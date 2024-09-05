@@ -38,6 +38,17 @@
 </template>
 
 <script>
+import {createRouter, createWebHistory} from 'vue-router'
+
+const routes =[
+{ path: '/login', component: LoginRegister },
+  { path: '/register', component: LoginRegister }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
 export default {
   name: 'LoginRegister',
   data() {
