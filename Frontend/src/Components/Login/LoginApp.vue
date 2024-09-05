@@ -59,7 +59,7 @@ export default {
     position: absolute;
     top: 20%;
     left: 20%;
-   
+    
     width: 768px;
     height: 450px;
    border-radius:10px;

@@ -1,8 +1,13 @@
 <script >
 import LoginApp from "./Components/Login/LoginApp.vue"
+import OperationsContainer from "./Components/MainPage/OperationsContainer.vue";
+import PolicyDashboard from "./Components/MainPage/PolicyDashboard.vue";
+
 export default {
   components: {
-    LoginApp
+    LoginApp,
+    OperationsContainer,
+    PolicyDashboard
   }
 }
 
@@ -10,12 +15,14 @@ export default {
 </script>
 
 <template>
+  <div><policy-dashboard></policy-dashboard>
+  </div>
+  <div>
+    <OperationsContainer></OperationsContainer>
+  </div>
 
-<login-app></login-app>
-  
-  
 
-  
+
 </template>
 
 <style >
