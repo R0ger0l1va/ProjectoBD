@@ -1,61 +1,103 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-wrapper">
-      <div class="dashboard-content">
-        <h2 class="dashboard-title">Dashboard de Póliza de Seguro</h2>
-        <div class="policy-info">
-          <div v-for="(value, key) in policyData" :key="key" class="policy-item">
-            <h3 class="policy-item-title">{{ formatLabel(key) }}</h3>
-            <p class="policy-item-value">{{ formatValue(key, value) }}</p>
+    <h1>Dashboard de Pólizas de {{ client.name }}</h1>
+    <div class="client-info">
+      <p><strong>ID del Cliente:</strong> {{ client.id }}</p>
+      <p><strong>Email:</strong> {{ client.email }}</p>
+    </div>
+    <div v-if="client.policies.length > 0" class="policies-list">
+      <div v-for="policy in client.policies" :key="policy.id" class="policy-card" :class="{ 'inactive': !policy.isActive }">
+        <h2>{{ policy.companyName }}</h2>
+        <div class="policy-details">
+          <div class="detail-item">
+            <span class="label">Número de Póliza:</span>
+            <span class="value">{{ policy.policyNumber }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Fecha de Inicio:</span>
+            <span class="value">{{ formatDate(policy.startDate) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Fecha de Finalización:</span>
+            <span class="value">{{ formatDate(policy.endDate) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Estado:</span>
+            <span class="value" :class="{ 'active': policy.isActive, 'inactive': !policy.isActive }">
+              {{ policy.isActive ? 'Activa' : 'Inactiva' }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Pago Mensual:</span>
+            <span class="value">{{ formatCurrency(policy.monthlyPayment) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Último Pago:</span>
+            <span class="value">{{ formatDate(policy.lastPaymentDate) }} - {{ formatCurrency(policy.lastPaymentAmount) }}</span>
           </div>
         </div>
       </div>
+    </div>
+    <div v-else class="no-policies">
+      <p>Este cliente no tiene pólizas activas en este momento.</p>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'PolicyDashboard',
+  name: 'ClientPolicyDashboard',
   data() {
     return {
-      policyData: {
-        companyName: "Seguros XYZ",
-        clientName: "Juan Pérez",
-        policyNumber: "POL-12345",
-        startDate: new Date("2023-01-01"),
-        endDate: new Date("2023-12-31"),
-        coverageAmount: 100000,
-        lastPay: 1000,
-        Pay: 5000,
-        State: "Activa"
-        // Puedes agregar más campos aquí en el futuro
+      client: {
+        id: 'CLI-001',
+        name: 'Juan Pérez',
+        email: 'juan.perez@email.com',
+        policies: [
+          {
+            id: 1,
+            companyName: 'Seguros XYZ',
+            policyNumber: 'POL-12345',
+            startDate: '2023-01-01',
+            endDate: '2023-12-31',
+            isActive: true,
+            monthlyPayment: 100,
+            lastPaymentDate: '2023-05-01',
+            lastPaymentAmount: 100
+          },
+          {
+            id: 2,
+            companyName: 'Aseguradora ABC',
+            policyNumber: 'POL-67890',
+            startDate: '2023-02-15',
+            endDate: '2024-02-14',
+            isActive: false,
+            monthlyPayment: 150,
+            lastPaymentDate: '2023-04-15',
+            lastPaymentAmount: 150
+          },
+          {
+            id: 3,
+            companyName: 'Seguros 123',
+            policyNumber: 'POL-24680',
+            startDate: '2023-03-01',
+            endDate: '2024-02-29',
+            isActive: true,
+            monthlyPayment: 200,
+            lastPaymentDate: '2023-05-01',
+            lastPaymentAmount: 200
+          }
+        ]
       }
     }
   },
   methods: {
-    formatLabel(key) {
-      const labels = {
-        companyName: "Empresa Aseguradora",
-        clientName: "Nombre del Cliente",
-        policyNumber: "Número de Póliza",
-        startDate: "Fecha de Inicio",
-        endDate: "Fecha de Finalización",
-        coverageAmount: "Monto de Cobertura",
-        lastPay: "Ultima Prima Mensual",
-        Pay: "Prima Mensual",
-        State: "Estado de Poliza"
-      }
-      return labels[key] || key
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
     },
-    formatValue(key, value) {
-      if (value instanceof Date) {
-        return value.toLocaleDateString()
-      }
-      if (key === 'coverageAmount') {
-        return `$${value.toLocaleString()}`
-      }
-      return value
+    formatCurrency(amount) {
+      return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
     }
   }
 }
@@ -63,64 +105,99 @@ export default {
 
 <style scoped>
 .dashboard-container {
-  padding: 24px;
-  background-color: #f3f4f6;
-  min-height: 100vh;
-}
-
-.dashboard-wrapper {
-  width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
-  background-color: #ffffff;
-  
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  border-radius: 40px;
-  overflow: hidden;
+  padding: 20px;
+  font-family: Arial, sans-serif;
 }
 
-.dashboard-content {
-  padding: 24px;
-}
-
-.dashboard-title {
-  font-size: 24px;
-  font-weight: bold;
+h1 {
+  color: #44917c;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+}
+
+.client-info {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.client-info p {
+  margin: 5px 0;
+}
+
+.policies-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.policy-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.policy-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.policy-card.inactive {
+  background-color: #e0e0e0;
+  opacity: 0.8;
+}
+
+.policy-card h2 {
+  color: #44917c;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+.policy-details {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-weight: bold;
+  color: #666;
+}
+
+.value {
   color: #333;
 }
 
-.policy-info {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.value.active {
+  color: #4caf50;
+  font-weight: bold;
 }
 
-.policy-item {
-  background-color: #f9fafb;
-  border-radius: 40px;
-  border-color: red;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  
+.value.inactive {
+  color: #f44336;
+  font-weight: bold;
 }
 
-.policy-item-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 8px;
+.no-policies {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin-top: 30px;
 }
 
-.policy-item-value {
-  font-size: 18px;
-  font-weight: 500;
-  color: #111827;
-}
-
-@media (max-width: 640px) {
-  .policy-info {
+@media (max-width: 768px) {
+  .policies-list {
     grid-template-columns: 1fr;
   }
 }

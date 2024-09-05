@@ -1,6 +1,24 @@
 <template>
   <div class="lista-polizas">
     <h2>Lista de Pólizas</h2>
+    <div class="filters">
+      <label for="stateFilter">Estado:</label>
+      <select v-model="filters.state" id="stateFilter">
+        <option value="">Todos</option>
+        <option value="active">Activa</option>
+        <option value="inactive">Inactiva</option>
+      </select>
+
+      <label for="typeFilter">Tipo:</label>
+      <select v-model="filters.type" id="typeFilter">
+        <option value="">Todos</option>
+        <option value="Seguros XYZ">Seguros XYZ</option>
+        <option value="Aseguradora ABC">Aseguradora ABC</option>
+      </select>
+
+      <label for="coverageFilter">Cobertura Mínima:</label>
+      <input type="number" v-model="filters.coverage" id="coverageFilter" placeholder="Monto de Cobertura" />
+    </div>
     <table>
       <thead>
         <tr>
@@ -10,16 +28,22 @@
           <th>Fecha de Inicio</th>
           <th>Fecha de Fin</th>
           <th>Monto de Cobertura</th>
+          <th>Estado</th>
+          <th>Prima Mensual</th>
+          <th>Ultimo Pago</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="poliza in polizas" :key="poliza.policyNumber">
+        <tr v-for="poliza in filteredPolizas" :key="poliza.policyNumber">
           <td>{{ poliza.companyName }}</td>
           <td>{{ poliza.clientName }}</td>
           <td>{{ poliza.policyNumber }}</td>
           <td>{{ formatDate(poliza.startDate) }}</td>
           <td>{{ formatDate(poliza.endDate) }}</td>
           <td>{{ formatCurrency(poliza.coverageAmount) }}</td>
+          <td>{{ poliza.state }}</td>
+          <td>{{ formatCurrency(poliza.pay) }}</td>
+          <td>{{ formatCurrency(poliza.lastPay) }}</td>
         </tr>
       </tbody>
     </table>
@@ -31,6 +55,11 @@ export default {
   name: 'ListaPolizas',
   data() {
     return {
+      filters: {
+        state: '',
+        type: '',
+        coverage: 0
+      },
       polizas: [
         {
           companyName: 'Seguros XYZ',
@@ -38,7 +67,10 @@ export default {
           policyNumber: 'POL-12345',
           startDate: '2023-01-01',
           endDate: '2023-12-31',
-          coverageAmount: 100000
+          coverageAmount: 100000,
+          state: "active",
+          pay: 10000,
+          lastPay: 11000
         },
         {
           companyName: 'Aseguradora ABC',
@@ -46,10 +78,24 @@ export default {
           policyNumber: 'POL-67890',
           startDate: '2023-02-15',
           endDate: '2024-02-14',
-          coverageAmount: 150000
+          coverageAmount: 150000,
+          state: "inactive",
+          pay: 5000,
+          lastPay: 2000,
         }
         // Aquí se agregarían más pólizas
       ]
+    }
+  },
+  computed: {
+    filteredPolizas() {
+      return this.polizas.filter(poliza => {
+        return (
+          (this.filters.state === '' || poliza.state === this.filters.state) &&
+          (this.filters.type === '' || poliza.companyName === this.filters.type) &&
+          (this.filters.coverage === 0 || poliza.coverageAmount >= this.filters.coverage)
+        );
+      });
     }
   },
   methods: {
@@ -75,6 +121,12 @@ export default {
 h2 {
   text-align: center;
   color: #44917c;
+  margin-bottom: 20px;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 

@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router'
+
 export default {
   name: 'OperationsContainer',
   data() {
@@ -35,14 +37,17 @@ export default {
       operations: [
         {
           name: "Crear Poliza",
+          ruta: '/crearPoliza',
           description: "Introducir los datos especificos de un cliente en el formulario para crear una poliza de seguro."
         },
         {
           name: "Modificar Poliza ",
+          ruta: '/modPoliza',
           description: "Introducir datos en el formulario y segun el id del cliente poder eliminar o actualizar la poliza de seguro."
         },
         {
           name: "Lista de Seguros",
+          ruta: '/listPoliza',
           description: "Registro de todos los seguros junto con su estado actual."
         }
       ]
@@ -55,9 +60,9 @@ export default {
 
     realizarAccion() {
       if (this.seleccionado !== null) {
-        const rutaSeleccionada = this.subcontenedores[this.seleccionado].ruta;
+        const rutaSeleccionada = this.operations[this.selectedOperation].ruta;
         // Aquí puedes usar vue-router para navegar a la ruta seleccionada
-        // this.$router.push(rutaSeleccionada);
+        this.$router.push(rutaSeleccionada) // this.$router.push(rutaSeleccionada);
         console.log(`Navegando a: ${rutaSeleccionada}`);
       }
     }
