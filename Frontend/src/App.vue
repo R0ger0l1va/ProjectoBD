@@ -10,7 +10,9 @@ export default {
 </script>
 
 <template>
- <login-register></login-register>
+ <main>
+  <router-view></router-view>
+ </main>
 </template>
 
 <style scoped>
