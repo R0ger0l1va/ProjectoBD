@@ -90,7 +90,7 @@ export default {
 
 h2 {
   text-align: center;
-  color: #4a5d23;
+  color: #44917c;
 }
 
 .form-group {
@@ -100,7 +100,7 @@ h2 {
 label {
   display: block;
   margin-bottom: 5px;
-  color: #4a5d23;
+  color: #44917c;
 }
 
 input {
@@ -114,14 +114,14 @@ input {
 }
 
 input:focus {
-  border-color: #4a5d23;
+  border-color: #44917c;
   outline: none;
 }
 
 button {
   width: 100%;
   padding: 10px;
-  background-color: #4a5d23;
+  background-color: #44917c;
   color: white;
   border: none;
   border-radius: 4px;

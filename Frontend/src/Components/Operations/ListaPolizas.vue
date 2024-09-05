@@ -74,7 +74,7 @@ export default {
 
 h2 {
   text-align: center;
-  color: #4a5d23;
+  color: #44917c;
   margin-bottom: 20px;
 }
 
@@ -92,7 +92,7 @@ th, td {
 }
 
 th {
-  background-color: #4a5d23;
+  background-color: #44917c;
   font-weight: bold;
   color: #fff;
 }
@@ -135,7 +135,7 @@ tr:hover {
     padding-right: 10px;
     white-space: nowrap;
     font-weight: bold;
-    color: #4a5d23;
+    color: #44917c;
   }
 }
 </style>

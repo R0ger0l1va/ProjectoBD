@@ -1,13 +1,20 @@
 <script >
-import LoginApp from "./Components/Login/LoginApp.vue"
 import OperationsContainer from "./Components/MainPage/OperationsContainer.vue";
 import PolicyDashboard from "./Components/MainPage/PolicyDashboard.vue";
-
+import LoginRegister from "./Components/Login/LoginRegister.vue";
+import ContenedorPrincipal from "./Components/MainPage/ContenedorPrincipal.vue";
+import CrearPoliza from "./Components/Operations/CrearPoliza.vue";
+import ModificarPoliza from "./Components/Operations/ModificarPoliza.vue";
+import ListaPolizas from "./Components/Operations/ListaPolizas.vue";
 export default {
   components: {
-    LoginApp,
+    CrearPoliza,
+    ModificarPoliza,
+    ListaPolizas,
     OperationsContainer,
-    PolicyDashboard
+    PolicyDashboard,
+    ContenedorPrincipal,
+    LoginRegister,
   }
 }
 
@@ -20,6 +27,10 @@ export default {
   <div>
     <OperationsContainer></OperationsContainer>
   </div>
+  <div> <login-register></login-register></div>
+  <crear-poliza></crear-poliza>
+  <modificar-poliza></modificar-poliza>
+  <lista-polizas></lista-polizas>
 
 
 
@@ -28,4 +39,4 @@ export default {
 <style >
 
 
-</style>
+</style>./Components/Login/LoginRegister.vue

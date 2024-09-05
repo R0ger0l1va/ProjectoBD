@@ -17,7 +17,9 @@
               <p class="operation-card-description">{{ op.description }}</p>
             </div>
           </div>
-          <button class="but"  ><h3>Seleccionar</h3></button>
+          <button class="boton-accion"
+      :class="{ 'activo': selectedOperation !== null }"
+      @click="realizarAccion"  ><h3>Seleccionar</h3></button>
         </div>
       </div>
     </div>
@@ -51,8 +53,13 @@ export default {
       this.selectedOperation = index;
     },
 
-    openComp() {
-      
+    realizarAccion() {
+      if (this.seleccionado !== null) {
+        const rutaSeleccionada = this.subcontenedores[this.seleccionado].ruta;
+        // Aquí puedes usar vue-router para navegar a la ruta seleccionada
+        // this.$router.push(rutaSeleccionada);
+        console.log(`Navegando a: ${rutaSeleccionada}`);
+      }
     }
   }
 }
@@ -61,21 +68,35 @@ export default {
 
 <style scoped>
 
-.but{
-  border-radius: 40px;
-  width: 50%;
-  height: 4rem;
-  border-color: #7d8f69;
-  background-color: white;
-  margin-top: 20px;
+.boton-accion {
   position: relative;
-  right: -350px;
+  width: 80%;
+  max-width: 300px;
+  right: -290px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #44917c;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  opacity: 0.6;
 }
 
-.but:hover{
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+.boton-accion.activo {
+  opacity: 1;
 }
+
+.boton-accion:hover {
+  background-color: #45a049;
+}
+
+.boton-accion:active {
+  transform: scale(0.98);}
+
+
 
 .operations-container {
   padding: 24px;
@@ -136,7 +157,7 @@ export default {
 }
 
 .operation-card.selected {
-  box-shadow: 0 0 0 2px #7d8f69;
+  box-shadow: 0 0 0 2px #44917c;
 }
 
 .operation-card-content {
