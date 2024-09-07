@@ -38,6 +38,7 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
 import { useRouter } from 'vue-router'
 export default {
   
