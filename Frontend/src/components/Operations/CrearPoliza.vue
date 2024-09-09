@@ -1,32 +1,32 @@
 <template>
-  <div class="crear-poliza">
-    <h2>Crear Nueva Póliza</h2>
+  <div class="formulario">
+    <h2>Crear Póliza de Seguro</h2>
     <form @submit.prevent="crearPoliza">
-      <div class="form-group">
-        <label for="companyName">Empresa Aseguradora:</label>
-        <input type="text" id="companyName" v-model="nuevaPoliza.companyName" required>
+      <div class="campo">
+        <label for="empresa">Empresa:</label>
+        <input id="empresa" v-model="poliza.empresa" required />
       </div>
-      <div class="form-group">
-        <label for="clientName">Nombre del Cliente:</label>
-        <input type="text" id="clientName" v-model="nuevaPoliza.clientName" required>
+      <div class="campo">
+        <label for="montoCobertura">Monto de Cobertura:</label>
+        <input id="montoCobertura" v-model.number="poliza.montoCobertura" type="number" required />
       </div>
-      <div class="form-group">
-        <label for="policyNumber">Número de Póliza:</label>
-        <input type="text" id="policyNumber" v-model="nuevaPoliza.policyNumber" required>
+      <div class="campo">
+        <label for="fechaInicio">Fecha de Inicio:</label>
+        <input id="fechaInicio" v-model="poliza.fechaInicio" type="date" required />
       </div>
-      <div class="form-group">
-        <label for="startDate">Fecha de Inicio:</label>
-        <input type="date" id="startDate" v-model="nuevaPoliza.startDate" required>
+      <div class="campo">
+        <label for="fechaFin">Fecha de Finalización:</label>
+        <input id="fechaFin" v-model="poliza.fechaFin" type="date" required />
       </div>
-      <div class="form-group">
-        <label for="endDate">Fecha de Finalización:</label>
-        <input type="date" id="endDate" v-model="nuevaPoliza.endDate" required>
+      <div class="campo">
+        <label for="nombreCliente">Nombre del Cliente:</label>
+        <input id="nombreCliente" v-model="poliza.nombreCliente" required />
       </div>
-      <div class="form-group">
-        <label for="coverageAmount">Monto de Cobertura:</label>
-        <input type="number" id="coverageAmount" v-model="nuevaPoliza.coverageAmount" required>
+      <div class="campo">
+        <label for="numeroPoliza">Número de Póliza:</label>
+        <input id="numeroPoliza" v-model="poliza.numeroPoliza" required />
       </div>
-      <button type="submit">Crear Póliza</button>
+      <button type="submit" class="boton-submit">Crear Póliza</button>
     </form>
   </div>
 </template>
@@ -36,90 +36,66 @@ export default {
   name: 'CrearPoliza',
   data() {
     return {
-      nuevaPoliza: {
-        companyName: '',
-        clientName: '',
-        policyNumber: '',
-        startDate: '',
-        endDate: '',
-        coverageAmount: null
+      poliza: {
+        empresa: '',
+        montoCobertura: null,
+        fechaInicio: '',
+        fechaFin: '',
+        nombreCliente: '',
+        numeroPoliza: ''
       }
     }
   },
   methods: {
     crearPoliza() {
-      // Aquí iría la lógica para crear la póliza
-      console.log('Nueva póliza creada:', this.nuevaPoliza);
-      // Resetear el formulario
-      this.nuevaPoliza = {
-        companyName: '',
-        clientName: '',
-        policyNumber: '',
-        startDate: '',
-        endDate: '',
-        coverageAmount: null
-      };
+      console.log('Póliza creada:', this.poliza)
+      this.poliza = {
+        empresa: '',
+        montoCobertura: null,
+        fechaInicio: '',
+        fechaFin: '',
+        nombreCliente: '',
+        numeroPoliza: ''
+      }
+      alert('Póliza creada con éxito')
     }
   }
 }
 </script>
 
 <style scoped>
-.crear-poliza {
-  max-width: 500px;
-  margin: 0 auto;
+.formulario {
+  background-color: #9E9B9B;
   padding: 20px;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  color: #333;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-  text-align: center;
-  color:#44917c;
-}
-
-.form-group {
+.campo {
   margin-bottom: 15px;
 }
 
 label {
   display: block;
   margin-bottom: 5px;
-  color:#44917c;
+  font-weight: bold;
 }
 
 input {
   width: 100%;
   padding: 8px;
-  border: 1px solid #7d8f69;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: #ffffff;
-  color: #333;
-  transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
-input:focus {
-  border-color:#44917c;
-  outline: none;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background-color:#44917c;
+.boton-submit {
+  padding: 10px 15px;
+  background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #3a4a1c;
-}
-
-button:active {
-  background-color: #2a3615;
+  border-radius: 4px;
+  font-size: 14px;
 }
 </style>

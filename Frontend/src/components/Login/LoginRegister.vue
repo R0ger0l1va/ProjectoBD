@@ -40,6 +40,7 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import { useRouter } from 'vue-router'
+
 export default {
   
   name: 'LoginRegister',
@@ -62,14 +63,15 @@ export default {
       this.isLoginActive = !this.isLoginActive
     },
     handleLogin() {
-      if (this.loginForm.email === 'user@gmail.com' && this.loginForm.password === '123') {
-        this.$router.push('/policy')
-      } else if (this.loginForm.email === 'admi@gmail.com' && this.loginForm.password === '123') {
-        this.$router.push('/operation')
-      } else
-      {
-        console.log('Credenciales incorrectas')
-      }
+        if (this.loginForm.email === 'adminG@gmail.com' && this.loginForm.password === '123') {
+          this.$router.push({ name: 'gestor-polizas', query: { userType: 'adminG' } });
+        } else if (this.loginForm.email === 'worker@gmail.com' && this.loginForm.password === '123') {
+          this.$router.push({ name: 'gestor-polizas', query: { userType: 'worker' } });
+        } else if (this.loginForm.email === 'user@gmail.com' && this.loginForm.password === '123') {
+          this.$router.push({ name: 'client-policy-dashboard' });
+        } else {
+          console.log('Credenciales incorrectas');
+        }
     },
     handleRegister() {
       console.log('Intento de registro', this.registerForm)

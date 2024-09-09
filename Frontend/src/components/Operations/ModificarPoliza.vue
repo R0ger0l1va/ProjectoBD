@@ -1,152 +1,115 @@
 <template>
-  <div class="modificar-poliza">
-    <h2>Modificar Póliza</h2>
-    <form @submit.prevent="actualizarPoliza">
-      <div class="form-group">
-        <label for="companyName">Empresa Aseguradora:</label>
-        <input type="text" id="companyName" v-model="polizaActual.companyName" required>
+  <div class="formulario">
+    <h2>Modificar/Eliminar Póliza de Seguro</h2>
+    <form @submit.prevent="modificarPoliza">
+      <div class="campo">
+        <label for="numeroPoliza">Número de Póliza:</label>
+        <input id="numeroPoliza" v-model="numeroPoliza" required />
       </div>
-      <div class="form-group">
-        <label for="clientName">Nombre del Cliente:</label>
-        <input type="text" id="clientName" v-model="polizaActual.clientName" required>
+      <div class="campo">
+        <label for="empresa">Empresa:</label>
+        <input id="empresa" v-model="poliza.empresa" />
       </div>
-      <div class="form-group">
-        <label for="policyNumber">Número de Póliza:</label>
-        <input type="text" id="policyNumber" v-model="polizaActual.policyNumber" required>
+      <div class="campo">
+        <label for="montoCobertura">Monto de Cobertura:</label>
+        <input id="montoCobertura" v-model.number="poliza.montoCobertura" type="number" />
       </div>
-      <div class="form-group">
-        <label for="startDate">Fecha de Inicio:</label>
-        <input type="date" id="startDate" v-model="polizaActual.startDate" required>
+      <div class="campo">
+        <label for="fechaInicio">Fecha de Inicio:</label>
+        <input id="fechaInicio" v-model="poliza.fechaInicio" type="date" />
       </div>
-      <div class="form-group">
-        <label for="endDate">Fecha de Finalización:</label>
-        <input type="date" id="endDate" v-model="polizaActual.endDate" required>
+      <div class="campo">
+        <label for="fechaFin">Fecha de Finalización:</label>
+        <input id="fechaFin" v-model="poliza.fechaFin" type="date" />
       </div>
-      <div class="form-group">
-        <label for="coverageAmount">Monto de Cobertura:</label>
-        <input type="number" id="coverageAmount" v-model="polizaActual.coverageAmount" required>
+      <div class="campo">
+        <label for="nombreCliente">Nombre del Cliente:</label>
+        <input id="nombreCliente" v-model="poliza.nombreCliente" />
       </div>
-      <button type="submit">Actualizar Póliza</button>
+      <div class="botones">
+        <button type="submit" class="boton-submit">Modificar Póliza</button>
+        <button type="button" @click="eliminarPoliza" class="boton-eliminar">
+          Eliminar Póliza
+        </button>
+      </div>
     </form>
-    <button @click="eliminarPoliza" class="delete-button">Eliminar Póliza</button>
   </div>
 </template>
 
 <script>
 export default {
   name: 'ModificarPoliza',
-  props: {
-    polizaId: {
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
-      polizaActual: {
-        companyName: '',
-        clientName: '',
-        policyNumber: '',
-        startDate: '',
-        endDate: '',
-        coverageAmount: null
+      numeroPoliza: '',
+      poliza: {
+        empresa: '',
+        montoCobertura: null,
+        fechaInicio: '',
+        fechaFin: '',
+        nombreCliente: ''
       }
     }
   },
   methods: {
-    actualizarPoliza() {
-      // Aquí iría la lógica para actualizar la póliza
-      console.log('Póliza actualizada:', this.polizaActual);
+    modificarPoliza() {
+      console.log('Póliza modificada:', this.poliza)
+      alert('Póliza modificada con éxito')
     },
     eliminarPoliza() {
-      // Aquí iría la lógica para eliminar la póliza
-      console.log('Póliza eliminada:', this.polizaId);
+      console.log('Póliza eliminada:', this.numeroPoliza)
+      alert('Póliza eliminada con éxito')
     }
-  },
-  mounted() {
-    // Aquí se cargarían los datos de la póliza actual
-    // Por ahora, usaremos datos de ejemplo
-    this.polizaActual = {
-      companyName: 'Seguros XYZ',
-      clientName: 'Juan Pérez',
-      policyNumber: 'POL-12345',
-      startDate: '2023-01-01',
-      endDate: '2023-12-31',
-      coverageAmount: 100000
-    };
   }
 }
 </script>
 
 <style scoped>
-.modificar-poliza {
-  max-width: 500px;
-  margin: 0 auto;
+.formulario {
+  background-color: #9E9B9B;
   padding: 20px;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  color: #333;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-  text-align: center;
-  color: #44917c;
-}
-
-.form-group {
+.campo {
   margin-bottom: 15px;
 }
 
 label {
   display: block;
   margin-bottom: 5px;
-  color: #44917c;
+  font-weight: bold;
 }
 
 input {
   width: 100%;
   padding: 8px;
-  border: 1px solid #7d8f69;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: #ffffff;
-  color: #333;
-  transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
-input:focus {
-  border-color: #44917c;
-  outline: none;
+.botones {
+  display: flex;
+  justify-content: space-between;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #44917c;
+.boton-submit,
+.boton-eliminar {
+  padding: 10px 15px;
   color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  margin-bottom: 10px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-button:hover {
-  background-color: #3a4a1c;
+.boton-submit {
+  background-color: #4caf50;
 }
 
-button:active {
-  background-color: #2a3615;
-}
-
-.delete-button {
-  background-color: #8B0000;
-}
-
-.delete-button:hover {
-  background-color: #6B0000;
-}
-
-.delete-button:active {
-  background-color: #4B0000;
+.boton-eliminar {
+  background-color: #f44336;
 }
 </style>

@@ -1,20 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginRegister from '@/components/Login/LoginRegister.vue'
-import OperationsContainer from '@/components/MainPage/OperationsContainer.vue'
-import PolicyDashboard from '@/components/MainPage/PolicyDashboard.vue'
-import CrearPoliza from '@/components/Operations/CrearPoliza.vue'
-import ModificarPoliza from '@/components/Operations/ModificarPoliza.vue'
-import ListaPolizas from '@/components/Operations/ListaPolizas.vue'
+import LoginRegister from '../components/Login/LoginRegister.vue'
+import GestorPolizasMejorado from '../components/MainPage/GestorPolizasMejorado.vue'
+import ClientPolicyDashboard from '../components/MainPage/PolicyDashboard.vue'
+
+
 
 const routes = [
-  
-  { path: '/login', component: LoginRegister },
-  { path: '/register', component: LoginRegister },
-  {path: '/operation', component: OperationsContainer},
-  {path: '/policy', component: PolicyDashboard},
-  {path: '/crearPoliza', component: CrearPoliza},
-  {path: '/modPoliza', component: ModificarPoliza},
-  {path: '/listPoliza', component: ListaPolizas},
+
+  {
+    path: '/',
+    name: 'login',
+    component: LoginRegister
+  },
+  {
+    path: '/gp',
+    name: 'gestor-polizas',
+    component: GestorPolizasMejorado,
+    meta: {
+      requiresAdmin: true
+    }
+  },
+  {
+    path: '/gpw',
+    name: 'gestor-polizas-worker',
+    component: GestorPolizasMejorado,
+    meta: {
+      requiresWorker: true
+    }
+  },
+  {
+    path: '/pol',
+    name: 'client-policy-dashboard',
+    component: ClientPolicyDashboard,
+    meta: {
+      requiresUser: true
+    }
+  }
 
 ]
 const router = createRouter({
@@ -23,3 +44,6 @@ const router = createRouter({
 })
 
 export default router
+
+
+
