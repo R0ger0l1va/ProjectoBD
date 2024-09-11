@@ -33,12 +33,33 @@
         <label for="numeroPoliza">Número de Póliza:</label>
         <input id="numeroPoliza" v-model="usuario.numeroPoliza">
       </div>
+      <div v-if="usuario.tipo === 'cliente'" class="campo">
+        <label for="sexo">Sexo:</label>
+        <select id="sexo" v-model="usuario.sexo" required>
+          <option value="masculino">Masculino</option>
+          <option value="femenino">Femenino</option>
+        </select>
+      </div>
+      <div v-if="usuario.tipo === 'cliente'" class="campo">
+        <label for="edad">Edad:</label>
+        <input id="edad" v-model="usuario.edad" type="number">
+      </div>
+      <div v-if="usuario.tipo === 'cliente'" class="campo">
+        <label for="direccionPostal">Dirección Postal:</label>
+        <input id="direccionPostal" v-model="usuario.direccionPostal">
+      </div>
+      <div v-if="usuario.tipo === 'cliente'" class="campo">
+        <label for="telefono">Teléfono:</label>
+        <input id="telefono" v-model="usuario.telefono">
+      </div>
       <button type="submit" class="boton-submit">Crear Usuario</button>
     </form>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'CrearUsuario',
   data() {
@@ -50,27 +71,60 @@ export default {
         email: '',
         password: '',
         cargo: '',
-        numeroPoliza: ''
+        numeroPoliza: '',
+        sexo: '',
+        edad: 0,
+        direccionPostal: '',
+        telefono: ''
       }
     }
   },
   methods: {
     crearUsuario() {
-      console.log('Usuario creado:', this.usuario);
-      alert('Usuario creado con éxito');
-      this.usuario = {
-        tipo: 'trabajador',
-        nombre: '',
-        apellido: '',
-        email: '',
-        password: '',
-        cargo: '',
-        numeroPoliza: ''
-      };
+      if (this.usuario.tipo === 'cliente') {
+        const params = {
+          id_pais: 1, // default value, you can change it
+          id_sexo: this.usuario.sexo, // default value, you can change it
+          nombre_cliente: this.usuario.nombre,
+          apellido_cliente: this.usuario.apellido,
+          edad: this.usuario.edad, // default value, you can change it
+          direccion_postal: this.usuario.direccionPostal,
+          telefono: this.usuario.telefono,
+          correo_electronico: this.usuario.email,
+          carnet_identidad: this.usuario.numeroPoliza
+        };
+
+        axios.post('/api/clientes', params)
+          .then(response => {
+            console.log('Cliente creado:', response.data);
+            alert('Cliente creado con éxito');
+          })
+          .catch(error => {
+            console.error('Error creating client:', error);
+            alert('Error creating client');
+          });
+
+        this.usuario = {
+          tipo: 'trabajador',
+          nombre: '',
+          apellido: '',
+          email: '',
+          password: '',
+          cargo: '',
+          numeroPoliza: '',
+          sexo: '',
+          edad: 0,
+          direccionPostal: '',
+          telefono: ''
+        };
+      } else {
+        // handle worker creation
+      }
     }
   }
 }
 </script>
+
 
 <style scoped>
 .formulario {
