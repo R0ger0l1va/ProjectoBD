@@ -7,16 +7,42 @@ export const getUsers = async (req, res) => {
 }
 
 export const signIn = async (req, res) => {
-    const { id_usuario, contrasenna,rol } = req.body
-    if (rol==='Admin') {
+    const { id_usuario, contrasenna, rol } = req.body
+    if (rol === 'AdminGen') {
         try {
-            const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])          
-            if (result.rows[0].rol === 'Admin' && result.rows[0].contrasenna === contrasenna) {
-                res.send(result)
+            const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])
+            if (result.rows[0].rol === rol && result.rows[0].contrasenna === contrasenna) {
+                res.status(200).json({
+                    Admin: result.rows[0],
+                    message: "Se ha logueado como AdminGen",
+                    
+                })
             }
             else {
                 res.status(500).json({
-                    message: 'El usuario encontrado no es Admin'
+                    message: 'El usuario no existe o fue encontrado pero no es Admin o contrasenna incorrecta'
+
+                })
+            }
+        } catch (error) {
+            res.status(500).json({
+                message: 'Ha ocurrido un error'
+
+            })
+        }
+    }
+    else if (rol==='Admin') {
+        try {
+            const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])          
+            if ( result.rows[0].rol === rol && result.rows[0].contrasenna === contrasenna) {
+                res.status(200).json({
+                    Admin: result.rows[0],
+                    message: "Se ha logueadp como Admin",
+                })
+            }
+            else {
+                res.status(500).json({
+                    message: 'El usuario no existe o fue encontrado pero no es Admin o contrasenna incorrecta'
 
                 })
 }
@@ -31,12 +57,15 @@ export const signIn = async (req, res) => {
     else if (rol === "Cliente") {
         try {
             const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])
-            if (result.rows[0].rol === 'Cliente' && result.rows[0].contrasenna===contrasenna) {
-                res.send(result)
+            if ( result.rows[0].rol === rol && result.rows[0].contrasenna===contrasenna ) {
+                res.status(200).json({
+                    Cliente: result.rows[0],
+                     message: "Se ha logueado como Cliente",
+                })
             }
             else {
                 res.status(500).json({
-                    message: 'El usuario encontrado no es Cliente'
+                    message: 'El usuario no existe o fue encontrado pero no es Cliente o contrasenna incorrecta'
 
                 })
             }
@@ -54,7 +83,7 @@ export const signIn = async (req, res) => {
 
 export const signUp = async (req, res) => {
     const { id_usuario, nombre_usuario, contrasenna, rol } = req.body
-    if (rol ==='Admin') {
+   if (rol ==='Admin') {
         try {
 
             await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
@@ -95,6 +124,27 @@ export const signUp = async (req, res) => {
         }
         
     }
+   else if (rol === 'AdminGen') {
+       try {
+
+           await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
+               [id_usuario, nombre_usuario, contrasenna, rol]
+           );
+
+           res.status(200).json({
+               message: "Se ha registrado como AdminGen",
+               tbUsuarios: { id_usuario, nombre_usuario, contrasenna },
+           });
+
+       } catch (error) {
+           console.log(error)
+           if (error?.code === "23505") {
+               return res.status(409).json({ message: "Ya existe este usuario" })
+           }
+           return res.status(500).json({ message: "Internal Server ERROR" })
+       }
+
+   }
     
 
     
