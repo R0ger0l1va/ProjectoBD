@@ -1,37 +1,101 @@
 
-import { pool } from "../db.js"
+import { pool } from "../../database/db.js"
 
 export const getUsers = async (req, res) => {
     const { rows } = await pool.query('Select * from "tbUsuarios"')
     res.json({ rows })
 }
 
-export const getUser = async (req, res) => {
-    const { rol } = req.params
-    const { rows } = await pool.query('select * from "tbUsuarios" where rol = $1', [rol])
-    if (rows.length === 0) {
-        return res.status(404).json({ message: "Usuario no encontrado" })
+export const signIn = async (req, res) => {
+    const { id_usuario, contrasenna,rol } = req.body
+    if (rol==='Admin') {
+        try {
+            const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])          
+            if (result.rows[0].rol === 'Admin' && result.rows[0].contrasenna === contrasenna) {
+                res.send(result)
+            }
+            else {
+                res.status(500).json({
+                    message: 'El usuario encontrado no es Admin'
+
+                })
+}
+        } catch (error) {
+            res.status(500).json({
+                message: 'Ha ocurrido un error'
+                
+            })
+        }
     }
-    res.json(rows)
+
+    else if (rol === "Cliente") {
+        try {
+            const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])
+            if (result.rows[0].rol === 'Cliente' && result.rows[0].contrasenna===contrasenna) {
+                res.send(result)
+            }
+            else {
+                res.status(500).json({
+                    message: 'El usuario encontrado no es Cliente'
+
+                })
+            }
+        } catch (error) {
+            res.status(500).json({
+                message: 'Ha ocurrido un error'
+
+            })
+        }
+    }
+    
+    
 
 }
 
-export const createUser = async (req, res) => {
-    try {
-        const { id_usuario,nombre_usuario, contrasenna, rol } = req.body
-        const result = await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
-            [id_usuario,nombre_usuario, contrasenna, rol]
-        )
-        console.log(result)
-        return res.json(result.rows[0])
+export const signUp = async (req, res) => {
+    const { id_usuario, nombre_usuario, contrasenna, rol } = req.body
+    if (rol ==='Admin') {
+        try {
 
-    } catch (error) {
-        console.log(error)
-        if (error?.code === "23505") {
-            return res.status(409).json({message: "Ya existe este usuario"})
+            await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
+                [id_usuario, nombre_usuario, contrasenna, rol]
+            );
+            
+            res.status(200).json({
+                message: "Se ha registrado como Admin",
+                tbUsuarios: { id_usuario, nombre_usuario, contrasenna },
+            });
+
+        } catch (error) {
+            console.log(error)
+            if (error?.code === "23505") {
+                return res.status(409).json({ message: "Ya existe este usuario" })
+            }
+            return res.status(500).json({ message: "Internal Server ERROR" })
         }
-        return res.status(500).json({message: "Internal Server ERROR"})
     }
+    else if(rol==='Cliente'){
+        try {
+
+            await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
+                [id_usuario, nombre_usuario, contrasenna, rol]
+            );
+
+            res.status(200).json({
+                message: "Se ha registrado como Cliente",
+                tbUsuarios: { id_usuario, nombre_usuario, contrasenna },
+            });
+
+        } catch (error) {
+            console.log(error)
+            if (error?.code === "23505") {
+                return res.status(409).json({ message: "Ya existe este usuario" })
+            }
+            return res.status(500).json({ message: "Internal Server ERROR" })
+        }
+        
+    }
+    
 
     
 
