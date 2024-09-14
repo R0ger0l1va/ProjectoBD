@@ -1,12 +1,12 @@
 <template>
   <div class="dashboard-container">
-    <h1>Dashboard de Pólizas de {{ client.name }}</h1>
+    <h1>Dashboard de Pólizas de {{ client.nombre_usuario }}</h1>
     <div class="client-info">
-      <p><strong>ID del Cliente:</strong> {{ client.id }}</p>
-      <p><strong>Email:</strong> {{ client.email }}</p>
+      <p><strong>ID del Cliente:</strong> {{ client.id_usuario }}</p>
+      <p><strong>rol:</strong> {{ client.rol }}</p>
     </div>
-    <div v-if="client.policies.length > 0" class="policies-list">
-      <div v-for="policy in client.policies" :key="policy.id" class="policy-card" :class="{ 'inactive': !policy.isActive }">
+    <div v-if="policies.length > 0" class="policies-list">
+      <div v-for="policy in policies" :key="policy.id" class="policy-card" :class="{ 'inactive': !policy.isActive }">
         <h2>{{ policy.companyName }}</h2>
         <div class="policy-details">
           <div class="detail-item">
@@ -50,9 +50,11 @@ export default {
   data() {
     return {
       client: {
-        id: 'CLI-001',
-        name: 'Juan Pérez',
-        email: 'juan.perez@email.com',
+        id_usuario: '',
+        nombre_usuario: '',
+        contrasenna: '',
+        rol: '',
+      },
         policies: [
           {
             id: 1,
@@ -89,8 +91,15 @@ export default {
           }
         ]
       }
+    },
+ created() {
+    const sessionData = sessionStorage.getItem('session');
+    if (sessionData) {
+      this.client = JSON.parse(sessionData);
+      console.log(this.client);
     }
   },
+  
   methods: {
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };

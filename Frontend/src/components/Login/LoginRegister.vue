@@ -6,26 +6,44 @@
         <form @submit.prevent="signUp" ref="signup">
           <div class="input-group">
             <div class="input-wrapper">
-              <input v-model="registerForm.nombre_usuario" type="text" placeholder="Nombre" required
-                :class="{ 'error': errors.name }" @blur="validateField('nombre_usuario')"
-                @input="validateInput('name')" />
+              <input
+                v-model="registerForm.nombre_usuario"
+                type="text"
+                placeholder="Nombre"
+                required
+                :class="{ error: errors.name }"
+                @blur="validateField('nombre_usuario')"
+                @input="validateInput('name')"
+              />
               <div class="error-container">
                 <span v-if="errors.name" class="error-message">Campo vacío</span>
                 <span v-if="minLengthErrors.name" class="error-message">Mínimo 3 caracteres</span>
               </div>
             </div>
             <div class="input-wrapper">
-              <input v-model="registerForm.id_usuario" type="number" placeholder="ID" required
-                :class="{ 'error': errors.id }" @blur="validateField('id_usuario')" />
+              <input
+                v-model="registerForm.id_usuario"
+                type="number"
+                placeholder="ID"
+                required
+                :class="{ error: errors.id }"
+                @blur="validateField('id_usuario')"
+              />
               <div class="error-container">
                 <span v-if="errors.id" class="error-message">Campo vacío</span>
               </div>
             </div>
           </div>
           <div class="input-wrapper">
-            <input v-model="registerForm.contrasenna" type="password" placeholder="Contraseña" required
-              :class="{ 'error': errors.password }" @blur="validateField('contrasenna')"
-              @input="validateInput('password')" />
+            <input
+              v-model="registerForm.contrasenna"
+              type="password"
+              placeholder="Contraseña"
+              required
+              :class="{ error: errors.password }"
+              @blur="validateField('contrasenna')"
+              @input="validateInput('password')"
+            />
             <div class="error-container">
               <span v-if="errors.password" class="error-message">Campo vacío</span>
               <span v-if="minLengthErrors.password" class="error-message">Mínimo 3 caracteres</span>
@@ -39,19 +57,33 @@
         <form @submit.prevent="signIn">
           <div class="input-group">
             <div class="input-wrapper">
-              <input v-model="loginForm.id_usuario" type="number" placeholder="ID" required
-                :class="{ 'error': errors.loginId }" @blur="validateField('loginId')" />
+              <input
+                v-model="loginForm.id_usuario"
+                type="number"
+                placeholder="ID"
+                required
+                :class="{ error: errors.loginId }"
+                @blur="validateField('loginId')"
+              />
               <div class="error-container">
                 <span v-if="errors.loginId" class="error-message">Campo vacío</span>
               </div>
             </div>
             <div class="input-wrapper">
-              <input v-model="loginForm.contrasenna" type="password" placeholder="Contraseña" required
-                :class="{ 'error': errors.loginPassword }" @blur="validateField('loginPassword')"
-                @input="validateInput('loginPassword')" />
+              <input
+                v-model="loginForm.contrasenna"
+                type="password"
+                placeholder="Contraseña"
+                required
+                :class="{ error: errors.loginPassword }"
+                @blur="validateField('loginPassword')"
+                @input="validateInput('loginPassword')"
+              />
               <div class="error-container">
                 <span v-if="errors.loginPassword" class="error-message">Campo vacío</span>
-                <span v-if="minLengthErrors.loginPassword" class="error-message">Mínimo 3 caracteres</span>
+                <span v-if="minLengthErrors.loginPassword" class="error-message"
+                  >Mínimo 3 caracteres</span
+                >
               </div>
             </div>
           </div>
@@ -74,14 +106,14 @@
         </div>
       </div>
     </div>
-    <div v-if="showAlert" :class="['alert', { 'success': isSuccess, 'error': !isSuccess }]">
+    <div v-if="showAlert" :class="['alert', { success: isSuccess, error: !isSuccess }]">
       {{ alertMessage }}
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 export default {
   name: 'LoginRegister',
   data() {
@@ -90,7 +122,7 @@ export default {
       loginForm: {
         id_usuario: '',
         contrasenna: '',
-        rol:''
+        rol: ''
       },
       registerForm: {
         id_usuario: '',
@@ -120,14 +152,17 @@ export default {
   },
   computed: {
     isLoginFormValid() {
-      return this.loginForm.id_usuario &&
+      return (
+        this.loginForm.id_usuario &&
         this.loginForm.contrasenna &&
         this.loginForm.contrasenna.length >= 3 &&
         !this.errors.loginId &&
         !this.errors.loginPassword
+      )
     },
     isRegisterFormValid() {
-      return this.registerForm.nombre_usuario &&
+      return (
+        this.registerForm.nombre_usuario &&
         this.registerForm.id_usuario &&
         this.registerForm.contrasenna &&
         this.registerForm.nombre_usuario.length >= 3 &&
@@ -135,6 +170,7 @@ export default {
         !this.errors.name &&
         !this.errors.id &&
         !this.errors.password
+      )
     }
   },
   methods: {
@@ -146,7 +182,8 @@ export default {
         console.log(res)
         this.showAlertMessage(res.data.message, true)
       } catch (error) {
-        alert("Id de usuario ya existe")      }
+        alert('Id de usuario ya existe')
+      }
     },
 
     async signIn() {
@@ -156,34 +193,35 @@ export default {
         this.reset()
         console.log(res)
         this.showAlertMessage(res.data.message, true)
-        await this.redirectUser(res.data.rol) // Obtener el rol del usuario
+        sessionStorage.setItem("session", JSON.stringify(res.data.Cliente))
+        
+        
+        await this.redirectUser(res.data.Cliente.rol) // Obtener el rol del usuario
       } catch (error) {
-        console.error('Error en el cliente:', error); // Agrega esto para depurar
+        console.error('Error en el cliente:', error) // Agrega esto para depurar
         if (error.response) {
-          console.log('Error response:', error.response); // Agrega esto para depurar
+          console.log('Error response:', error.response) // Agrega esto para depurar
           switch (error.response.status) {
             case 401:
-              alert("Contraseña incorrecta")
-              this.showAlertMessage('Contraseña incorrecta', false);
-              break;
+              alert('Contraseña incorrecta')
+              this.showAlertMessage('Contraseña incorrecta', false)
+              break
             case 404:
-              alert("Usuario no encontrado")
-              this.showAlertMessage('Usuario no encontrado', false);
-              break;
+              alert('Usuario no encontrado')
+              this.showAlertMessage('Usuario no encontrado', false)
+              break
             case 400:
-              this.showAlertMessage('Rol desconocido', false);
-              break;
+              this.showAlertMessage('Rol desconocido', false)
+              break
             default:
-              this.showAlertMessage('Error desconocido', false);
-              break;
+              this.showAlertMessage('Error desconocido', false)
+              break
           }
         } else {
-          this.showAlertMessage('Error de red o servidor no disponible', false);
+          this.showAlertMessage('Error de red o servidor no disponible', false)
         }
       }
     },
-
-    
 
     redirectUser(role) {
       if (role === 'Cliente') {
@@ -194,36 +232,38 @@ export default {
         this.$router.push({ name: 'gestor-polizas' }) // Redirigir a la página de inicio por defecto
       }
     },
-  
 
     reset() {
       this.registerForm = {
         nombre_usuario: '',
         id_usuario: '',
         contrasenna: ''
-      };
+      }
       this.loginForm = {
         id_usuario: '',
         contrasenna: ''
-      };
+      }
     },
 
     validateField(field) {
-      this.lastFocusedField = field;
+      this.lastFocusedField = field
       if (field === 'nombre_usuario' || field === 'id_usuario' || field === 'contrasenna') {
         this.errors[field] = this.registerForm[field] === ''
       } else if (field === 'loginId' || field === 'loginPassword') {
         this.errors[field] = this.loginForm[field.replace('login', 'id_')] === ''
       }
-      this.showPreviousFieldError();
+      this.showPreviousFieldError()
     },
     validateInput(field) {
       const minLength = 3
       if (field === 'name' || field === 'password') {
-        this.minLengthErrors[field] = this.registerForm[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length > 0 && this.registerForm[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length < minLength
+        this.minLengthErrors[field] =
+          this.registerForm[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length > 0 &&
+          this.registerForm[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length < minLength
         this.errors[field] = false
       } else if (field === 'loginPassword') {
-        this.minLengthErrors[field] = this.loginForm.contrasenna.length > 0 && this.loginForm.contrasenna.length < minLength
+        this.minLengthErrors[field] =
+          this.loginForm.contrasenna.length > 0 && this.loginForm.contrasenna.length < minLength
         this.errors[field] = false
       }
     },
@@ -239,23 +279,26 @@ export default {
       }, 5000)
     },
     showPreviousFieldError() {
-      const fields = ['nombre_usuario', 'id_usuario', 'contrasenna', 'loginId', 'loginPassword'];
-      const currentIndex = fields.indexOf(this.lastFocusedField);
+      const fields = ['nombre_usuario', 'id_usuario', 'contrasenna', 'loginId', 'loginPassword']
+      const currentIndex = fields.indexOf(this.lastFocusedField)
       if (currentIndex > 0) {
-        const previousField = fields[currentIndex - 1];
+        const previousField = fields[currentIndex - 1]
         if (previousField.startsWith('login')) {
-          this.errors[previousField] = this.loginForm[previousField.replace('login', 'id_')] === '';
+          this.errors[previousField] = this.loginForm[previousField.replace('login', 'id_')] === ''
           if (previousField === 'loginPassword') {
-            this.minLengthErrors[previousField] = this.loginForm.contrasenna.length > 0 && this.loginForm.contrasenna.length < 3;
+            this.minLengthErrors[previousField] =
+              this.loginForm.contrasenna.length > 0 && this.loginForm.contrasenna.length < 3
           }
         } else {
-          this.errors[previousField] = this.registerForm[previousField] === '';
+          this.errors[previousField] = this.registerForm[previousField] === ''
           if (previousField === 'nombre_usuario' || previousField === 'contrasenna') {
-            this.minLengthErrors[previousField === 'nombre_usuario' ? 'name' : 'password'] = this.registerForm[previousField].length > 0 && this.registerForm[previousField].length < 3;
+            this.minLengthErrors[previousField === 'nombre_usuario' ? 'name' : 'password'] =
+              this.registerForm[previousField].length > 0 &&
+              this.registerForm[previousField].length < 3
           }
         }
       }
-    },
+    }
   }
 }
 </script>
@@ -275,7 +318,9 @@ export default {
 .form-container {
   background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.25),
+    0 10px 10px rgba(0, 0, 0, 0.22);
   position: relative;
   overflow: hidden;
   width: 768px;
@@ -316,7 +361,6 @@ export default {
 }
 
 @keyframes show {
-
   0%,
   49.99% {
     opacity: 0;
@@ -346,13 +390,13 @@ export default {
 }
 
 .overlay {
-  background: #FF416C;
-  background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
+  background: #ff416c;
+  background: -webkit-linear-gradient(to right, #ff4b2b, #ff416c);
   background: linear-gradient(to right, #046c54, #046c54, green);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 0 0;
-  color: #FFFFFFFF;
+  color: #ffffffff;
   position: relative;
   left: -100%;
   height: 100%;
@@ -404,7 +448,7 @@ export default {
 }
 
 .form-panel form {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -426,9 +470,9 @@ export default {
 button {
   border-radius: 20px;
   margin-top: 12px;
-  border: 1px solid #FF4B2B;
-  background-color: #FF4B2B;
-  color: #FFFFFF;
+  border: 1px solid #ff4b2b;
+  background-color: #ff4b2b;
+  color: #ffffff;
   font-size: 12px;
   font-weight: bold;
   padding: 12px 45px;
@@ -443,7 +487,7 @@ button:active {
 
 button.ghost {
   background-color: transparent;
-  border-color: #FFFFFF;
+  border-color: #ffffff;
 }
 
 .form-panel h2 {
@@ -507,7 +551,7 @@ button.ghost {
   align-items: center;
 }
 
-input[type="radio"] {
+input[type='radio'] {
   margin-right: 5px;
 }
 
@@ -536,7 +580,7 @@ input[type="radio"] {
 }
 
 .alert.success {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 .alert.error {
