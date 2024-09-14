@@ -146,8 +146,7 @@ export default {
         console.log(res)
         this.showAlertMessage(res.data.message, true)
       } catch (error) {
-        this.showAlertMessage(error.response.data.message, false)
-      }
+        alert("Id de usuario ya existe")      }
     },
 
     async signIn() {
@@ -157,27 +156,41 @@ export default {
         this.reset()
         console.log(res)
         this.showAlertMessage(res.data.message, true)
-        await this.getUserRole(this.loginForm.id_usuario) // Obtener el rol del usuario
+        await this.redirectUser(res.data.rol) // Obtener el rol del usuario
       } catch (error) {
-        this.showAlertMessage(error.response.data.message, false)
+        console.error('Error en el cliente:', error); // Agrega esto para depurar
+        if (error.response) {
+          console.log('Error response:', error.response); // Agrega esto para depurar
+          switch (error.response.status) {
+            case 401:
+              alert("Contraseña incorrecta")
+              this.showAlertMessage('Contraseña incorrecta', false);
+              break;
+            case 404:
+              alert("Usuario no encontrado")
+              this.showAlertMessage('Usuario no encontrado', false);
+              break;
+            case 400:
+              this.showAlertMessage('Rol desconocido', false);
+              break;
+            default:
+              this.showAlertMessage('Error desconocido', false);
+              break;
+          }
+        } else {
+          this.showAlertMessage('Error de red o servidor no disponible', false);
+        }
       }
     },
 
-    async getUserRole(userId) {
-      try {
-        const res = await axios.get("/getLoginUser",userId)
-        this.redirectUser(res.data.userRole) // Redirigir basado en el rol del usuario
-      } catch (error) {
-        console.error('Error al obtener el rol del usuario:', error)
-      }
-    },
+    
 
     redirectUser(role) {
       if (role === 'Cliente') {
         this.$router.push({ name: 'client-policy-dashboard' }) // Redirigir al componente de administrador
       } else if (role === 'Vendedor') {
         this.$router.push({ name: 'gestor-polizas-worker' }) // Redirigir al componente de usuario
-      } else {
+      } else if (role === 'AdminGen') {
         this.$router.push({ name: 'gestor-polizas' }) // Redirigir a la página de inicio por defecto
       }
     },
@@ -223,7 +236,7 @@ export default {
       this.showAlert = true
       setTimeout(() => {
         this.showAlert = false
-      }, 3000)
+      }, 5000)
     },
     showPreviousFieldError() {
       const fields = ['nombre_usuario', 'id_usuario', 'contrasenna', 'loginId', 'loginPassword'];

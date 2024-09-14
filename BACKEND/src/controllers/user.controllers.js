@@ -8,14 +8,12 @@ export const getUsers = async (req, res) => {
 
 export const getLoginUser = async (req, res) => {
     const { id_usuario } = req.body
+    console.log(id_usuario)
     try {
         const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])
-        if (result.rows.length > 0) {
-            const userRole = result.rows[0].rol // Asumiendo que el rol está en la columna 'rol'
-            res.status(200).json({ userRole })
-        } else {
-            res.status(404).json({ message: 'Usuario no encontrado' })
-        }
+        console.log(result.rows[0].rol)
+        res.status(200).json({ result: result.rows[0].rol });
+        
     } catch (error) {
         console.error('Error al obtener el usuario:', error)
         res.status(500).json({ message: 'Error interno del servidor' })
@@ -35,34 +33,41 @@ export const signIn = async (req, res) => {
                         res.status(200).json({
                             Cliente: result.rows[0],
                             message: "Se ha logueado como Cliente",
+                            rol: result.rows[0].rol
                         })
                         break;
                     case "Vendedor":
                         res.status(200).json({
                             Vendedor: result.rows[0],
                             message: "Se ha logueado como Vendedor",
+                            rol: result.rows[0].rol
                         })
                         break;
                     case "AdminGen":
                         res.status(200).json({
                             AdminG: result.rows[0],
                             message: "Se ha logueado como AdminGen",
+                            rol: result.rows[0].rol
                         })
                         break;
                     default:
+                        res.status(400).json({
+                            message: 'Rol desconocido'
+                        });
                         break;
                 }
                
             }
             else {
-                res.status(500).json({
-                    message: 'El usuario no existe o fue encontrado pero no es Admin o contrasenna incorrecta'
+                    res.status(401).json({
+                        message: 'contraseña incorrecta'
 
-                })
+                    })
+                
             }
         } catch (error) {
-            res.status(500).json({
-                message: 'Ha ocurrido un error'
+            res.status(404).json({
+                message: 'El usuario no existe'
 
             })
         }
