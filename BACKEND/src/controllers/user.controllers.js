@@ -6,66 +6,57 @@ export const getUsers = async (req, res) => {
     res.json({ rows })
 }
 
-export const signIn = async (req, res) => {
-    const { id_usuario, contrasenna, rol } = req.body
-    if (rol === 'AdminGen') {
-        try {
-            const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])
-            if (result.rows[0].rol === rol && result.rows[0].contrasenna === contrasenna) {
-                res.status(200).json({
-                    Admin: result.rows[0],
-                    message: "Se ha logueado como AdminGen",
-                    
-                })
-            }
-            else {
-                res.status(500).json({
-                    message: 'El usuario no existe o fue encontrado pero no es Admin o contrasenna incorrecta'
-
-                })
-            }
-        } catch (error) {
-            res.status(500).json({
-                message: 'Ha ocurrido un error'
-
-            })
+export const getLoginUser = async (req, res) => {
+    const { id_usuario } = req.body
+    try {
+        const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])
+        if (result.rows.length > 0) {
+            const userRole = result.rows[0].rol // Asumiendo que el rol está en la columna 'rol'
+            res.status(200).json({ userRole })
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' })
         }
+    } catch (error) {
+        console.error('Error al obtener el usuario:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
     }
-    else if (rol==='Admin') {
-        try {
-            const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])          
-            if ( result.rows[0].rol === rol && result.rows[0].contrasenna === contrasenna) {
-                res.status(200).json({
-                    Admin: result.rows[0],
-                    message: "Se ha logueadp como Admin",
-                })
-            }
-            else {
-                res.status(500).json({
-                    message: 'El usuario no existe o fue encontrado pero no es Admin o contrasenna incorrecta'
-
-                })
 }
-        } catch (error) {
-            res.status(500).json({
-                message: 'Ha ocurrido un error'
-                
-            })
-        }
-    }
 
-    else if (rol === "Cliente") {
+    
+
+export const signIn = async (req, res) => {
+    const { id_usuario, contrasenna } = req.body
+
         try {
             const result = await pool.query('select * from public.tbusuarios_read($1)', [id_usuario])
-            if ( result.rows[0].rol === rol && result.rows[0].contrasenna===contrasenna ) {
-                res.status(200).json({
-                    Cliente: result.rows[0],
-                     message: "Se ha logueado como Cliente",
-                })
+            if (result.rows[0].contrasenna === contrasenna) {
+                switch (result.rows[0].rol) {
+                    case "Cliente":
+                        res.status(200).json({
+                            Cliente: result.rows[0],
+                            message: "Se ha logueado como Cliente",
+                        })
+                        break;
+                    case "Vendedor":
+                        res.status(200).json({
+                            Vendedor: result.rows[0],
+                            message: "Se ha logueado como Vendedor",
+                        })
+                        break;
+                    case "AdminGen":
+                        res.status(200).json({
+                            AdminG: result.rows[0],
+                            message: "Se ha logueado como AdminGen",
+                        })
+                        break;
+                    default:
+                        break;
+                }
+               
             }
             else {
                 res.status(500).json({
-                    message: 'El usuario no existe o fue encontrado pero no es Cliente o contrasenna incorrecta'
+                    message: 'El usuario no existe o fue encontrado pero no es Admin o contrasenna incorrecta'
 
                 })
             }
@@ -75,39 +66,15 @@ export const signIn = async (req, res) => {
 
             })
         }
-    }
-    
-    
 
 }
 
 export const signUp = async (req, res) => {
-    const { id_usuario, nombre_usuario, contrasenna, rol } = req.body
-   if (rol ==='Admin') {
+    const { id_usuario, nombre_usuario, contrasenna } = req.body
         try {
 
             await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
-                [id_usuario, nombre_usuario, contrasenna, rol]
-            );
-            
-            res.status(200).json({
-                message: "Se ha registrado como Admin",
-                tbUsuarios: { id_usuario, nombre_usuario, contrasenna },
-            });
-
-        } catch (error) {
-            console.log(error)
-            if (error?.code === "23505") {
-                return res.status(409).json({ message: "Ya existe este usuario" })
-            }
-            return res.status(500).json({ message: "Internal Server ERROR" })
-        }
-    }
-    else if(rol==='Cliente'){
-        try {
-
-            await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
-                [id_usuario, nombre_usuario, contrasenna, rol]
+                [id_usuario, nombre_usuario, contrasenna,"Cliente"]
             );
 
             res.status(200).json({
@@ -122,32 +89,6 @@ export const signUp = async (req, res) => {
             }
             return res.status(500).json({ message: "Internal Server ERROR" })
         }
-        
-    }
-   else if (rol === 'AdminGen') {
-       try {
-
-           await pool.query('Select public.tbusuarios_insert($1,$2,$3,$4)',
-               [id_usuario, nombre_usuario, contrasenna, rol]
-           );
-
-           res.status(200).json({
-               message: "Se ha registrado como AdminGen",
-               tbUsuarios: { id_usuario, nombre_usuario, contrasenna },
-           });
-
-       } catch (error) {
-           console.log(error)
-           if (error?.code === "23505") {
-               return res.status(409).json({ message: "Ya existe este usuario" })
-           }
-           return res.status(500).json({ message: "Internal Server ERROR" })
-       }
-
-   }
-    
-
-    
 
 }
 export const deleteUser = async (req, res) => {
