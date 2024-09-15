@@ -4,33 +4,39 @@
     
     <div v-if="policies.length > 0" class="policies-list">
       <div v-for="policy in policies" :key="policy.id" class="policy-card" :class="{ 'inactive': !policy.isActive }">
-        <h2>{{ policy.companyName }}</h2>
+        <h2> ID de Agencia: {{ policy.id_agencia_seguro }}</h2>
         <div class="policy-details">
           <div class="detail-item">
             <span class="label">Número de Póliza:</span>
-            <span class="value">{{ policy.policyNumber }}</span>
+            <span class="value">{{ policy.numero_poliza }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Tipo de Seguro:</span>
+            <span class="value">{{ policy.id_tipo_seguro }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Estado Poliza:</span>
+            <span class="value">{{ policy.id_estado_poliza }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Fecha de Inicio:</span>
-            <span class="value">{{ formatDate(policy.startDate) }}</span>
+            <span class="value">{{ formatDate(policy.fecha_inicio) }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Fecha de Finalización:</span>
-            <span class="value">{{ formatDate(policy.endDate) }}</span>
+            <span class="value">{{ formatDate(policy.fecha_fin) }}</span>
           </div>
           <div class="detail-item">
-            <span class="label">Estado:</span>
-            <span class="value" :class="{ 'active': policy.isActive, 'inactive': !policy.isActive }">
-              {{ policy.isActive ? 'Activa' : 'Inactiva' }}
-            </span>
+            <span class="label">Tipo Cobertura:</span>
+            <span class="value">{{ policy.id_tipo_cobertura }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Pago Mensual:</span>
-            <span class="value">{{ formatCurrency(policy.monthlyPayment) }}</span>
+            <span class="value">{{ formatCurrency(policy.prima_mensual) }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Último Pago:</span>
-            <span class="value">{{ formatDate(policy.lastPaymentDate) }} - {{ formatCurrency(policy.lastPaymentAmount) }}</span>
+            <span class="value">{{ policy.monto_total_asegurado }} </span>
           </div>
         </div>
       </div>
@@ -55,39 +61,6 @@ export default {
         rol: '',
       },
         policies: [
-          {
-            id: 1,
-            companyName: 'Seguros XYZ',
-            policyNumber: 'POL-12345',
-            startDate: '2023-01-01',
-            endDate: '2023-12-31',
-            isActive: true,
-            monthlyPayment: 100,
-            lastPaymentDate: '2023-05-01',
-            lastPaymentAmount: 100
-          },
-          {
-            id: 2,
-            companyName: 'Aseguradora ABC',
-            policyNumber: 'POL-67890',
-            startDate: '2023-02-15',
-            endDate: '2024-02-14',
-            isActive: false,
-            monthlyPayment: 150,
-            lastPaymentDate: '2023-04-15',
-            lastPaymentAmount: 150
-          },
-          {
-            id: 3,
-            companyName: 'Seguros 123',
-            policyNumber: 'POL-24680',
-            startDate: '2023-03-01',
-            endDate: '2024-02-29',
-            isActive: true,
-            monthlyPayment: 200,
-            lastPaymentDate: '2023-05-01',
-            lastPaymentAmount: 200
-          }
         ]
       }
     },
@@ -96,13 +69,17 @@ export default {
     if (sessionData) {
       this.client = JSON.parse(sessionData);
       console.log(this.client);
+      this.getPolizas()
     }
   },
   
   methods: {
     async getPolizas() {
       try {
-        const res = axios.get('/getPolizas',this.client.id_usuario)
+      const res = await axios.get(`/getPolizas/${this.client.id_usuario}`);
+        this.policies = res.data
+        console.log(this.policies);
+        
       } catch (error) {
         console.log(error);
         

@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.get("/getPoliza", getPoliza);
-router.get("/getPolizas",getPolizas)
+router.get("/getPolizas/:id_usuario",getPolizas)
 router.post("/postPoliza", crearPoliza);
 router.delete("/delPoliza", borrarPoliza);
 router.put("/actPoliza", updPoliza);

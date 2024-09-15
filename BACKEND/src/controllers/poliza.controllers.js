@@ -18,11 +18,11 @@ export const getPoliza = async (req, res) => {
 };
 
 export const getPolizas = async (req, res) => {
-  const numero_identidad_cliente = 2
+  const {id_usuario} = req.params
   try {
     const result = await pool.query(
       "SELECT * FROM public.tbpoliza_read_all($1)",
-      [numero_identidad_cliente]
+      [id_usuario]
     );
     if (result.rows.length > 0) {
       res.json(result.rows);
