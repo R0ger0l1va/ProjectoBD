@@ -33,22 +33,20 @@ export const signIn = async (req, res) => {
       switch (result.rows[0].rol) {
         case "Cliente":
           res.status(200).json({
-            Cliente: result.rows[0],
-            
+            Usuario: result.rows[0],
+            message: "Se ha logueado como Vendedor",
           });
           break;
         case "Vendedor":
           res.status(200).json({
-            Vendedor: result.rows[0],
+            Usuario: result.rows[0],
             message: "Se ha logueado como Vendedor",
-            rol: result.rows[0].rol,
           });
           break;
         case "AdminGen":
           res.status(200).json({
-            AdminG: result.rows[0],
+            Usuario: result.rows[0],
             message: "Se ha logueado como AdminGen",
-            rol: result.rows[0].rol,
           });
           break;
         default:

@@ -1,10 +1,7 @@
 <template>
   <div class="dashboard-container">
-    <h1>Dashboard de Pólizas de {{ client.nombre_usuario }}</h1>
-    <div class="client-info">
-      <p><strong>ID del Cliente:</strong> {{ client.id_usuario }}</p>
-      <p><strong>rol:</strong> {{ client.rol }}</p>
-    </div>
+    <h1>Pólizas de {{ client.nombre_usuario }}</h1>
+    
     <div v-if="policies.length > 0" class="policies-list">
       <div v-for="policy in policies" :key="policy.id" class="policy-card" :class="{ 'inactive': !policy.isActive }">
         <h2>{{ policy.companyName }}</h2>
@@ -45,6 +42,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'ClientPolicyDashboard',
   data() {
@@ -101,6 +100,15 @@ export default {
   },
   
   methods: {
+    async getPolizas() {
+      try {
+        const res = axios.get('/getPolizas',this.client.id_usuario)
+      } catch (error) {
+        console.log(error);
+        
+      }
+    },
+
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString(undefined, options);

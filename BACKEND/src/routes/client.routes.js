@@ -4,13 +4,13 @@ import {
   borrarCliente,
   crearCliente,
   getClient,
-} from "../controllers/client.controllers";
+} from "../controllers/client.controllers.js";
 
 const router = Router();
 
-app.get("/getCliente", getClient);
-app.post("/postCliente", crearCliente);
-app.delete("/delCliente", borrarCliente);
-app.put("/updCliente", actualizarCliente);
+router.get("/getCliente", getClient);
+router.post("/postCliente", crearCliente);
+router.delete("/delCliente", borrarCliente);
+router.put("/updCliente", actualizarCliente);
 
 export default router;

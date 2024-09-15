@@ -1,9 +1,7 @@
 <template>
   <div class="contenedor-principal">
     <h1 class="titulo-principal">Sistema de Gestión de Pólizas de Seguro</h1>
-
-   
-
+    <h2 class="titulo-principal"> Operador: {{nombreOperador}}</h2>
     <div >
       <div class="contenedores">
         <div v-for="(operacion, index) in operacionesVisibles" :key="index" class="contenedor"
@@ -53,6 +51,7 @@ export default {
         { nombre: 'Crear Usuario', descripcion: 'Crea un nuevo trabajador o cliente', componente: CrearUsuario }
       ],
       seleccionado: null,
+      nombreOperador: '',
       hover: null,
       userType : null,
       componenteActivo: null,
@@ -74,11 +73,13 @@ export default {
   },
 
   created() {
-    const userType = this.$route.query.userType;
-    if (userType === 'adminG') {
+    const userType = JSON.parse(sessionStorage.getItem("session"));
+    this.nombreOperador = userType.nombre_usuario
+    
+    if (userType.rol === 'AdminGen') {
       this.isAdminG = true;
       this.isLoggedIn = true;
-    } else if (userType === 'worker') {
+    } else if (userType.rol === 'Vendedor') {
       this.isLoggedIn = true;
     }
   },

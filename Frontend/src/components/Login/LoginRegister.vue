@@ -22,6 +22,16 @@
             </div>
             <div class="input-wrapper">
               <input
+                v-model="registerForm.apellido_cliente"
+                type="text"
+                placeholder="Apellido (Opcional)"
+                @blur="validateField('apellido_cliente')"
+              />
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-wrapper">
+              <input
                 v-model="registerForm.id_usuario"
                 type="number"
                 placeholder="ID"
@@ -31,6 +41,82 @@
               />
               <div class="error-container">
                 <span v-if="errors.id" class="error-message">Campo vacío</span>
+              </div>
+            </div>
+            <div class="input-wrapper">
+              <select
+                v-model="registerForm.id_pais"
+                required
+                :class="{ error: errors.country }"
+                @blur="validateField('id_pais')"
+              >
+                <option value="" disabled selected>Seleccione un país</option>
+                <option v-for="countryCod in countriesCode" :key="countryCod" :value="countryCod">
+                  {{ countries[countryCod - 1] }}
+                </option>
+              </select>
+              <div class="error-container">
+                <span v-if="errors.country" class="error-message">Seleccione un país</span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-wrapper">
+              <select
+                v-model="registerForm.id_sexo"
+                :class="{ error: errors.sex }"
+                @blur="validateField('id_sexo')"
+              >
+                <option value="" disabled selected>Seleccione sexo (Opcional)</option>
+                <option v-for="sexCod in sexCode" :key="sexCod" :value="sexCod">
+                  {{ gender[sexCod-1]}}
+                </option>
+              </select>
+            </div>
+            <div class="input-wrapper">
+              <input
+                v-model="registerForm.edad"
+                type="number"
+                placeholder="Edad"
+                required
+                min="18"
+                :class="{ error: errors.age }"
+                @blur="validateField('edad')"
+              />
+              <div class="error-container">
+                <span v-if="errors.age" class="error-message">Debe ser mayor de 18 años</span>
+              </div>
+            </div>
+          </div>
+          <div class="input-wrapper">
+            <input
+              v-model="registerForm.direccion_postal"
+              type="text"
+              placeholder="Dirección Postal (Opcional)"
+            />
+          </div>
+          <div class="input-group">
+            <div class="input-wrapper">
+              <input
+                v-model="registerForm.telefono"
+                type="tel"
+                placeholder="Teléfono (Opcional)"
+                @blur="validateField('telefono')"
+              />
+            </div>
+            <div class="input-wrapper">
+              <input
+                v-model="registerForm.correo_electronico"
+                type="email"
+                placeholder="Correo Electrónico"
+                :required="!registerForm.telefono"
+                :class="{ error: errors.email }"
+                @blur="validateField('correo_electronico')"
+              />
+              <div class="error-container">
+                <span v-if="errors.email" class="error-message"
+                  >Campo requerido si no hay teléfono</span
+                >
               </div>
             </div>
           </div>
@@ -48,6 +134,16 @@
               <span v-if="errors.password" class="error-message">Campo vacío</span>
               <span v-if="minLengthErrors.password" class="error-message">Mínimo 3 caracteres</span>
             </div>
+          </div>
+          <div class="input-wrapper">
+            <input
+              v-model="registerForm.carnet_identidad"
+              :type="showCarnet ? 'text' : 'password'"
+              placeholder="Carnet de Identidad (Opcional)"
+            />
+            <button type="button" @click="toggleCarnetVisibility" class="toggle-visibility">
+              {{ showCarnet ? 'Ocultar' : 'Mostrar' }}
+            </button>
           </div>
           <button type="submit" :disabled="!isRegisterFormValid">Registrarse</button>
         </form>
@@ -119,6 +215,22 @@ export default {
   data() {
     return {
       isLoginActive: true,
+      showCarnet: false,
+      sexCode: [1, 2, 3],
+      gender: ['Masculino','Femenino','Binario'],
+      countriesCode:[1,2,3,4,5,6,7,8,9,10],
+      countries: [
+        'Colombia',
+        'Jamaica',
+        'Cuba',
+        'Argentina',
+        'Estados Unidos',
+        'Rusia',
+        'Chipre',
+        'Bosjuana',
+        'Guinea',
+        'China'
+      ],
       loginForm: {
         id_usuario: '',
         contrasenna: '',
@@ -127,15 +239,28 @@ export default {
       registerForm: {
         id_usuario: '',
         nombre_usuario: '',
+        apellido_cliente: '',
+        numero_id_cliente: '',
+        nombre_cliente: '',
         contrasenna: '',
-        rol: ''
+        rol: '',
+        id_pais: '',
+        id_sexo: '',
+        edad: '',
+        direccion_postal: '',
+        telefono: '',
+        correo_electronico: '',
+        carnet_identidad: ''
       },
       errors: {
         name: false,
         id: false,
         password: false,
         loginId: false,
-        loginPassword: false
+        loginPassword: false,
+        country: false,
+        age: false,
+        email: false
       },
       minLengthErrors: {
         name: false,
@@ -149,6 +274,7 @@ export default {
       },
       lastFocusedField: ''
     }
+
   },
   computed: {
     isLoginFormValid() {
@@ -165,26 +291,37 @@ export default {
         this.registerForm.nombre_usuario &&
         this.registerForm.id_usuario &&
         this.registerForm.contrasenna &&
+        this.registerForm.id_pais &&
+        this.registerForm.edad >= 18 &&
+        (this.registerForm.telefono || this.registerForm.correo_electronico) &&
         this.registerForm.nombre_usuario.length >= 3 &&
         this.registerForm.contrasenna.length >= 3 &&
         !this.errors.name &&
         !this.errors.id &&
-        !this.errors.password
+        !this.errors.password &&
+        !this.errors.country &&
+        !this.errors.age &&
+        !this.errors.email
       )
     }
   },
   methods: {
     async signUp() {
       try {
+        this.registerForm.nombre_cliente = this.registerForm.nombre_usuario,
+        this.registerForm.numero_id_cliente = this.registerForm.id_usuario
         console.log(this.registerForm)
+        const rest = await axios.post('/postCliente', this.registerForm)
         const res = await axios.post('/signUp', this.registerForm)
         this.reset()
         console.log(res)
+        console.log(rest)
         this.showAlertMessage(res.data.message, true)
       } catch (error) {
         alert('Id de usuario ya existe')
       }
     },
+
 
     async signIn() {
       try {
@@ -193,10 +330,9 @@ export default {
         this.reset()
         console.log(res)
         this.showAlertMessage(res.data.message, true)
-        sessionStorage.setItem("session", JSON.stringify(res.data.Cliente))
-        
-        
-        await this.redirectUser(res.data.Cliente.rol) // Obtener el rol del usuario
+          sessionStorage.setItem('session', JSON.stringify(res.data.Usuario))
+
+        await this.redirectUser(res.data.Usuario.rol) // Obtener el rol del usuario
       } catch (error) {
         console.error('Error en el cliente:', error) // Agrega esto para depurar
         if (error.response) {
@@ -251,8 +387,18 @@ export default {
         this.errors[field] = this.registerForm[field] === ''
       } else if (field === 'loginId' || field === 'loginPassword') {
         this.errors[field] = this.loginForm[field.replace('login', 'id_')] === ''
+      } else if (field === 'id_pais') {
+        this.errors.country = this.registerForm.id_pais === ''
+      } else if (field === 'edad') {
+        this.errors.age = this.registerForm.edad < 18
+      } else if (field === 'correo_electronico') {
+        this.errors.email = !this.registerForm.telefono && !this.registerForm.correo_electronico
       }
       this.showPreviousFieldError()
+    },
+
+    toggleCarnetVisibility() {
+      this.showCarnet = !this.showCarnet
     },
     validateInput(field) {
       const minLength = 3
@@ -323,9 +469,9 @@ export default {
     0 10px 10px rgba(0, 0, 0, 0.22);
   position: relative;
   overflow: hidden;
-  width: 768px;
+  width: 968px;
   max-width: 100%;
-  min-height: 480px;
+  min-height: 510px;
 }
 
 .form-panel {
@@ -536,7 +682,7 @@ button.ghost {
 }
 
 .input-group input {
-  width: 48%;
+  width: 70%;
 }
 
 .radio-group {
@@ -599,5 +745,33 @@ button:disabled {
   display: block;
   text-align: left;
   margin-top: 2px;
+}
+
+.toggle-visibility {
+  position: absolute;
+  right: 10px;
+  top: 97%;
+  right: -2%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+}
+
+select {
+  background-color: #eee;
+  border-radius: 20px;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 10px top 50%;
+  background-size: 12px auto;
 }
 </style>

@@ -18,6 +18,7 @@ export const getClient = async (req, res) => {
 
 export const crearCliente = async (req, res) => {
   const {
+    numero_id_cliente,
     id_pais,
     id_sexo,
     nombre_cliente,
@@ -30,8 +31,9 @@ export const crearCliente = async (req, res) => {
   } = req.body;
   try {
     const result = await pool.query(
-      "SELECT * FROM public.tbcliente_insert($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+      "SELECT * from public.tbcliente_insertt($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)",
       [
+        numero_id_cliente,
         id_pais,
         id_sexo,
         nombre_cliente,
@@ -45,7 +47,7 @@ export const crearCliente = async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.send(error.message);
   }
 };
 

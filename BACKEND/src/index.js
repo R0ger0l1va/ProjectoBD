@@ -1,6 +1,8 @@
 import express, {urlencoded} from "express"
 import { port } from "./config.js"
 import userRoutes from './routes/user.routes.js'
+import clientRoutes from './routes/client.routes.js'
+import polizaRoutes from './routes/poliza.routes.js'
 import bodyParser from "body-parser"
 import morgan from "morgan"
 import cors from "cors"
@@ -24,6 +26,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 //Routes
 app.use(userRoutes)
+app.use(clientRoutes)
+app.use(polizaRoutes)
 
 //MIDDELWARES FOR VUE
 app.use(history())
