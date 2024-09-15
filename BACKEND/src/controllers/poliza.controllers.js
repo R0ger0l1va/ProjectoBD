@@ -7,7 +7,10 @@ import { pool } from "../../database/db.js";
       id_agencia_seguro
     ]);
     if (result.rows.length > 0) {
-      res.json(result.rows);
+      const nombresTipoSeguro = result.rows.map(
+        (row) => row.nombre_tipo_seguro
+      );
+      res.json(nombresTipoSeguro);
     } else {
       res.status(404).send("Agencia no encontrada");
     }
@@ -40,7 +43,7 @@ export const getTipoCobertura = async (req, res) => {
       id_tipo_cobertura,
     ]);
     if (result.rows.length > 0) {
-      res.json(result.rows);
+      res.json(result.rows[0]);
     } else {
       res.status(404).send("Póliza no encontrada");
     }
@@ -57,7 +60,7 @@ export const getAgencia = async (req, res) => {
       id_agencia_seguro,
     ]);
     if (result.rows.length > 0) {
-      res.json(result.rows);
+      res.json(result.rows[0]);
     } else {
       res.status(404).send("Póliza no encontrada");
     }
@@ -74,7 +77,7 @@ export const getTipoSeguro = async (req, res) => {
       id_tipo_seguro,
     ]);
     if (result.rows.length > 0) {
-      res.json(result.rows);
+      res.json(result.rows[0]);
     } else {
       res.status(404).send("Póliza no encontrada");
     }

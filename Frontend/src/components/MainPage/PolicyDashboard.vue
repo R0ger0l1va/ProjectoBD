@@ -3,8 +3,16 @@
     <h1>Pólizas de {{ client.nombre_usuario }}</h1>
     
     <div v-if="policies.length > 0" class="policies-list">
-      <div v-for="policy in policies" :key="policy.id" class="policy-card" :class="{ 'inactive': !policy.isActive }">
-        <h2> ID de Agencia: {{ policy.id_agencia_seguro }}</h2>
+      <div 
+        v-for="policy in policies" 
+        :key="policy.id" 
+        class="policy-card" 
+        :class="[
+          getCoverageClass(policy.tipoCobertura),
+          getStatusClass(policy.estadoPoliza)
+        ]"
+      >
+        <h2>ID de Agencia: {{ policy.agenciaSeguro }}</h2>
         <div class="policy-details">
           <div class="detail-item">
             <span class="label">Número de Póliza:</span>
@@ -14,9 +22,13 @@
             <span class="label">Tipo de Seguro:</span>
             <span class="value">{{ policy.tipoSeguro }}</span>
           </div>
-          <div class="detail-item">
+          <div v-if="isValidPolicy(policy.tipoSeguro)" class="detail-item">
             <span class="label">Estado Poliza:</span>
-            <span class="value">{{ policy.estadoPoliza }}</span>
+            <span class="value" :class="getStatusTextClass(policy.estadoPoliza)">{{ policy.estadoPoliza }}</span>
+          </div>
+          <div v-else class="detail-item invalid-policy">
+            <span class="label">Estado Poliza:</span>
+            <span class="value">No válida</span>
           </div>
           <div class="detail-item">
             <span class="label">Fecha de Inicio:</span>
@@ -28,7 +40,7 @@
           </div>
           <div class="detail-item">
             <span class="label">Tipo Cobertura:</span>
-            <span class="value">{{ policy.id_tipo_cobertura }}</span>
+            <span class="value">{{ policy.tipoCobertura }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Pago Mensual:</span>
@@ -100,9 +112,10 @@ export default {
           const seg = await axios.get(`/getTipoSeguro/${policy.id_tipo_seguro}`);
           this.seguros = segAge.data
           console.log(this.seguros);
-          
-        
-
+          policy.agenciaSeguro = age.data.nombre_agencia_seguro
+          policy.tipoCobertura = cob.data.nombre_tipo_cobertura
+          policy.tipoSeguro = seg.data.nombre_tipo_seguro
+          console.log(policy.tipoSeguro)
           policy.estadoPoliza = res.data.nombre_estado_poliza;
           console.log(policy.estadoPoliza);
         } catch (error) {
@@ -112,7 +125,9 @@ export default {
     },
     
     
-   
+   isValidPolicy(tipoSeguro) {
+      return this.seguros.includes(tipoSeguro);
+    },
 
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -120,8 +135,45 @@ export default {
     },
     formatCurrency(amount) {
       return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
+    },
+    getCoverageClass(tipoCobertura) {
+      switch (tipoCobertura.toLowerCase()) {
+        case 'vip':
+          return 'coverage-vip';
+        case 'premium':
+          return 'coverage-premium';
+        case 'estandar':
+          return 'coverage-estandar';
+        default:
+          return '';
+      }
+    },
+    getStatusClass(estadoPoliza) {
+      switch (estadoPoliza.toLowerCase()) {
+        case 'activa':
+          return 'status-active';
+        case 'cancelada':
+          return 'status-cancelled';
+        case 'vencida':
+          return 'status-expired';
+        default:
+          return '';
+      }
+    },
+    getStatusTextClass(estadoPoliza) {
+      switch (estadoPoliza.toLowerCase()) {
+        case 'activa':
+          return 'status-text-active';
+        case 'cancelada':
+          return 'status-text-cancelled';
+        case 'vencida':
+          return 'status-text-expired';
+        default:
+          return '';
+      }
     }
   }
+  
 }
 </script>
 
@@ -139,17 +191,6 @@ h1 {
   margin-bottom: 20px;
 }
 
-.client-info {
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-.client-info p {
-  margin: 5px 0;
-}
-
 .policies-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -157,7 +198,6 @@ h1 {
 }
 
 .policy-card {
-  background-color: #f9f9f9;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -167,11 +207,6 @@ h1 {
 .policy-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.policy-card.inactive {
-  background-color: #e0e0e0;
-  opacity: 0.8;
 }
 
 .policy-card h2 {
@@ -201,21 +236,53 @@ h1 {
   color: #333;
 }
 
-.value.active {
-  color: #4caf50;
-  font-weight: bold;
-}
-
-.value.inactive {
-  color: #f44336;
-  font-weight: bold;
-}
-
 .no-policies {
   text-align: center;
   color: #666;
   font-style: italic;
   margin-top: 30px;
+}
+
+/* Coverage classes */
+.coverage-vip {
+  background-color: #ffd700;
+}
+
+.coverage-premium {
+  background-color: #c0c0c0;
+}
+
+.coverage-estandar {
+  background-color: #cd7f32;
+}
+
+/* Status classes */
+.status-active {
+  border: 2px solid #4caf50;
+}
+
+.status-cancelled {
+  opacity: 0.8;
+}
+
+.status-expired {
+  opacity: 0.9;
+}
+
+/* Status text classes */
+.status-text-active {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.status-text-cancelled {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.status-text-expired {
+  color: #2196f3;
+  font-weight: bold;
 }
 
 @media (max-width: 768px) {
