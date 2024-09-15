@@ -12,11 +12,11 @@
           </div>
           <div class="detail-item">
             <span class="label">Tipo de Seguro:</span>
-            <span class="value">{{ policy.id_tipo_seguro }}</span>
+            <span class="value">{{ policy.tipoSeguro }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Estado Poliza:</span>
-            <span class="value">{{ policy.id_estado_poliza }}</span>
+            <span class="value">{{ policy.estadoPoliza }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Fecha de Inicio:</span>
@@ -60,8 +60,12 @@ export default {
         contrasenna: '',
         rol: '',
       },
-        policies: [
-        ]
+      policies: [
+        
+          
+      ],
+      seguros:[]
+        
       }
     },
  created() {
@@ -74,17 +78,41 @@ export default {
   },
   
   methods: {
-    async getPolizas() {
+    
+
+     async getPolizas() {
       try {
-      const res = await axios.get(`/getPolizas/${this.client.id_usuario}`);
-        this.policies = res.data
+        const res = await axios.get(`/getPolizas/${this.client.id_usuario}`);
+        this.policies = res.data;
+        await this.addDataPoliza();
         console.log(this.policies);
-        
       } catch (error) {
         console.log(error);
-        
       }
     },
+    async addDataPoliza() {
+      for (let policy of this.policies) {
+        try {
+          const res = await axios.get(`/getEstadoPoliza/${policy.id_estado_poliza}`);
+          const segAge = await axios.get(`/getSegurosAgencia/${policy.id_agencia_seguro}`)
+          const cob = await axios.get(`/getTipoCobertura/${policy.id_tipo_cobertura}`);
+          const age = await axios.get(`/getAgencia/${policy.id_agencia_seguro}`);
+          const seg = await axios.get(`/getTipoSeguro/${policy.id_tipo_seguro}`);
+          this.seguros = segAge.data
+          console.log(this.seguros);
+          
+        
+
+          policy.estadoPoliza = res.data.nombre_estado_poliza;
+          console.log(policy.estadoPoliza);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    },
+    
+    
+   
 
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };

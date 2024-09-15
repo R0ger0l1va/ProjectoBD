@@ -1,5 +1,88 @@
 import { pool } from "../../database/db.js";
 
+ export const getSegurosAgencia = async (req, res) => {
+  const {id_agencia_seguro} = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM public.tbsegurosdeagencia_read($1)", [
+      id_agencia_seguro
+    ]);
+    if (result.rows.length > 0) {
+      res.json(result.rows);
+    } else {
+      res.status(404).send("Agencia no encontrada");
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export const getEstadoPoliza = async (req, res) => {
+  const {id_estado_poliza} = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM public.tbestadopoliza_read($1)", [
+      id_estado_poliza,
+    ]);
+    if (result.rows.length > 0) {
+      res.json(result.rows[0]);
+    } else {
+      res.status(404).send("Estado de Poliza no encontrada");
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+
+export const getTipoCobertura = async (req, res) => {
+  const { id_tipo_cobertura } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM public.tbtipocobertura_read($1)", [
+      id_tipo_cobertura,
+    ]);
+    if (result.rows.length > 0) {
+      res.json(result.rows);
+    } else {
+      res.status(404).send("Póliza no encontrada");
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+
+export const getAgencia = async (req, res) => {
+  const { id_agencia_seguro } = req.params
+  try {
+    const result = await pool.query("SELECT * FROM public.tbagenciaseguro_read($1)", [
+      id_agencia_seguro,
+    ]);
+    if (result.rows.length > 0) {
+      res.json(result.rows);
+    } else {
+      res.status(404).send("Póliza no encontrada");
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+
+export const getTipoSeguro = async (req, res) => {
+  const { id_tipo_seguro } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM public.tbtiposeguro_read($1)", [
+      id_tipo_seguro,
+    ]);
+    if (result.rows.length > 0) {
+      res.json(result.rows);
+    } else {
+      res.status(404).send("Póliza no encontrada");
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
 
 export const getPoliza = async (req, res) => {
   const id = req.params.id;
