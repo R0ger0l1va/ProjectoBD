@@ -83,7 +83,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-	//Funcion 4
+	//Funcion 1
 	CREATE OR REPLACE FUNCTION obtener_reclamaciones_dado_polizaid(p_numero_poliza INTEGER)
 RETURNS TABLE (numero_reclamacion INTEGER, numero_poliza INTEGER, id_estado_reclamacion INTEGER,
 id_tipo_siniestro INTEGER, fecha_siniestro DATE, monto_reclamado DOUBLE PRECISION, 
@@ -825,10 +825,10 @@ R:// en este read hice un INNERJOIN para conectar el nombre de los tipos de segu
 	Para cada cliente de ese pais
 		--nombre del cliente
 		--numero de identificacion
-		--cantidad de reclamaciones aprobadas
-		--total del monto indemnizado
+		--cantidad de polizas activas
+		--total de las primas pagadas por el cliente hasta la fecha
 		
-	//salida para obtener los paises
+	//salida(view) para obtener los paises
 		SELECT * FROM public."tbPais"
 		ORDER BY id_pais ASC ;
 	//para obtener la cantidad de polizas activas de un cliente dado un pais
@@ -849,20 +849,213 @@ R:// en este read hice un INNERJOIN para conectar el nombre de los tipos de segu
 		END;
 		$$ LANGUAGE plpgSQL;
 	//para obtener el total de las primas pagadas por un cliente dado un pais	   
-		CREATE OR REPLACE FUNCTION salida_polizas_activas_cliente (p_id_pais INTEGER)
-		RETURNS TABLE (nombre_cliente VARCHAR, numero_identidad_cliente INTEGER, id_estado_poliza BIGINT)
+		CREATE OR REPLACE FUNCTION salida_total_monto_pagado_cliente (p_id_pais INTEGER)
+		RETURNS TABLE (nombre_cliente VARCHAR, numero_identidad_cliente INTEGER, monto_pagado DOUBLE PRECISION)
 		AS $$
 		BEGIN
 		RETURN QUERY
 		SELECT public."tbCliente".nombre_cliente,
 			public."tbCliente".numero_identidad_cliente,
-			COUNT (public."tbPoliza".id_estado_poliza)
-		FROM  public."tbCliente", public."tbPoliza"
+			SUM(public."tbPrimaMensual".monto_pagado)
+		FROM  public."tbCliente", public."tbPoliza", public."tbPrimaMensual"
 		WHERE 
 			public."tbCliente".numero_identidad_cliente = public."tbPoliza".numero_identidad_cliente AND
 			public."tbPoliza".id_estado_poliza = 3 AND
+			public."tbPrimaMensual".numero_poliza = public."tbPoliza".numero_poliza AND
 			public."tbCliente".id_pais = p_id_pais
 		GROUP BY public."tbCliente".numero_identidad_cliente;
+		$$ LANGUAGE plpgSQL;
+
+//LISTADO DE POLIZAS
+-- fecha del reporte
+	Para cada tipo de seguro:
+	--tipo de seguro
+	Para cada poliza de ese tipo:
+		--numero de poliza
+		--numero de cliente
+		--fecha de inicio
+		--fecha de fin
+		--prima mensual
+		--monto total asegurado
+		--estado	
+
+		//una funcion tipo vista, general, para ver todos los tipos de seguros que hay registrados
+		CREATE OR REPLACE VIEW public.reporte_tipos_de_seguros
+		AS
+		SELECT id_tipo_seguro,
+			nombre_tipo_seguro
+		FROM "tbTipoSeguro"
+		ORDER BY id_tipo_seguro;
+
+		ALTER TABLE public.reporte_tipos_de_seguros
+			OWNER TO postgres;
+		//funcion que dado el identificador del tipo de seguro se puedan obtener toda la informacion requerida de las polizas
+		CREATE OR REPLACE FUNCTION salida_obtener_poliza_dado_tiposeguro (p_id_tipo_seguro INTEGER)
+		RETURNS TABLE (numero_poliza INTEGER, numero_identidad_cliente INTEGER, fecha_inicio DATE, 
+						fecha_fin DATE, prima_mensual DOUBLE PRECISION, monto_total_asegurado DOUBLE PRECISION, 
+						nombre_estado_poliza VARCHAR) AS $$
+		BEGIN
+			RETURN QUERY
+			SELECT public."tbPoliza".numero_poliza, public."tbPoliza".numero_identidad_cliente,
+				public."tbPoliza".fecha_inicio, public."tbPoliza".fecha_fin, public."tbPoliza".prima_mensual,
+				public."tbPoliza".monto_total_asegurado, public."tbEstadoPoliza".nombre_estado_poliza
+			FROM public."tbPoliza", public."tbEstadoPoliza"
+			WHERE public."tbPoliza".id_tipo_seguro = p_id_tipo_seguro AND
+					public."tbPoliza".id_estado_poliza = public."tbEstadoPoliza".id_estado_poliza;
 		END;
 		$$ LANGUAGE plpgSQL;
+
+//LISTADO DE RECLAMACIONES 
+-- nombre del cliente
+-- numero de poliza
+-- tipo de seguro
+-- numero de reclamacion
+-- tipo de siniestro
+-- fecha del siniestro
+-- monto reclamado
+-- estado de reclamacion 
+-- monto indemnizado
+	//funcion vista que devuelve la informacion de las reclamaciones haciendo uso del inner join entre tablas (parecido al reporte 5)
+	CREATE OR REPLACE VIEW public.salida_listado_reclamaciones
+	AS
+	SELECT
+		"tbCliente".nombre_cliente,
+		"tbReclamacion".numero_poliza,
+		"tbTipoSeguro".nombre_tipo_seguro,
+		"tbReclamacion".numero_reclamacion,
+		"tbTipoSiniestro".nombre_siniestro,
+		"tbReclamacion".fecha_siniestro,
+		"tbReclamacion".monto_reclamado,
+		"tbEstadoReclamacion".nombre_estado_reclamacion,
+		"tbReclamacion".monto_indemnizado
+	FROM "tbReclamacion",
+		"tbTipoSiniestro",
+		"tbTipoSeguro",
+		"tbCliente",
+		"tbEstadoReclamacion"
+	WHERE 
+	"tbReclamacion".id_tipo_siniestro = "tbTipoSiniestro".id_tipo_siniestro AND 
+	("tbTipoSeguro".id_tipo_seguro 
+	IN (SELECT "tbPoliza".id_tipo_seguro
+		FROM "tbPoliza"
+		WHERE "tbPoliza".numero_poliza = "tbReclamacion".numero_poliza)) AND 
+	("tbCliente".numero_identidad_cliente 
+		IN ( SELECT "tbPoliza".numero_identidad_cliente
+			FROM "tbPoliza"
+			WHERE "tbPoliza".numero_poliza = "tbReclamacion".numero_poliza)) AND 
+	"tbReclamacion".id_estado_reclamacion = "tbEstadoReclamacion".id_estado_reclamacion
+	ORDER BY "tbReclamacion".numero_reclamacion;
+
+	ALTER TABLE public.salida_listado_reclamaciones
+		OWNER TO postgres;
+
+
+//LISTADO DE REASEGURADORAS
+-- fecha del reporte
+	Para cada reaseguradora:
+	--nombre de la reaseguradora
+	--pais de origen
+	--tipo de reaseguro ofrecido
+	--porcentaje de participacion en los diferentes tipos de seguros
+
+	//salida para obtener la informacion de todas las compañias reaseguradoras 
+	CREATE OR REPLACE VIEW public.salida_listado_reaseguradoras
+	AS
+	SELECT
+		public."tbCompReaseguradora".nombre_compannia_reaseguradora,
+		public."tbPais".nombre_pais,
+		public."tbTipoReaseguro".nombre_tipo_reaseguro
+	FROM  public."tbPais", public."tbTipoReaseguro", public."tbCompReaseguradora"
+	WHERE public."tbCompReaseguradora".id_tipo_reaseguro = public."tbTipoReaseguro".id_tipo_reaseguro AND
+		public."tbCompReaseguradora".id_pais = public."tbPais".id_pais;
+
+	ALTER TABLE public.salida_listado_reaseguradoras
+		OWNER TO postgres;
+
+	//funcion para obtener el porciento de participacion por tipo de seguro dado el identificador de una compañia reaseguradora
+	CREATE OR REPLACE FUNCTION salida_porciento_participacion_dado_id_compannia(p_id_comp_reaseguradora INTEGER)
+	RETURNS TABLE (nombre_tipo_seguro VARCHAR, porciento_participacion DOUBLE PRECISION) AS $$
+	BEGIN 
+		RETURN QUERY
+		SELECT public."tbTipoSeguro".nombre_tipo_seguro, 
+			public."tbPorcentParticipacion".porciento_participacion
+		FROM public."tbPorcentParticipacion", public."tbTipoSeguro"
+		WHERE public."tbPorcentParticipacion".id_tipo_seguro = public."tbTipoSeguro".id_tipo_seguro AND
+			public."tbPorcentParticipacion".id_comp_reaseguradora = p_id_comp_reaseguradora
+		ORDER BY public."tbPorcentParticipacion".porciento_participacion ASC;
+	END;
+	$$ LANGUAGE plpgSQL;
+
+//LISTADO DE POLIZAS VENCIDAS
+--fecha del reporte
+	Para cada poliza:
+	--numero de poliza
+	--nombre del cliente
+	--tipo de seguro
+	--fecha de inicio
+	--fecha de fin
+	--monto total
+	//salida que proporciona la informacion de las polizas cuyo estado esta vencido (x el momento no hay ninguna pero si funciona)
+	CREATE OR REPLACE VIEW public.salida_listado_polizas_vencidas
+	AS
+	SELECT public."tbPoliza".numero_poliza,
+		public."tbCliente".nombre_cliente,
+		public."tbTipoSeguro".nombre_tipo_seguro,
+		public."tbPoliza".fecha_inicio,
+		public."tbPoliza".fecha_fin,
+		public."tbPoliza".monto_total_asegurado
+	FROM public."tbPoliza",
+		public."tbCliente",
+		public."tbTipoSeguro"
+	WHERE public."tbPoliza".id_tipo_seguro = public."tbTipoSeguro".id_tipo_seguro AND
+		public."tbPoliza".numero_identidad_cliente = public."tbCliente".numero_identidad_cliente AND
+		public."tbPoliza".id_estado_poliza = 2;
 		
+	ALTER TABLE public.salida_listado_polizas_vencidas
+		OWNER TO postgres;
+
+
+
+
+
+
+
+		REPORTE PARA ROGER
+		//creacion de una vista para visualizar todos los clientes existentes en el sistema
+		CREATE OR REPLACE VIEW public.reporte_roger_clientes
+		AS
+		SELECT public."tbCliente".numero_identidad_cliente,
+			public."tbPais".nombre_pais,
+			public."tbSexo".nombre_sexo,
+			public."tbCliente".nombre_cliente,
+			public."tbCliente".apellido_cliente,
+			public."tbCliente".telefono,
+			public."tbCliente".correo_electronico,
+			public."tbCliente".carnet_identidad
+		FROM public."tbCliente", public."tbPais",
+			public."tbSexo"
+		WHERE public."tbCliente".id_pais = public."tbPais".id_pais AND
+				public."tbCliente".id_sexo = public."tbSexo".id_sexo;
+			
+		ALTER TABLE public.reporte_roger_clientes
+			OWNER TO postgres;
+		//creacion de una funcion a la cual se le pasan los numeros de identidad de cada cliente y te devuelve las polizas 
+		  que pertenecen a el
+		  CREATE OR REPLACE FUNCTION roger_obtener_poliza_dado_cliente (p_id_cliente INTEGER)
+			RETURNS TABLE (numero_poliza INTEGER, nombre_agencia_seguro VARCHAR, nombre_estado_poliza VARCHAR, nombre_tipo_seguro VARCHAR, 
+							fecha_inicio DATE, fecha_fin DATE, prima_mensual DOUBLE PRECISION, monto_total_asegurado DOUBLE PRECISION, nombre_tipo_cobertura VARCHAR) 
+			AS $$
+			BEGIN
+			RETURN QUERY
+			SELECT public."tbPoliza".numero_poliza , public."tbAgenciaSeguro".nombre_agencia_seguro , 
+					public."tbEstadoPoliza".nombre_estado_poliza, public."tbTipoSeguro".nombre_tipo_seguro , 
+					public."tbPoliza".fecha_inicio , public."tbPoliza".fecha_fin , public."tbPoliza".prima_mensual , 
+					public."tbPoliza".monto_total_asegurado , public."tbTipoCobertura".nombre_tipo_cobertura
+			FROM public."tbPoliza", public."tbEstadoPoliza", public."tbAgenciaSeguro", public."tbTipoCobertura", public."tbTipoSeguro"
+			WHERE public."tbPoliza".id_tipo_cobertura= public."tbTipoCobertura".id_tipo_cobertura AND
+				public."tbPoliza".id_agencia_seguro= public."tbAgenciaSeguro".id_agencia_seguro AND
+				public."tbPoliza".id_tipo_seguro =public."tbTipoSeguro".id_tipo_seguro AND
+				public."tbPoliza".id_estado_poliza = public."tbEstadoPoliza".id_estado_poliza AND
+				public."tbPoliza".numero_identidad_cliente = p_id_cliente;
+			END;
+			$$ LANGUAGE plpgSQL;
