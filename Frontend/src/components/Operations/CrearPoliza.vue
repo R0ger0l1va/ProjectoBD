@@ -169,6 +169,7 @@ export default {
 
       try {
         await axios.post('/postPoliza', this.poliza)
+        await axios.get('/generate-pdf')
         alert('Póliza creada con éxito')
         // Reset form
         Object.keys(this.poliza).forEach((key) => (this.poliza[key] = ''))
