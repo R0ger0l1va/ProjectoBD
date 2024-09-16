@@ -1,25 +1,8 @@
-import { Router } from "express"
-import { jsPDF } from "jspdf"
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from "url";
+import { Router } from "express";
+import { pdf_getAgencia } from "../controllers/reportsPDF.controllers.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const router = Router()
+const router = Router();
 
-router.get('/generate-pdf', (req, res) => {
-    const doc = new jsPDF();
+router.get("/gen-pdf_getAgencia/:id", pdf_getAgencia);
 
-    doc.text("Hello world!", 10, 10);
-    doc.text("This is a sample PDF generated using jsPDF.", 10, 20);
-
-    const pdf = doc.output();
-    const savePath = path.join(__dirname,'out','sample.pdf')
-    fs.mkdirSync(path.dirname(savePath), { recursive: true });
-    fs.writeFileSync(savePath, pdf, "binary");
-    res.contentType("application/pdf");
-    res.send(pdf);
-}) 
-
-export default router
+export default router;
