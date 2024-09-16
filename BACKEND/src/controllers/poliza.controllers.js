@@ -1,5 +1,53 @@
 import { pool } from "../../database/db.js";
 
+//todo TODOS los Datos Faltantes
+
+export const getAllAgencias = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM public.tbagenciaseguro_read_all()');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export const getAllTipoSeguros = async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM public.tbtiposeguro_read_all()");
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+export const getAllCoberturas = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM public.tbtipocobertura_read_all()');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export const getAllClientes =async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM public.tbcliente_read_all()');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+//todo Datos Faltantes
  export const getSegurosAgencia = async (req, res) => {
   const {id_agencia_seguro} = req.params;
   try {
@@ -86,7 +134,7 @@ export const getTipoSeguro = async (req, res) => {
   }
 }
 
-
+//todo CRUD
 export const getPoliza = async (req, res) => {
   const id = req.params.id;
   try {
