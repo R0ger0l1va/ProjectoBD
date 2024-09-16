@@ -12,10 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.3",
     "connect-history-api-fallback": "^2.0.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-fileupload": "^1.5.1",
+    "jspdf": "^2.5.1",
     "morgan": "^1.10.0",
     "pg": "^8.12.0"
   }
