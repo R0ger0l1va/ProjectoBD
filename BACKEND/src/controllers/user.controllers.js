@@ -1,5 +1,27 @@
 import { pool } from "../../database/db.js";
 
+export const getSex = async (req, res) => {
+  try {
+    const result = await pool.query('select * from tbsexo_read_all()')
+    res.json(result.rows)
+  } catch (error) {
+    console.error("Error al obtener los paises :", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+    
+  }
+}
+
+export const getPais = async (req, res) => {
+  try {
+    const result = await pool.query('select * from tbpais_read_all()')
+  res.status(200).json(result.rows)
+  } catch (error) {
+    console.error("Error al obtener los paises :", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+    
+  }
+}
+
 export const getUsers = async (req, res) => {
   const { rows } = await pool.query('Select * from "tbUsuarios"');
   res.json({ rows });

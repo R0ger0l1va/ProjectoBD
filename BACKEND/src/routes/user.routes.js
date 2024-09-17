@@ -6,9 +6,13 @@ import {
   signUp,
   deleteUser,
   updateUser,
+  getSex,
+  getPais,
 } from "../controllers/user.controllers.js";
 
 const router = Router();
+router.get("/getSex", getSex)
+router.get('/getPais',getPais )
 router.get("/users", getUsers);
 router.post("/signIn", signIn);
 router.get("/getLoginUser", getLoginUser);

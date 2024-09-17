@@ -51,8 +51,8 @@
                 @blur="validateField('id_pais')"
               >
                 <option value="" disabled selected>Seleccione un país</option>
-                <option v-for="countryCod in countriesCode" :key="countryCod" :value="countryCod">
-                  {{ countries[countryCod - 1] }}
+                <option v-for="countryCod in countries" :key="countryCod.id" :value="countryCod.id">
+                  {{ countryCod.nombre}}
                 </option>
               </select>
               <div class="error-container">
@@ -67,9 +67,9 @@
                 :class="{ error: errors.sex }"
                 @blur="validateField('id_sexo')"
               >
-                <option value="" disabled selected>Seleccione sexo (Opcional)</option>
-                <option v-for="sexCod in sexCode" :key="sexCod" :value="sexCod">
-                  {{ gender[sexCod-1]}}
+                <option value="" disabled selected>Seleccione sexo</option>
+                <option v-for="sexCod in gender" :key="sexCod.id" :value="sexCod.id">
+                  {{ sexCod.nombre}}
                 </option>
               </select>
             </div>
@@ -216,20 +216,9 @@ export default {
     return {
       isLoginActive: true,
       showCarnet: false,
-      sexCode: [1, 2, 3],
-      gender: ['Masculino','Femenino','Binario'],
-      countriesCode:[1,2,3,4,5,6,7,8,9,10],
+      gender: [],
       countries: [
-        'Colombia',
-        'Jamaica',
-        'Cuba',
-        'Argentina',
-        'Estados Unidos',
-        'Rusia',
-        'Chipre',
-        'Bosjuana',
-        'Guinea',
-        'China'
+        
       ],
       loginForm: {
         id_usuario: '',
@@ -276,6 +265,8 @@ export default {
     }
 
   },
+
+  
   computed: {
     isLoginFormValid() {
       return (
@@ -306,6 +297,30 @@ export default {
     }
   },
   methods: {
+    async fetchData() {
+      try {
+        const sex = await axios.get('/getSex')
+        const pais = await axios.get('/getPais')
+        this.countries = pais.data.map((pais) => ({
+          id: pais.id_pais,
+          nombre: pais.nombre_pais
+        }))
+        this.gender = sex.data.map((sexo) => ({
+          id: sexo.id_sexo,
+          nombre: sexo.nombre_sexo
+        }))
+        
+        console.log(this.gender);
+        console.log(this.countries);
+        
+        
+      } catch (error) {
+        console.log(error.message.response);
+        
+      }
+    },
+    
+
     async signUp() {
       try {
         this.registerForm.nombre_cliente = this.registerForm.nombre_usuario,
@@ -445,6 +460,9 @@ export default {
         }
       }
     }
+  },
+    mounted() {
+    this.fetchData()
   }
 }
 </script>

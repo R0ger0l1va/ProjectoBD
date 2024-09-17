@@ -103,6 +103,8 @@ export default {
       try {
         const response = await axios.get(`/getPoliza/${this.numeroPoliza}`)
         this.poliza = response.data
+        console.log(this.poliza);
+        
         this.polizaEncontrada = true
       } catch (error) {
         console.error('Error buscando la póliza:', error)
@@ -112,7 +114,7 @@ export default {
     },
     async modificarPoliza() {
       try {
-        await axios.put('/actPoliza', this.poliza)
+        await axios.put('/actPoliza',this.poliza)
         alert('Póliza modificada con éxito')
       } catch (error) {
         console.error('Error modificando la póliza:', error)
@@ -122,7 +124,7 @@ export default {
     async eliminarPoliza() {
       if (confirm('¿Está seguro de que desea eliminar esta póliza?')) {
         try {
-          await axios.delete('/delPoliza', { poliza: { numero_poliza: this.poliza.numero_poliza } })
+          await axios.delete(`/delPoliza/${this.numeroPoliza}`)
           alert('Póliza eliminada con éxito')
           this.polizaEncontrada = false
           this.numeroPoliza = ''

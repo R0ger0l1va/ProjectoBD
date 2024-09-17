@@ -6,6 +6,7 @@ import {
   getAllAgencias,
   getAllClientes,
   getAllCoberturas,
+  getAllPolizas,
   getAllTipoSeguros,
   getEstadoPoliza,
   getPoliza,
@@ -19,6 +20,7 @@ import {
 const router = Router();
 
 //todo Obtener todos los datos de Tabla de datos faltantes de Poliza
+router.get('/getAllPolizas',getAllPolizas)
 router.get('/getAllClientes',getAllClientes)
 router.get("/getAllAgencias",getAllAgencias);
 router.get("/getAllCoberturas",getAllCoberturas);
@@ -37,6 +39,6 @@ router.get("/getPoliza/:id", getPoliza);
 router.get("/getPolizas/:id_usuario", getPolizas);
 router.post("/postPoliza", crearPoliza);
 router.delete("/delPoliza/:id", borrarPoliza);
-router.put("/actPoliza/:id", updPoliza);
+router.put("/actPoliza", updPoliza);
 
 export default router;

@@ -1,9 +1,9 @@
 <template>
   <div class="report-generator">
-    <h2>Generador de Reportes y Salidas</h2>
+    <h2>Generador de Reportes</h2>
     
     <div class="report-section">
-      <h3>Reportes</h3>
+      <h3>Reportes con Parámetros</h3>
       <div class="report-options">
         <div class="report-option">
           <label for="agenciaId">Reporte de Agencia:</label>
@@ -32,11 +32,6 @@
         </div>
         
         <div class="report-option">
-            <label>Reporte 5:</label>
-          <button @click="generateReport('report5')">Generar Reporte 5</button>
-        </div>
-        
-        <div class="report-option">
           <label for="anno">Reporte 6:</label>
           <input v-model="anno" type="number" id="anno" placeholder="Año">
           <button @click="generateReport('report6')">Generar</button>
@@ -45,11 +40,29 @@
     </div>
     
     <div class="report-section">
-      <h3>Salidas</h3>
+      <h3>Reportes sin Parámetros</h3>
       <div class="report-options">
-        <button v-for="n in 6" :key="`salida${n}`" @click="generateSalida(n)">
-          Generar Salida {{ n }}
-        </button>
+        <div class="report-option">
+          <button @click="generateReport('report5')">Generar Reporte 5</button>
+        </div>
+        <div class="report-option">
+          <button @click="generateReport('salida1')">Generar Salida 1</button>
+        </div>
+        <div class="report-option">
+          <button @click="generateReport('salida2')">Generar Salida 2</button>
+        </div>
+        <div class="report-option">
+          <button @click="generateReport('salida3')">Generar Salida 3</button>
+        </div>
+        <div class="report-option">
+          <button @click="generateReport('salida4')">Generar Salida 4</button>
+        </div>
+        <div class="report-option">
+          <button @click="generateReport('salida5')">Generar Salida 5</button>
+        </div>
+        <div class="report-option">
+          <button @click="generateReport('salida6')">Generar Salida 6</button>
+        </div>
       </div>
     </div>
     
@@ -101,20 +114,19 @@ export default {
           case 'report6':
             response = await axios.get(`/gen-pdf_report6/${this.anno}`, { responseType: 'blob' });
             break;
+          case 'salida1':
+          case 'salida2':
+          case 'salida3':
+          case 'salida4':
+          case 'salida5':
+          case 'salida6':
+            response = await axios.get(`/gen-pdf_${reportType}`, { responseType: 'blob' });
+            break;
         }
         this.displayPdf(response.data);
       } catch (error) {
         console.error('Error generating report:', error);
         alert('Error al generar el reporte. Por favor, intente de nuevo.');
-      }
-    },
-    async generateSalida(salidaNumber) {
-      try {
-        const response = await axios.get(`/gen-pdf_salida${salidaNumber}`, { responseType: 'blob' });
-        this.displayPdf(response.data);
-      } catch (error) {
-        console.error('Error generating salida:', error);
-        alert('Error al generar la salida. Por favor, intente de nuevo.');
       }
     },
     displayPdf(pdfBlob) {
@@ -155,12 +167,22 @@ h2, h3 {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  width: calc(50% - 7.5px);
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 input, button {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+input {
+  margin-bottom: 5px;
 }
 
 button {
