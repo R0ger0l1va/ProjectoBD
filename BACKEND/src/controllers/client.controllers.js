@@ -31,7 +31,7 @@ export const crearCliente = async (req, res) => {
   } = req.body;
   try {
     const result = await pool.query(
-      "SELECT * from public.tbcliente_insertt($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)",
+      "SELECT * from public.tbcliente_insert($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)",
       [
         numero_id_cliente,
         id_pais,

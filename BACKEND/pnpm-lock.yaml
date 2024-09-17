@@ -26,6 +26,9 @@ importers:
       jspdf:
         specifier: ^2.5.1
         version: 2.5.1
+      jspdf-autotable:
+        specifier: ^3.8.3
+        version: 3.8.3(jspdf@2.5.1)
       morgan:
         specifier: ^1.10.0
         version: 1.10.0
@@ -231,6 +234,11 @@ packages:
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
+
+  jspdf-autotable@3.8.3:
+    resolution: {integrity: sha512-PQFdljBt+ijm6ZWXYxhZ54A/awV63UKcipYoA2+YGsz0BXXiXTIL/FIg+V30j7wPdSdzClfbB3qKX9UeuFylPQ==}
+    peerDependencies:
+      jspdf: ^2.5.1
 
   jspdf@2.5.1:
     resolution: {integrity: sha512-hXObxz7ZqoyhxET78+XR34Xu2qFGrJJ2I2bE5w4SM8eFaFEkW2xcGRVUss360fYelwRSid/jT078kbNvmoW0QA==}
@@ -712,6 +720,10 @@ snapshots:
   inherits@2.0.4: {}
 
   ipaddr.js@1.9.1: {}
+
+  jspdf-autotable@3.8.3(jspdf@2.5.1):
+    dependencies:
+      jspdf: 2.5.1
 
   jspdf@2.5.1:
     dependencies:
