@@ -33,10 +33,10 @@ router.get("/getAgencia/:id_agencia_seguro",getAgencia);
 router.get("/getEstadoPoliza/:id_estado_poliza", getEstadoPoliza);
 
 //todo CRUD Polizas
-router.get("/getPoliza", getPoliza);
+router.get("/getPoliza/:id", getPoliza);
 router.get("/getPolizas/:id_usuario", getPolizas);
 router.post("/postPoliza", crearPoliza);
-router.delete("/delPoliza", borrarPoliza);
-router.put("/actPoliza", updPoliza);
+router.delete("/delPoliza/:id", borrarPoliza);
+router.put("/actPoliza/:id", updPoliza);
 
 export default router;

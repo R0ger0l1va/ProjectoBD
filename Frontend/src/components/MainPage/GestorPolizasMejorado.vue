@@ -30,6 +30,7 @@ import ListarPolizas from '../Operations/ListarPolizas.vue';
 import Reclamacion from '../Operations/Reclamacion.vue';
 import CrearUsuario from '../Operations/CrearUsuario.vue';
 import LoginRegister from '../Login/LoginRegister.vue';
+import GenerarReportes from '../Operations/GenerarReportes.vue';
 
 export default {
   name: 'GestorPolizas',
@@ -39,7 +40,8 @@ export default {
     ListarPolizas,
     Reclamacion,
     CrearUsuario,
-    LoginRegister
+    LoginRegister,
+    GenerarReportes
   },
   data() {
     return {
@@ -48,7 +50,8 @@ export default {
         { nombre: 'Modificar Póliza', descripcion: 'Modifica o elimina una póliza existente', componente: ModificarPoliza },
         { nombre: 'Listar Pólizas', descripcion: 'Muestra todas las pólizas con opciones de filtrado', componente: ListarPolizas },
         { nombre: 'Reclamación', descripcion: 'Realiza una reclamación de seguro', componente: Reclamacion },
-        { nombre: 'Crear Usuario', descripcion: 'Crea un nuevo trabajador o cliente', componente: CrearUsuario }
+        { nombre: 'Crear Usuario', descripcion: 'Crea un nuevo trabajador o cliente', componente: CrearUsuario },
+        { nombre: 'Generar Reportes y Salidas', descripcion: 'Genera reportes en PDF de la base de datos', componente: GenerarReportes }
       ],
       seleccionado: null,
       nombreOperador: '',
@@ -65,7 +68,7 @@ export default {
       if (this.isAdminG) {
         return this.operaciones;
       } else if (this.isLoggedIn) {
-        return this.operaciones.filter(op => op.nombre !== 'Crear Usuario');
+        return this.operaciones.filter(op => op.nombre !== 'Crear Usuario' && op.nombre !== 'Generar Reportes y Salidas');
       } else {
         return [];
       }
@@ -84,7 +87,6 @@ export default {
     }
   },
  
-  
   methods: {
     seleccionar(index) {
       this.seleccionado = index;
@@ -99,8 +101,6 @@ export default {
       this.componenteActivo = null;
       this.seleccionado = null;
     },
-   
-     
   }
 }
 </script>
