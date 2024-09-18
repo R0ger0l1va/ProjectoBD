@@ -29,6 +29,7 @@ import ListarPolizas from '../Operations/ListarPolizas.vue';
 import Reclamacion from '../Operations/Reclamacion.vue';
 import CrearUsuario from '../Operations/CrearUsuario.vue';
 import GenerarReportes from '../Operations/GenerarReportes.vue';
+import DatosAgencia from '../Operations/DatosAgencia.vue';
 
 export default {
   name: 'GestorPolizas',
@@ -38,7 +39,8 @@ export default {
     ListarPolizas,
     Reclamacion,
     CrearUsuario,
-    GenerarReportes
+    GenerarReportes,
+    DatosAgencia
   },
   data() {
     return {
@@ -48,7 +50,9 @@ export default {
         { nombre: 'Listar Pólizas', descripcion: 'Muestra todas las pólizas con opciones de filtrado', componente: ListarPolizas },
         { nombre: 'Reclamación', descripcion: 'Realiza una reclamación de seguro', componente: Reclamacion },
         { nombre: 'Crear Usuario', descripcion: 'Crea un nuevo trabajador o cliente', componente: CrearUsuario },
-        { nombre: 'Generar Reportes y Salidas', descripcion: 'Genera reportes en PDF de la base de datos', componente: GenerarReportes }
+        { nombre: 'Generar Reportes y Salidas', descripcion: 'Genera reportes en PDF de la base de datos', componente: GenerarReportes },
+        { nombre: 'Datos De la Empresa', descripcion: 'Operaciones con los datos Adicionales de la Empresa', componente: DatosAgencia }
+
       ],
       seleccionado: null,
       nombreOperador: '',
@@ -62,7 +66,7 @@ export default {
       if (this.isAdminG) {
         return this.operaciones;
       } else if (this.isLoggedIn) {
-        return this.operaciones.filter(op => op.nombre !== 'Crear Usuario' && op.nombre !== 'Generar Reportes y Salidas');
+        return this.operaciones.filter(op => op.nombre !== 'Crear Usuario' && op.nombre !== 'Generar Reportes y Salidas' && op.nombre !== 'Datos De la Empresa');
       } else {
         return [];
       }

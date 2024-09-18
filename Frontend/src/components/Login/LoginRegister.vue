@@ -31,19 +31,6 @@
           </div>
           <div class="input-group">
             <div class="input-wrapper">
-              <input
-                v-model="registerForm.id_usuario"
-                type="number"
-                placeholder="ID"
-                required
-                :class="{ error: errors.id }"
-                @blur="validateField('id_usuario')"
-              />
-              <div class="error-container">
-                <span v-if="errors.id" class="error-message">Campo vacío</span>
-              </div>
-            </div>
-            <div class="input-wrapper">
               <select
                 v-model="registerForm.id_pais"
                 required
@@ -59,8 +46,6 @@
                 <span v-if="errors.country" class="error-message">Seleccione un país</span>
               </div>
             </div>
-          </div>
-          <div class="input-group">
             <div class="input-wrapper">
               <select
                 v-model="registerForm.id_sexo"
@@ -73,6 +58,8 @@
                 </option>
               </select>
             </div>
+          </div>
+          <div class="input-group">
             <div class="input-wrapper">
               <input
                 v-model="registerForm.edad"
@@ -87,14 +74,15 @@
                 <span v-if="errors.age" class="error-message">Debe ser mayor de 18 años</span>
               </div>
             </div>
-          </div>
-          <div class="input-wrapper">
+            <div class="input-wrapper">
             <input
               v-model="registerForm.direccion_postal"
               type="text"
               placeholder="Dirección Postal (Opcional)"
             />
           </div>
+          </div>
+          
           <div class="input-group">
             <div class="input-wrapper">
               <input
@@ -120,7 +108,8 @@
               </div>
             </div>
           </div>
-          <div class="input-wrapper">
+          <div class="input-group">
+            <div class="input-wrapper">
             <input
               v-model="registerForm.contrasenna"
               type="password"
@@ -145,6 +134,8 @@
               {{ showCarnet ? 'Ocultar' : 'Mostrar' }}
             </button>
           </div>
+          </div>
+          
           <button type="submit" :disabled="!isRegisterFormValid">Registrarse</button>
         </form>
       </div>
@@ -226,7 +217,7 @@ export default {
         rol: ''
       },
       registerForm: {
-        id_usuario: '',
+        
         nombre_usuario: '',
         apellido_cliente: '',
         numero_id_cliente: '',
@@ -280,7 +271,6 @@ export default {
     isRegisterFormValid() {
       return (
         this.registerForm.nombre_usuario &&
-        this.registerForm.id_usuario &&
         this.registerForm.contrasenna &&
         this.registerForm.id_pais &&
         this.registerForm.edad >= 18 &&
@@ -387,7 +377,6 @@ export default {
     reset() {
       this.registerForm = {
         nombre_usuario: '',
-        id_usuario: '',
         contrasenna: ''
       }
       this.loginForm = {
@@ -398,7 +387,7 @@ export default {
 
     validateField(field) {
       this.lastFocusedField = field
-      if (field === 'nombre_usuario' || field === 'id_usuario' || field === 'contrasenna') {
+      if (field === 'nombre_usuario'  || field === 'contrasenna') {
         this.errors[field] = this.registerForm[field] === ''
       } else if (field === 'loginId' || field === 'loginPassword') {
         this.errors[field] = this.loginForm[field.replace('login', 'id_')] === ''
@@ -440,7 +429,7 @@ export default {
       }, 5000)
     },
     showPreviousFieldError() {
-      const fields = ['nombre_usuario', 'id_usuario', 'contrasenna', 'loginId', 'loginPassword']
+      const fields = ['nombre_usuario', 'contrasenna', 'loginId', 'loginPassword']
       const currentIndex = fields.indexOf(this.lastFocusedField)
       if (currentIndex > 0) {
         const previousField = fields[currentIndex - 1]
@@ -695,7 +684,7 @@ button.ghost {
 
 .input-group {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
 }
 
@@ -792,4 +781,7 @@ select {
   background-position: right 10px top 50%;
   background-size: 12px auto;
 }
+
+
+
 </style>
