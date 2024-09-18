@@ -230,7 +230,7 @@ export default {
         direccion_postal: '',
         telefono: '',
         correo_electronico: '',
-        carnet_identidad: ''
+        carnet_identidad: null
       },
       errors: {
         name: false,
@@ -313,11 +313,19 @@ export default {
 
     async signUp() {
       try {
+        if (!this.registerForm.id_sexo) {
+      alert('El campo sexo es obligatorio');
+      return;
+    }
         this.registerForm.nombre_cliente = this.registerForm.nombre_usuario,
-        this.registerForm.numero_id_cliente = this.registerForm.id_usuario
-        console.log(this.registerForm)
-        const rest = await axios.post('/postCliente', this.registerForm)
+          console.log(this.registerForm)
         const res = await axios.post('/signUp', this.registerForm)
+        const generated = res.data.id_usuario
+        this.registerForm.numero_id_cliente = generated
+        console.log(this.registerForm.numero_id_cliente );
+        
+        const rest = await axios.post('/postCliente', this.registerForm)
+        
         this.reset()
         console.log(res)
         console.log(rest)
@@ -785,3 +793,5 @@ select {
 
 
 </style>
+
+

@@ -30,6 +30,7 @@ import Reclamacion from '../Operations/Reclamacion.vue';
 import CrearUsuario from '../Operations/CrearUsuario.vue';
 import GenerarReportes from '../Operations/GenerarReportes.vue';
 import DatosAgencia from '../Operations/DatosAgencia.vue';
+import PolizaOps from '../Operations/PolizaOps.vue';
 
 export default {
   name: 'GestorPolizas',
@@ -40,7 +41,8 @@ export default {
     Reclamacion,
     CrearUsuario,
     GenerarReportes,
-    DatosAgencia
+    DatosAgencia,
+    PolizaOps
   },
   data() {
     return {
@@ -51,7 +53,8 @@ export default {
         { nombre: 'Reclamación', descripcion: 'Realiza una reclamación de seguro', componente: Reclamacion },
         { nombre: 'Crear Usuario', descripcion: 'Crea un nuevo trabajador o cliente', componente: CrearUsuario },
         { nombre: 'Generar Reportes y Salidas', descripcion: 'Genera reportes en PDF de la base de datos', componente: GenerarReportes },
-        { nombre: 'Datos De la Empresa', descripcion: 'Operaciones con los datos Adicionales de la Empresa', componente: DatosAgencia }
+        { nombre: 'Datos De la Empresa', descripcion: 'Operaciones con los datos Adicionales de la Empresa', componente: DatosAgencia },
+                { nombre: 'Pol', descripcion: 'Operaciones con los datos Adicionales de la Empresa', componente: PolizaOps }
 
       ],
       seleccionado: null,

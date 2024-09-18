@@ -90,10 +90,10 @@ export const signIn = async (req, res) => {
 };
 
 export const signUp = async (req, res) => {
-  const { id_usuario, nombre_usuario, contrasenna } = req.body;
+  const {nombre_usuario, contrasenna } = req.body;
   try {
-    await pool.query("Select public.tbusuarios_insert($1,$2,$3,$4)", [
-      id_usuario,
+    const result = await pool.query("Select * from public.tbusuarios_insert($1,$2,$3)", [
+      
       nombre_usuario,
       contrasenna,
       "Cliente",
@@ -101,7 +101,7 @@ export const signUp = async (req, res) => {
 
     res.status(200).json({
       message: "Se ha registrado como Cliente",
-      tbUsuarios: { id_usuario, nombre_usuario, contrasenna },
+      id_usuario: result.rows[0].id_usuario,
     });
   } catch (error) {
     console.log(error);
