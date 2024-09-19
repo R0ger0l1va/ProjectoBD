@@ -209,8 +209,10 @@ export default {
       showCarnet: false,
       gender: [],
       countries: [],
-      clienteData: [], // New array to store Cliente data
+      clienteData: [],
+      usuarioData: [], // New array to store Usuario data
       loginForm: {
+        id: '',
         correo_electronico: '',
         contrasenna: '',
         rol: ''
@@ -288,7 +290,8 @@ export default {
       try {
         const sex = await axios.get('/getSex')
         const pais = await axios.get('/getPais')
-        const clientes = await axios.get('/getAllClientes') // New API call to get Cliente data
+        const clientes = await axios.get('/getAllClientes')
+        const usuarios = await axios.get('/getAllUsuarios') // New API call to get Usuario data
         this.countries = pais.data.map((pais) => ({
           id: pais.id_pais,
           nombre: pais.nombre_pais
@@ -297,25 +300,25 @@ export default {
           id: sexo.id_sexo,
           nombre: sexo.nombre_sexo
         }))
-        this.clienteData = clientes.data
-        console.log(this.clienteData);
-        
-        // Store Cliente data
+        this.clienteData = clientes.data.map((cliente) => ({
+          id: cliente.numero_id_cliente,
+          nombre: cliente.nombre_cliente,
+          email: cliente.correo_electronico
+        }))
+        this.usuarioData = usuarios.data.map((usuario) => ({
+          id: usuario.id_usuario,
+          nombre: usuario.nombre_usuario
+        }))
       } catch (error) {
         console.error('Error fetching data:', error)
       }
     },
     validateUsername() {
-
-    const existingUser = this.clienteData.find(cliente => cliente.nombre_cliente === this.registerForm.nombre_cliente)
-      
+      const existingUser = this.clienteData.find(cliente => cliente.nombre === this.registerForm.nombre_usuario)
       this.errors.nameExists = !!existingUser
     },
     validateEmail() {
-      const existingEmail = this.clienteData.find(cliente => cliente.correo_electronico === this.registerForm.correo_electronico)
-      
-
-
+      const existingEmail = this.clienteData.find(cliente => cliente.email === this.registerForm.correo_electronico)
       this.errors.emailExists = !!existingEmail
     },
     async signUp() {
@@ -331,7 +334,7 @@ export default {
           return
         }
         if (this.errors.emailExists) {
-          alert("email ya existe")
+          alert("Email ya existe")
           return
         }
         this.registerForm.nombre_cliente = this.registerForm.nombre_usuario
@@ -348,11 +351,20 @@ export default {
     },
     async signIn() {
       try {
-        const existingUser = this.clienteData.find(cliente => cliente.correo_electronico === this.loginForm.correo_electronico)
+        const existingUser = this.clienteData.find(cliente => cliente.email === this.loginForm.correo_electronico)
         if (!existingUser) {
           this.showAlertMessage('Usuario no encontrado', false)
           return
         }
+        
+        // Verify if the client ID exists in the usuario table
+        const userExists = this.usuarioData.find(usuario => usuario.id === existingUser.id)
+        if (!userExists) {
+          this.showAlertMessage('Error de autenticación', false)
+          return
+        }
+
+        this.loginForm.id = existingUser.id // Set the ID for login
         const res = await axios.post('/signIn', this.loginForm)
         this.reset()
         this.showAlertMessage(res.data.message, true)
@@ -406,6 +418,7 @@ export default {
         carnet_identidad: null
       }
       this.loginForm = {
+        id: '',
         correo_electronico: '',
         contrasenna: '',
         rol: ''

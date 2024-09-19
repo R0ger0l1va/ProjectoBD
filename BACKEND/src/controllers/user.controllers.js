@@ -22,9 +22,9 @@ export const getPais = async (req, res) => {
   }
 }
 
-export const getUsers = async (req, res) => {
-  const { rows } = await pool.query('Select * from "tbUsuarios"');
-  res.json({ rows });
+export const getAllUsers = async (req, res) => {
+  const result = await pool.query('Select * from public.tbusuarios_read_all');
+  res.json(result.rows);
 };
 
 export const getLoginUser = async (req, res) => {
