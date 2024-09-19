@@ -23,10 +23,8 @@
 </template>
 
 <script>
-import CrearPoliza from '../Operations/CrearPoliza.vue';
-import ModificarPoliza from '../Operations/ModificarPoliza.vue';
+
 import ListarPolizas from '../Operations/ListarPolizas.vue';
-import Reclamacion from '../Operations/Reclamacion.vue';
 import CrearUsuario from '../Operations/CrearUsuario.vue';
 import GenerarReportes from '../Operations/GenerarReportes.vue';
 import DatosAgencia from '../Operations/DatosAgencia.vue';
@@ -35,10 +33,8 @@ import PolizaOps from '../Operations/PolizaOps.vue';
 export default {
   name: 'GestorPolizas',
   components: {
-    CrearPoliza,
-    ModificarPoliza,
+    
     ListarPolizas,
-    Reclamacion,
     CrearUsuario,
     GenerarReportes,
     DatosAgencia,
@@ -47,14 +43,11 @@ export default {
   data() {
     return {
       operaciones: [
-        { nombre: 'Crear Póliza', descripcion: 'Crea una nueva póliza de seguro', componente: CrearPoliza },
-        { nombre: 'Modificar Póliza', descripcion: 'Modifica o elimina una póliza existente', componente: ModificarPoliza },
+        { nombre: 'Op.Polizas', descripcion: 'Operaciones con las Polizas de Seguro', componente: PolizaOps },
         { nombre: 'Listar Pólizas', descripcion: 'Muestra todas las pólizas con opciones de filtrado', componente: ListarPolizas },
-        { nombre: 'Reclamación', descripcion: 'Realiza una reclamación de seguro', componente: Reclamacion },
         { nombre: 'Crear Usuario', descripcion: 'Crea un nuevo trabajador o cliente', componente: CrearUsuario },
-        { nombre: 'Generar Reportes y Salidas', descripcion: 'Genera reportes en PDF de la base de datos', componente: GenerarReportes },
         { nombre: 'Datos De la Empresa', descripcion: 'Operaciones con los datos Adicionales de la Empresa', componente: DatosAgencia },
-                { nombre: 'Pol', descripcion: 'Operaciones con los datos Adicionales de la Empresa', componente: PolizaOps }
+        { nombre: 'Generar Reportes y Salidas', descripcion: 'Genera reportes en PDF de la base de datos', componente: GenerarReportes },
 
       ],
       seleccionado: null,

@@ -18,6 +18,7 @@
               <div class="error-container">
                 <span v-if="errors.name" class="error-message">Campo vacío</span>
                 <span v-if="minLengthErrors.name" class="error-message">Mínimo 3 caracteres</span>
+                <span v-if="errors.nameExists" class="error-message">Nombre de usuario ya existe</span>
               </div>
             </div>
             <div class="input-wrapper">
@@ -145,15 +146,15 @@
           <div class="input-group">
             <div class="input-wrapper">
               <input
-                v-model="loginForm.id_usuario"
-                type="number"
-                placeholder="ID"
+                v-model="loginForm.correo_electronico"
+                type="email"
+                placeholder="Correo Electrónico"
                 required
-                :class="{ error: errors.loginId }"
-                @blur="validateField('loginId')"
+                :class="{ error: errors.loginEmail }"
+                @blur="validateField('loginEmail')"
               />
               <div class="error-container">
-                <span v-if="errors.loginId" class="error-message">Campo vacío</span>
+                <span v-if="errors.loginEmail" class="error-message">Correo electrónico inválido</span>
               </div>
             </div>
             <div class="input-wrapper">
@@ -168,9 +169,7 @@
               />
               <div class="error-container">
                 <span v-if="errors.loginPassword" class="error-message">Campo vacío</span>
-                <span v-if="minLengthErrors.loginPassword" class="error-message"
-                  >Mínimo 3 caracteres</span
-                >
+                <span v-if="minLengthErrors.loginPassword" class="error-message">Mínimo 3 caracteres</span>
               </div>
             </div>
           </div>
@@ -201,6 +200,7 @@
 
 <script>
 import axios from 'axios'
+
 export default {
   name: 'LoginRegister',
   data() {
@@ -208,16 +208,14 @@ export default {
       isLoginActive: true,
       showCarnet: false,
       gender: [],
-      countries: [
-        
-      ],
+      countries: [],
+      clienteData: [], // New array to store Cliente data
       loginForm: {
-        id_usuario: '',
+        correo_electronico: '',
         contrasenna: '',
         rol: ''
       },
       registerForm: {
-        
         nombre_usuario: '',
         apellido_cliente: '',
         numero_id_cliente: '',
@@ -234,13 +232,14 @@ export default {
       },
       errors: {
         name: false,
-        id: false,
         password: false,
-        loginId: false,
+        loginEmail: false,
         loginPassword: false,
         country: false,
         age: false,
-        email: false
+        email: false,
+        nameExists: false,
+        emailExists: false
       },
       minLengthErrors: {
         name: false,
@@ -254,17 +253,14 @@ export default {
       },
       lastFocusedField: ''
     }
-
   },
-
-  
   computed: {
     isLoginFormValid() {
       return (
-        this.loginForm.id_usuario &&
+        this.loginForm.correo_electronico &&
         this.loginForm.contrasenna &&
         this.loginForm.contrasenna.length >= 3 &&
-        !this.errors.loginId &&
+        !this.errors.loginEmail &&
         !this.errors.loginPassword
       )
     },
@@ -274,15 +270,16 @@ export default {
         this.registerForm.contrasenna &&
         this.registerForm.id_pais &&
         this.registerForm.edad >= 18 &&
-        (this.registerForm.telefono || this.registerForm.correo_electronico) &&
+        this.registerForm.correo_electronico &&
         this.registerForm.nombre_usuario.length >= 3 &&
         this.registerForm.contrasenna.length >= 3 &&
         !this.errors.name &&
-        !this.errors.id &&
         !this.errors.password &&
         !this.errors.country &&
         !this.errors.age &&
-        !this.errors.email
+        !this.errors.email &&
+        !this.errors.nameExists &&
+        !this.errors.emailExists
       )
     }
   },
@@ -291,6 +288,7 @@ export default {
       try {
         const sex = await axios.get('/getSex')
         const pais = await axios.get('/getPais')
+        const clientes = await axios.get('/getAllClientes') // New API call to get Cliente data
         this.countries = pais.data.map((pais) => ({
           id: pais.id_pais,
           nombre: pais.nombre_pais
@@ -299,64 +297,75 @@ export default {
           id: sexo.id_sexo,
           nombre: sexo.nombre_sexo
         }))
+        this.clienteData = clientes.data
+        console.log(this.clienteData);
         
-        console.log(this.gender);
-        console.log(this.countries);
-        
-        
+        // Store Cliente data
       } catch (error) {
-        console.log(error.message.response);
-        
+        console.error('Error fetching data:', error)
       }
     },
-    
+    validateUsername() {
 
+    const existingUser = this.clienteData.find(cliente => cliente.nombre_cliente === this.registerForm.nombre_cliente)
+      
+      this.errors.nameExists = !!existingUser
+    },
+    validateEmail() {
+      const existingEmail = this.clienteData.find(cliente => cliente.correo_electronico === this.registerForm.correo_electronico)
+      
+
+
+      this.errors.emailExists = !!existingEmail
+    },
     async signUp() {
       try {
         if (!this.registerForm.id_sexo) {
-      alert('El campo sexo es obligatorio');
-      return;
-    }
-        this.registerForm.nombre_cliente = this.registerForm.nombre_usuario,
-          console.log(this.registerForm)
+          alert('El campo sexo es obligatorio')
+          return
+        }
+        this.validateUsername()
+        this.validateEmail()
+        if (this.errors.nameExists) {
+          alert("Nombre ya existe")
+          return
+        }
+        if (this.errors.emailExists) {
+          alert("email ya existe")
+          return
+        }
+        this.registerForm.nombre_cliente = this.registerForm.nombre_usuario
         const res = await axios.post('/signUp', this.registerForm)
         const generated = res.data.id_usuario
         this.registerForm.numero_id_cliente = generated
-        console.log(this.registerForm.numero_id_cliente );
-        
         const rest = await axios.post('/postCliente', this.registerForm)
-        
-        this.reset()
-        console.log(res)
         console.log(rest)
+        this.reset()
         this.showAlertMessage(res.data.message, true)
       } catch (error) {
-        alert('Id de usuario ya existe')
+        this.showAlertMessage('Error al registrar usuario', false)
       }
     },
-
-
     async signIn() {
       try {
-        console.log(this.loginForm)
+        const existingUser = this.clienteData.find(cliente => cliente.correo_electronico === this.loginForm.correo_electronico)
+        if (!existingUser) {
+          this.showAlertMessage('Usuario no encontrado', false)
+          return
+        }
         const res = await axios.post('/signIn', this.loginForm)
         this.reset()
-        console.log(res)
         this.showAlertMessage(res.data.message, true)
-          sessionStorage.setItem('session', JSON.stringify(res.data.Usuario))
-
-        await this.redirectUser(res.data.Usuario.rol) // Obtener el rol del usuario
+        sessionStorage.setItem('session', JSON.stringify(res.data.Usuario))
+        await this.redirectUser(res.data.Usuario.rol)
       } catch (error) {
-        console.error('Error en el cliente:', error) // Agrega esto para depurar
+        console.error('Error en el cliente:', error)
         if (error.response) {
-          console.log('Error response:', error.response) // Agrega esto para depurar
           switch (error.response.status) {
             case 401:
-              alert('Contraseña incorrecta')
               this.showAlertMessage('Contraseña incorrecta', false)
               break
             case 404:
-              alert('Usuario no encontrado')
               this.showAlertMessage('Usuario no encontrado', false)
               break
             case 400:
@@ -371,46 +380,51 @@ export default {
         }
       }
     },
-
     redirectUser(role) {
       if (role === 'Cliente') {
-        this.$router.push({ name: 'client-policy-dashboard' }) // Redirigir al componente de administrador
+        this.$router.push({ name: 'client-policy-dashboard' })
       } else if (role === 'Vendedor') {
-        this.$router.push({ name: 'gestor-polizas-worker' }) // Redirigir al componente de usuario
+        this.$router.push({ name: 'gestor-polizas-worker' })
       } else if (role === 'AdminGen') {
-        this.$router.push({ name: 'gestor-polizas' }) // Redirigir a la página de inicio por defecto
+        this.$router.push({ name: 'gestor-polizas' })
       }
     },
-
     reset() {
       this.registerForm = {
         nombre_usuario: '',
-        contrasenna: ''
+        apellido_cliente: '',
+        numero_id_cliente: '',
+        nombre_cliente: '',
+        contrasenna: '',
+        rol: '',
+        id_pais: '',
+        id_sexo: '',
+        edad: '',
+        direccion_postal: '',
+        telefono: '',
+        correo_electronico: '',
+        carnet_identidad: null
       }
       this.loginForm = {
-        id_usuario: '',
-        contrasenna: ''
+        correo_electronico: '',
+        contrasenna: '',
+        rol: ''
       }
     },
-
     validateField(field) {
       this.lastFocusedField = field
-      if (field === 'nombre_usuario'  || field === 'contrasenna') {
+      if (field === 'nombre_usuario' || field === 'contrasenna') {
         this.errors[field] = this.registerForm[field] === ''
-      } else if (field === 'loginId' || field === 'loginPassword') {
-        this.errors[field] = this.loginForm[field.replace('login', 'id_')] === ''
+      } else if (field === 'loginEmail' || field === 'loginPassword') {
+        this.errors[field] = this.loginForm[field.replace('login', '').toLowerCase()] === ''
       } else if (field === 'id_pais') {
         this.errors.country = this.registerForm.id_pais === ''
       } else if (field === 'edad') {
         this.errors.age = this.registerForm.edad < 18
       } else if (field === 'correo_electronico') {
-        this.errors.email = !this.registerForm.telefono && !this.registerForm.correo_electronico
+        this.errors.email = !this.registerForm.correo_electronico
       }
       this.showPreviousFieldError()
-    },
-
-    toggleCarnetVisibility() {
-      this.showCarnet = !this.showCarnet
     },
     validateInput(field) {
       const minLength = 3
@@ -437,12 +451,12 @@ export default {
       }, 5000)
     },
     showPreviousFieldError() {
-      const fields = ['nombre_usuario', 'contrasenna', 'loginId', 'loginPassword']
+      const fields = ['nombre_usuario', 'contrasenna', 'loginEmail', 'loginPassword']
       const currentIndex = fields.indexOf(this.lastFocusedField)
       if (currentIndex > 0) {
         const previousField = fields[currentIndex - 1]
         if (previousField.startsWith('login')) {
-          this.errors[previousField] = this.loginForm[previousField.replace('login', 'id_')] === ''
+          this.errors[previousField] = this.loginForm[previousField.replace('login', '').toLowerCase()] === ''
           if (previousField === 'loginPassword') {
             this.minLengthErrors[previousField] =
               this.loginForm.contrasenna.length > 0 && this.loginForm.contrasenna.length < 3
@@ -458,7 +472,7 @@ export default {
       }
     }
   },
-    mounted() {
+  mounted() {
     this.fetchData()
   }
 }
