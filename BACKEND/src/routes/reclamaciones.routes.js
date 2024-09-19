@@ -3,16 +3,16 @@ import { Router } from "express";
 const router = Router()
 
 // Controlador para tbreclamacion_delete
-app.delete('/tbreclamacion/:id', );
+router.delete("/delReclamacion/:id");
 
 // Controlador para tbreclamacion_insert
-app.post('/tbreclamacion', );
+router.post("/insertReclamacion");
 
 // Controlador para tbreclamacion_update
-app.put('/tbreclamacion/:id', );
+router.put("/updReclamacion/:id");
 
 // Controlador para tbreclamacion_read_all
-app.get('/tbreclamacion', );
+router.get("/getReclamacion");
 
 
 export default router

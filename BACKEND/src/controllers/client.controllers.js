@@ -1,16 +1,14 @@
 import { pool } from "../../database/db.js";
 
 export const getClient = async (req, res) => {
-  const id = req.body;
+  const {id_cliente} = req.params
   try {
     const result = await pool.query("SELECT * FROM public.tbcliente_read($1)", [
-      id,
+      id_cliente,
     ]);
-    if (result.rows.length > 0) {
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).send("Cliente no encontrado");
-    }
+    
+      res.json(result.rows);
+    
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -52,7 +50,7 @@ export const crearCliente = async (req, res) => {
 };
 
 export const borrarCliente = async (req, res) => {
-  const id = req.body;
+  const {id} = req.params;
   try {
     const result = await pool.query("SELECT public.tbcliente_delete($1)", [id]);
     if (result.rows[0].tbcliente_delete) {
@@ -66,8 +64,9 @@ export const borrarCliente = async (req, res) => {
 };
 
 export const actualizarCliente = async (req, res) => {
-  const id = req.body;
+  
   const {
+    numero_id_cliente,
     id_pais,
     id_sexo,
     nombre_cliente,
@@ -82,7 +81,7 @@ export const actualizarCliente = async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM public.tbcliente_update($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
       [
-        id,
+        numero_id_cliente,
         id_pais,
         id_sexo,
         nombre_cliente,
@@ -94,12 +93,12 @@ export const actualizarCliente = async (req, res) => {
         carnet_identidad,
       ]
     );
-    if (result.rows.length > 0) {
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).send("Cliente no encontrado");
-    }
+    
+      res.json(result.rows);
+    
   } catch (error) {
+    console.log(error.message);
+    
     res.status(500).send(error.message);
   }
 };

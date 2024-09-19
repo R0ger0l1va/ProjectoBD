@@ -3,15 +3,15 @@ import { Router } from "express";
 const router = Router();
 
 // Controlador para tbtipocobertura_delete
-app.delete('/tbtipocobertura/:id', );
+router.delete('/delCobertura/:id', );
 
 // Controlador para tbtipocobertura_insert
-app.post('/tbtipocobertura', );
+router.post('/insertCobertura', );
 
 // Controlador para tbtipocobertura_read
-app.get('/tbtipocobertura/:id', );
+router.get('/getCobertura/:id', );
 
 // Controlador para tbtipocobertura_update
-app.put('/tbtipocobertura/:id', );
+router.put('/updCobertura/:id', );
 
 export default router;

@@ -3,15 +3,15 @@ import Router from "express"
 const router = Router()
 
 // Controlador para tbagenciaseguro_delete
-app.delete('/tbagenciaseguro/:id', )
+router.delete('/delAgencia/:id', )
 
 // Controlador para tbagenciaseguro_insert
-app.post('/tbagenciaseguro', )
+router.post('/insertAgencia', )
 
 // Controlador para tbagenciaseguro_read
-app.get('/tbagenciaseguro/:id', );
+router.get('/getAgencia/:id', );
 
 // Controlador para tbagenciaseguro_update
-app.put('/tbagenciaseguro/:id', );
+router.put('/updAgencia/:id', );
 
 export default router 

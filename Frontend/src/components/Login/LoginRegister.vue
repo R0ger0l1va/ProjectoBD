@@ -18,7 +18,9 @@
               <div class="error-container">
                 <span v-if="errors.name" class="error-message">Campo vacío</span>
                 <span v-if="minLengthErrors.name" class="error-message">Mínimo 3 caracteres</span>
-                <span v-if="errors.nameExists" class="error-message">Nombre de usuario ya existe</span>
+                <span v-if="errors.nameExists" class="error-message"
+                  >Nombre de usuario ya existe</span
+                >
               </div>
             </div>
             <div class="input-wrapper">
@@ -40,7 +42,7 @@
               >
                 <option value="" disabled selected>Seleccione un país</option>
                 <option v-for="countryCod in countries" :key="countryCod.id" :value="countryCod.id">
-                  {{ countryCod.nombre}}
+                  {{ countryCod.nombre }}
                 </option>
               </select>
               <div class="error-container">
@@ -55,7 +57,7 @@
               >
                 <option value="" disabled selected>Seleccione sexo</option>
                 <option v-for="sexCod in gender" :key="sexCod.id" :value="sexCod.id">
-                  {{ sexCod.nombre}}
+                  {{ sexCod.nombre }}
                 </option>
               </select>
             </div>
@@ -76,14 +78,14 @@
               </div>
             </div>
             <div class="input-wrapper">
-            <input
-              v-model="registerForm.direccion_postal"
-              type="text"
-              placeholder="Dirección Postal (Opcional)"
-            />
+              <input
+                v-model="registerForm.direccion_postal"
+                type="text"
+                placeholder="Dirección Postal (Opcional)"
+              />
+            </div>
           </div>
-          </div>
-          
+
           <div class="input-group">
             <div class="input-wrapper">
               <input
@@ -111,33 +113,35 @@
           </div>
           <div class="input-group">
             <div class="input-wrapper">
-            <input
-              v-model="registerForm.contrasenna"
-              type="password"
-              placeholder="Contraseña"
-              required
-              :class="{ error: errors.password }"
-              @blur="validateField('contrasenna')"
-              @input="validateInput('password')"
-            />
-            <div class="error-container">
-              <span v-if="errors.password" class="error-message">Campo vacío</span>
-              <span v-if="minLengthErrors.password" class="error-message">Mínimo 3 caracteres</span>
+              <input
+                v-model="registerForm.contrasenna"
+                type="password"
+                placeholder="Contraseña"
+                required
+                :class="{ error: errors.password }"
+                @blur="validateField('contrasenna')"
+                @input="validateInput('password')"
+              />
+              <div class="error-container">
+                <span v-if="errors.password" class="error-message">Campo vacío</span>
+                <span v-if="minLengthErrors.password" class="error-message"
+                  >Mínimo 3 caracteres</span
+                >
+              </div>
+            </div>
+            <div class="input-wrapper">
+              <input
+                v-model="registerForm.carnet_identidad"
+                :type="showCarnet ? 'text' : 'password'"
+                placeholder="Carnet de Identidad (Opcional)"
+              />
+              <button type="button" @click="toggleCarnetVisibility" class="toggle-visibility">
+                {{ showCarnet ? 'Ocultar' : 'Mostrar' }}
+              </button>
             </div>
           </div>
-          <div class="input-wrapper">
-            <input
-              v-model="registerForm.carnet_identidad"
-              :type="showCarnet ? 'text' : 'password'"
-              placeholder="Carnet de Identidad (Opcional)"
-            />
-            <button type="button" @click="toggleCarnetVisibility" class="toggle-visibility">
-              {{ showCarnet ? 'Ocultar' : 'Mostrar' }}
-            </button>
-          </div>
-          </div>
-          
-          <button type="submit" :disabled="!isRegisterFormValid">Registrarse</button>
+
+          <button type="submit" :disabled="!isRegisterFormFilled">Registrarse</button>
         </form>
       </div>
       <div class="form-panel sign-in">
@@ -146,15 +150,17 @@
           <div class="input-group">
             <div class="input-wrapper">
               <input
-                v-model="loginForm.correo_electronico"
-                type="email"
-                placeholder="Correo Electrónico"
+                v-model="loginForm.nombre_usuario"
+                type="text"
+                placeholder="Nombre de Usuario"
                 required
-                :class="{ error: errors.loginEmail }"
-                @blur="validateField('loginEmail')"
+                :class="{ error: errors.loginName }"
+                @blur="validateField('loginName')"
               />
               <div class="error-container">
-                <span v-if="errors.loginEmail" class="error-message">Correo electrónico inválido</span>
+                <span v-if="errors.loginEmail" class="error-message"
+                  >Correo electrónico inválido</span
+                >
               </div>
             </div>
             <div class="input-wrapper">
@@ -169,12 +175,14 @@
               />
               <div class="error-container">
                 <span v-if="errors.loginPassword" class="error-message">Campo vacío</span>
-                <span v-if="minLengthErrors.loginPassword" class="error-message">Mínimo 3 caracteres</span>
+                <span v-if="minLengthErrors.loginPassword" class="error-message"
+                  >Mínimo 3 caracteres</span
+                >
               </div>
             </div>
           </div>
           <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-          <button type="submit" :disabled="!isLoginFormValid">Iniciar Sesión</button>
+          <button type="submit" :disabled="!isLoginFormFilled">Iniciar Sesión</button>
         </form>
       </div>
       <div class="overlay-container">
@@ -205,6 +213,10 @@ export default {
   name: 'LoginRegister',
   data() {
     return {
+      formSubmitted: {
+        register: false,
+        login: false
+      },
       isLoginActive: true,
       showCarnet: false,
       gender: [],
@@ -212,15 +224,15 @@ export default {
       clienteData: [],
       usuarioData: [], // New array to store Usuario data
       loginForm: {
-        id: '',
-        correo_electronico: '',
+        id_usuario: '',
+        nombre_usuario: '',
         contrasenna: '',
         rol: ''
       },
       registerForm: {
         nombre_usuario: '',
         apellido_cliente: '',
-        numero_id_cliente: '',
+        numero_identidad_cliente: '',
         nombre_cliente: '',
         contrasenna: '',
         rol: '',
@@ -235,7 +247,7 @@ export default {
       errors: {
         name: false,
         password: false,
-        loginEmail: false,
+        loginName: false,
         loginPassword: false,
         country: false,
         age: false,
@@ -257,31 +269,17 @@ export default {
     }
   },
   computed: {
-    isLoginFormValid() {
-      return (
-        this.loginForm.correo_electronico &&
-        this.loginForm.contrasenna &&
-        this.loginForm.contrasenna.length >= 3 &&
-        !this.errors.loginEmail &&
-        !this.errors.loginPassword
-      )
+    isLoginFormFilled() {
+      return this.loginForm.nombre_usuario && this.loginForm.contrasenna
     },
-    isRegisterFormValid() {
+    isRegisterFormFilled() {
       return (
         this.registerForm.nombre_usuario &&
         this.registerForm.contrasenna &&
         this.registerForm.id_pais &&
-        this.registerForm.edad >= 18 &&
-        this.registerForm.correo_electronico &&
-        this.registerForm.nombre_usuario.length >= 3 &&
-        this.registerForm.contrasenna.length >= 3 &&
-        !this.errors.name &&
-        !this.errors.password &&
-        !this.errors.country &&
-        !this.errors.age &&
-        !this.errors.email &&
-        !this.errors.nameExists &&
-        !this.errors.emailExists
+        this.registerForm.id_sexo &&
+        this.registerForm.edad &&
+        this.registerForm.correo_electronico
       )
     }
   },
@@ -291,7 +289,7 @@ export default {
         const sex = await axios.get('/getSex')
         const pais = await axios.get('/getPais')
         const clientes = await axios.get('/getAllClientes')
-        const usuarios = await axios.get('/getAllUsuarios') // New API call to get Usuario data
+        const usuarios = await axios.get('/GetAllUsers') // New API call to get Usuario data
         this.countries = pais.data.map((pais) => ({
           id: pais.id_pais,
           nombre: pais.nombre_pais
@@ -301,43 +299,53 @@ export default {
           nombre: sexo.nombre_sexo
         }))
         this.clienteData = clientes.data.map((cliente) => ({
-          id: cliente.numero_id_cliente,
+          id: cliente.numero_identidad_cliente,
           nombre: cliente.nombre_cliente,
           email: cliente.correo_electronico
         }))
+        console.log(this.clienteData)
+
         this.usuarioData = usuarios.data.map((usuario) => ({
           id: usuario.id_usuario,
           nombre: usuario.nombre_usuario
         }))
+        console.log(this.usuarioData)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
     },
     validateUsername() {
-      const existingUser = this.clienteData.find(cliente => cliente.nombre === this.registerForm.nombre_usuario)
+      const existingUser = this.usuarioData.find(
+        (usuario) => usuario.nombre === this.registerForm.nombre_usuario
+      )
+      console.log(existingUser)
+
       this.errors.nameExists = !!existingUser
     },
     validateEmail() {
-      const existingEmail = this.clienteData.find(cliente => cliente.email === this.registerForm.correo_electronico)
+      const existingEmail = this.clienteData.find(
+        (cliente) => cliente.email === this.registerForm.correo_electronico
+      )
       this.errors.emailExists = !!existingEmail
     },
     async signUp() {
+      this.formSubmitted.register = true
       try {
+        this.registerForm.nombre_cliente = this.registerForm.nombre_usuario
         if (!this.registerForm.id_sexo) {
           alert('El campo sexo es obligatorio')
           return
         }
-        this.validateUsername()
         this.validateEmail()
+        this.validateUsername()
         if (this.errors.nameExists) {
-          alert("Nombre ya existe")
+          alert('Nombre ya existe')
           return
         }
         if (this.errors.emailExists) {
-          alert("Email ya existe")
+          alert('Email ya existe')
           return
         }
-        this.registerForm.nombre_cliente = this.registerForm.nombre_usuario
         const res = await axios.post('/signUp', this.registerForm)
         const generated = res.data.id_usuario
         this.registerForm.numero_id_cliente = generated
@@ -347,24 +355,22 @@ export default {
         this.showAlertMessage(res.data.message, true)
       } catch (error) {
         this.showAlertMessage('Error al registrar usuario', false)
+      } finally {
+        this.formSubmitted.register = false
       }
     },
     async signIn() {
+      this.formSubmitted.login = true
       try {
-        const existingUser = this.clienteData.find(cliente => cliente.email === this.loginForm.correo_electronico)
+        const existingUser = this.usuarioData.find(
+          (usuario) => usuario.nombre === this.loginForm.nombre_usuario
+        )
         if (!existingUser) {
           this.showAlertMessage('Usuario no encontrado', false)
           return
         }
-        
-        // Verify if the client ID exists in the usuario table
-        const userExists = this.usuarioData.find(usuario => usuario.id === existingUser.id)
-        if (!userExists) {
-          this.showAlertMessage('Error de autenticación', false)
-          return
-        }
 
-        this.loginForm.id = existingUser.id // Set the ID for login
+        this.loginForm.id_usuario = existingUser.id // Set the ID for login
         const res = await axios.post('/signIn', this.loginForm)
         this.reset()
         this.showAlertMessage(res.data.message, true)
@@ -390,6 +396,8 @@ export default {
         } else {
           this.showAlertMessage('Error de red o servidor no disponible', false)
         }
+      } finally {
+        this.formSubmitted.login = false
       }
     },
     redirectUser(role) {
@@ -417,18 +425,22 @@ export default {
         correo_electronico: '',
         carnet_identidad: null
       }
-      this.loginForm = {
-        id: '',
-        correo_electronico: '',
+      ;(this.loginForm = {
+        id_usuario: '',
+        nombre_usuario: '',
         contrasenna: '',
         rol: ''
-      }
+      }),
+        (this.formSubmitted = {
+          register: false,
+          login: false
+        })
     },
     validateField(field) {
       this.lastFocusedField = field
       if (field === 'nombre_usuario' || field === 'contrasenna') {
         this.errors[field] = this.registerForm[field] === ''
-      } else if (field === 'loginEmail' || field === 'loginPassword') {
+      } else if (field === 'loginName' || field === 'loginPassword') {
         this.errors[field] = this.loginForm[field.replace('login', '').toLowerCase()] === ''
       } else if (field === 'id_pais') {
         this.errors.country = this.registerForm.id_pais === ''
@@ -469,7 +481,8 @@ export default {
       if (currentIndex > 0) {
         const previousField = fields[currentIndex - 1]
         if (previousField.startsWith('login')) {
-          this.errors[previousField] = this.loginForm[previousField.replace('login', '').toLowerCase()] === ''
+          this.errors[previousField] =
+            this.loginForm[previousField.replace('login', '').toLowerCase()] === ''
           if (previousField === 'loginPassword') {
             this.minLengthErrors[previousField] =
               this.loginForm.contrasenna.length > 0 && this.loginForm.contrasenna.length < 3
@@ -816,9 +829,4 @@ select {
   background-position: right 10px top 50%;
   background-size: 12px auto;
 }
-
-
-
 </style>
-
-

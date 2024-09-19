@@ -2,15 +2,15 @@ import {Router} from "express"
 
 const router = Router()
 
-app.delete("/tbcompreaseguradora/:id", );
+router.delete("/delReaseguradora/:id", );
 
 // Controlador para tbcompreaseguradora_insert
-app.post("/tbcompreaseguradora", );
+router.post("/insertReaseguradora", );
 
 // Controlador para tbcompreaseguradora_update
-app.put("/tbcompreaseguradora/:id", );
+router.put("/updReaseguradora/:id", );
 
 // Controlador para tbcompreaseguradora_read_all
-app.get("/tbcompreaseguradora", );
+router.get("/getReaseguradora");
 
 export default router

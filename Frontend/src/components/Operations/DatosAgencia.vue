@@ -14,8 +14,6 @@
       <select v-model="selectedElement" id="elemento" @change="resetForm">
         <option value="pais">País</option>
         <option value="agencia">Agencia</option>
-        <option value="cobertura">Cobertura</option>
-        <option value="seguro">Seguro</option>
         <option value="reclamacion">Reclamación</option>
         <option value="reaseguradora">Compañía Reaseguradora</option>
       </select>
@@ -55,14 +53,6 @@
         <div v-if="selectedElement === 'agencia'" class="input-group">
           <label for="nombre_jefe_departamento_seguros">Nombre Jefe Departamento Seguros:</label>
           <input id="nombre_jefe_departamento_seguros" v-model="formData.nombre_jefe_departamento_seguros" required>
-        </div>
-        <div v-if="selectedElement === 'cobertura' && selectedOperation === 'insertar'" class="input-group">
-          <label for="nombre_tipo_cobertura">Nombre Tipo Cobertura:</label>
-          <input id="nombre_tipo_cobertura" v-model="formData.nombre_tipo_cobertura" required>
-        </div>
-        <div v-if="selectedElement === 'seguro' && selectedOperation === 'insertar'" class="input-group">
-          <label for="nombre_tipo_seguro">Nombre Tipo Seguro:</label>
-          <input id="nombre_tipo_seguro" v-model="formData.nombre_tipo_seguro" required>
         </div>
         <div v-if="selectedElement === 'reclamacion'" class="input-group">
           <label for="numero_poliza">Número Póliza:</label>
@@ -116,6 +106,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -134,8 +126,6 @@ export default {
       const names = {
         pais: 'País',
         agencia: 'Agencia',
-        cobertura: 'Cobertura',
-        seguro: 'Seguro',
         reclamacion: 'Reclamación',
         reaseguradora: 'Compañía Reaseguradora'
       }
@@ -158,12 +148,57 @@ export default {
       // This method should be implemented to fetch the actual IDs from your data source
       return [1, 2, 3, 4, 5]
     },
-    submitForm() {
-      console.log('Operación:', this.selectedOperation)
-      console.log('Elemento:', this.selectedElement)
-      console.log('Datos del formulario:', this.formData)
-      // Aquí iría la lógica para enviar los datos al servidor
-      this.resetForm()
+    async submitForm() {
+      try {
+        let response;
+        const id = this.formData[`id_${this.selectedElement}`];
+
+        switch (this.selectedElement) {
+          case 'pais':
+            if (this.selectedOperation === 'insertar') {
+              response = await axios.post('/insertPais', this.formData);
+            } else if (this.selectedOperation === 'modificar') {
+              response = await axios.put(`/updPais/${id}`, this.formData);
+            } else if (this.selectedOperation === 'eliminar') {
+              response = await axios.delete(`/delPais/${id}`);
+            }
+            break;
+          case 'agencia':
+            if (this.selectedOperation === 'insertar') {
+              response = await axios.post('/insertAgencia', this.formData);
+            } else if (this.selectedOperation === 'modificar') {
+              response = await axios.put(`/updAgencia/${id}`, this.formData);
+            } else if (this.selectedOperation === 'eliminar') {
+              response = await axios.delete(`/delAgencia/${id}`);
+            }
+            break;
+          case 'reclamacion':
+            if (this.selectedOperation === 'insertar') {
+              response = await axios.post('/insertReclamacion', this.formData);
+            } else if (this.selectedOperation === 'modificar') {
+              response = await axios.put(`/updReclamacion/${id}`, this.formData);
+            } else if (this.selectedOperation === 'eliminar') {
+              response = await axios.delete(`/delReclamacion/${id}`);
+            }
+            break;
+          case 'reaseguradora':
+            if (this.selectedOperation === 'insertar') {
+              response = await axios.post('/insertReaseguradora', this.formData);
+            } else if (this.selectedOperation === 'modificar') {
+              response = await axios.put(`/updReaseguradora/${id}`, this.formData);
+            } else if (this.selectedOperation === 'eliminar') {
+              response = await axios.delete(`/delReaseguradora/${id}`);
+            }
+            break;
+        }
+
+        console.log('Respuesta del servidor:', response.data);
+        alert('Operación realizada con éxito');
+        this.resetForm();
+      } catch (error) {
+        console.error('Error al realizar la operación:', error);
+        alert('Error al realizar la operación');
+      }
     }
   }
 }

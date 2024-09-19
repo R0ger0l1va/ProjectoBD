@@ -13,12 +13,20 @@
       <!-- Campos comunes -->
       <div class="campo">
         <label for="nombre">Nombre:</label>
-        <input id="nombre" v-model="usuario.nombre" required @blur="validateName">
-        <span v-if="errors.nombre" class="error-message">{{ errors.nombre }}</span>
+        <input id="nombre" v-model="usuario.nombre_usuario" required @blur="validateField('nombre_usuario')">
+        <div class="error-container">
+          <span v-if="errors.name" class="error-message">Campo vacío</span>
+          <span v-if="minLengthErrors.name" class="error-message">Mínimo 3 caracteres</span>
+          <span v-if="errors.nameExists" class="error-message">Nombre de usuario ya existe</span>
+        </div>
       </div>
       <div class="campo">
         <label for="password">Contraseña:</label>
-        <input id="password" v-model="usuario.password" type="password" required>
+        <input id="password" v-model="usuario.contrasenna" type="password" required @blur="validateField('contrasenna')" @input="validateInput('password')">
+        <div class="error-container">
+          <span v-if="errors.password" class="error-message">Campo vacío</span>
+          <span v-if="minLengthErrors.password" class="error-message">Mínimo 3 caracteres</span>
+        </div>
       </div>
 
       <!-- Campos específicos para Trabajador -->
@@ -36,26 +44,30 @@
       <div v-if="usuario.tipo === 'cliente'">
         <div class="campo">
           <label for="apellido">Apellido:</label>
-          <input id="apellido" v-model="usuario.apellido">
+          <input id="apellido" v-model="usuario.apellido_cliente">
         </div>
         <div class="campo">
           <label for="numeroIdentidad">Número de Identidad:</label>
-          <input id="numeroIdentidad" v-model="usuario.numeroIdentidad">
+          <input id="numeroIdentidad" v-model="usuario.numero_identidad_cliente">
         </div>
         <div class="campo">
           <label for="sexo">Sexo:</label>
-          <select id="sexo" v-model="usuario.sexo" required>
-            <option value="masculino">Masculino</option>
-            <option value="femenino">Femenino</option>
+          <select id="sexo" v-model="usuario.id_sexo" required>
+            <option v-for="sexCod in gender" :key="sexCod.id" :value="sexCod.id">
+              {{ sexCod.nombre }}
+            </option>
           </select>
         </div>
         <div class="campo">
           <label for="edad">Edad:</label>
-          <input id="edad" v-model="usuario.edad" type="number" required>
+          <input id="edad" v-model="usuario.edad" type="number" required @blur="validateField('edad')">
+          <div class="error-container">
+            <span v-if="errors.age" class="error-message">Debe ser mayor de 18 años</span>
+          </div>
         </div>
         <div class="campo">
           <label for="direccionPostal">Dirección Postal:</label>
-          <input id="direccionPostal" v-model="usuario.direccionPostal">
+          <input id="direccionPostal" v-model="usuario.direccion_postal">
         </div>
         <div class="campo">
           <label for="telefono">Teléfono:</label>
@@ -63,11 +75,15 @@
         </div>
         <div class="campo">
           <label for="email">Email:</label>
-          <input id="email" v-model="usuario.email" type="email" required>
+          <input id="email" v-model="usuario.correo_electronico" type="email" required @blur="validateField('correo_electronico')">
+          <div class="error-container">
+            <span v-if="errors.email" class="error-message">Campo requerido si no hay teléfono</span>
+            <span v-if="errors.emailExists" class="error-message">Email ya existe</span>
+          </div>
         </div>
       </div>
 
-      <button type="submit" class="boton-submit">Crear Usuario</button>
+      <button type="submit" class="boton-submit" :disabled="!isFormValid">Crear Usuario</button>
     </form>
 
     <!-- Sección para modificar o eliminar trabajador -->
@@ -76,7 +92,7 @@
       <div class="campo">
         <label for="idTrabajador">ID del Trabajador:</label>
         <select id="idTrabajador" v-model="idTrabajadorOperacion" @change="buscarTrabajador">
-          <option v-for="id in trabajadoresIds" :key="id" :value="id">{{ id }}</option>
+          <option v-for="id in trabajadoresIds" :key="id.id" :value="id.id">{{ id.id }}</option>
         </select>
       </div>
 
@@ -104,18 +120,18 @@
       <div class="campo">
         <label for="numeroCliente">Número de Cliente:</label>
         <select id="numeroCliente" v-model="numeroClienteOperacion" @change="buscarCliente">
-          <option v-for="id in clientesIds" :key="id" :value="id">{{ id }}</option>
+          <option v-for="id in clientesIds" :key="id.id" :value="id.id">{{ id.id }}</option>
         </select>
       </div>
 
       <form v-if="clienteEncontrado" @submit.prevent="modificarCliente">
         <div class="campo">
           <label for="nombreModificar">Nombre:</label>
-          <input id="nombreModificar" v-model="clienteModificar.nombre" required>
+          <input id="nombreModificar" v-model="clienteModificar.nombre_cliente" required>
         </div>
         <div class="campo">
           <label for="apellidoModificar">Apellido:</label>
-          <input id="apellidoModificar" v-model="clienteModificar.apellido">
+          <input id="apellidoModificar" v-model="clienteModificar.apellido_cliente">
         </div>
         <div class="campo">
           <label for="edadModificar">Edad:</label>
@@ -123,7 +139,7 @@
         </div>
         <div class="campo">
           <label for="direccionPostalModificar">Dirección Postal:</label>
-          <input id="direccionPostalModificar" v-model="clienteModificar.direccionPostal">
+          <input id="direccionPostalModificar" v-model="clienteModificar.direccion_postal">
         </div>
         <div class="campo">
           <label for="telefonoModificar">Teléfono:</label>
@@ -131,7 +147,7 @@
         </div>
         <div class="campo">
           <label for="emailModificar">Email:</label>
-          <input id="emailModificar" v-model="clienteModificar.email" type="email" required>
+          <input id="emailModificar" v-model="clienteModificar.correo_electronico" type="email" required>
         </div>
         <button type="submit" class="boton-submit">Modificar Cliente</button>
       </form>
@@ -150,16 +166,17 @@ export default {
     return {
       usuario: {
         tipo: 'trabajador',
-        nombre: '',
-        password: '',
+        nombre_usuario: '',
+        contrasenna: '',
         rol: '',
-        apellido: '',
-        numeroIdentidad: '',
-        sexo: '',
+        apellido_cliente: '',
+        numero_identidad_cliente: '',
+        id_sexo: '',
         edad: '',
-        direccionPostal: '',
+        direccion_postal: '',
         telefono: '',
-        email: ''
+        correo_electronico: '',
+        nombre_cliente: ''
       },
       idTrabajadorOperacion: '',
       numeroClienteOperacion: '',
@@ -168,150 +185,254 @@ export default {
       trabajadorModificar: {},
       clienteModificar: {},
       errors: {
-        nombre: ''
+        name: false,
+        password: false,
+        age: false,
+        email: false,
+        nameExists: false,
+        emailExists: false
+      },
+      minLengthErrors: {
+        name: false,
+        password: false
       },
       trabajadoresIds: [],
-      clientesIds: []
+      clientesIds: [],
+      gender: [],
+      formSubmitted: false
+    }
+  },
+  computed: {
+    isFormValid() {
+      return (
+        this.usuario.nombre_usuario &&
+        this.usuario.contrasenna &&
+        this.usuario.nombre_usuario.length >= 3 &&
+        this.usuario.contrasenna.length >= 3 &&
+        !this.errors.name &&
+        !this.errors.password &&
+        !this.errors.age &&
+        !this.errors.email &&
+        !this.errors.nameExists &&
+        !this.errors.emailExists &&
+        !this.formSubmitted
+      )
     }
   },
   mounted() {
     this.cargarIdsTrabajadores();
     this.cargarIdsClientes();
+    this.cargarGeneros();
   },
   methods: {
     async cargarIdsTrabajadores() {
       try {
-        const response = await axios.get('/getTrabajadoresIds');
-        this.trabajadoresIds = response.data;
+        const response = await axios.get('/getAllUsers');
+        this.trabajadoresIds = response.data
+          .filter(trabajador => trabajador.rol === 'AdminGen' || trabajador.rol === 'Vendedor')        
+          .map((trabajador) => ({
+          id: trabajador.id_usuario,
+          nombre: trabajador.nombre_usuario,
+          rol: trabajador.rol
+        }));
       } catch (error) {
         console.error('Error al cargar IDs de trabajadores:', error);
       }
     },
     async cargarIdsClientes() {
       try {
-        const response = await axios.get('/getClientesIds');
-        this.clientesIds = response.data;
+        const response = await axios.get('/getAllClientes');
+        this.clientesIds = response.data.map((cliente) => ({
+          id: cliente.numero_identidad_cliente,
+          nombre: cliente.nombre_cliente
+        }));
       } catch (error) {
         console.error('Error al cargar IDs de clientes:', error);
       }
     },
-    async validateName() {
+    async cargarGeneros() {
       try {
-        const response = await axios.post('/checkNombreExistente', { nombre: this.usuario.nombre });
-        if (response.data.exists) {
-          this.errors.nombre = 'Este nombre ya existe en la base de datos';
-        } else {
-          this.errors.nombre = '';
-        }
+        const response = await axios.get('/getSex');
+        this.gender = response.data.map((sexo) => ({
+          id: sexo.id_sexo,
+          nombre: sexo.nombre_sexo
+        }));
+      } catch (error) {
+        console.error('Error al cargar géneros:', error);
+      }
+    },
+    validateField(field) {
+      if (field === 'nombre_usuario') {
+        this.errors.name = this.usuario.nombre_usuario === '';
+        this.validateUsername();
+      } else if (field === 'contrasenna') {
+        this.errors.password = this.usuario.contrasenna === '';
+      } else if (field === 'edad') {
+        this.errors.age = this.usuario.edad < 18;
+      } else if (field === 'correo_electronico') {
+        this.errors.email = !this.usuario.correo_electronico;
+        this.validateEmail();
+      }
+    },
+    validateInput(field) {
+      const minLength = 3;
+      if (field === 'name' || field === 'password') {
+        this.minLengthErrors[field] = 
+          this.usuario[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length > 0 &&
+          this.usuario[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length < minLength;
+        this.errors[field] = false;
+      }
+    },
+    async validateUsername() {
+      try {
+        const response = await axios.post('/checkNombreExistente', { nombre: this.usuario.nombre_usuario });
+        this.errors.nameExists = response.data.exists;
       } catch (error) {
         console.error('Error al validar el nombre:', error);
+      }
+    },
+    async validateEmail() {
+      try {
+        const response = await axios.post('/checkEmailExistente', { email: this.usuario.correo_electronico });
+        this.errors.emailExists = response.data.exists;
+      } catch (error) {
+        console.error('Error al validar el email:', error);
       }
     },
     resetForm() {
       this.usuario = {
         tipo: this.usuario.tipo,
-        nombre: '',
-        password: '',
+        nombre_usuario: '',
+        contrasenna: '',
         rol: '',
-        apellido: '',
-        numeroIdentidad: '',
-        sexo: '',
+        apellido_cliente: '',
+        numero_identidad_cliente: '',
+        id_sexo: '',
         edad: '',
-        direccionPostal: '',
+        direccion_postal: '',
         telefono: '',
-        email: ''
+        correo_electronico: ''
       };
-      this.errors.nombre = '';
+      this.errors = {
+        name: false,
+        password: false,
+        age: false,
+        email: false,
+        nameExists: false,
+        emailExists: false
+      };
+      this.minLengthErrors = {
+        name: false,
+        password: false
+      };
+      this.formSubmitted = false;
     },
     async crearUsuario() {
+      this.formSubmitted = true;
       try {
         if (this.usuario.tipo === 'trabajador') {
-          await axios.post('/crearTrabajador', {
-            nombre: this.usuario.nombre,
-            password: this.usuario.password,
+          await axios.post('/postTrabajador', {
+            nombre_usuario: this.usuario.nombre_usuario,
+            contrasenna: this.usuario.contrasenna,
             rol: this.usuario.rol
           });
         } else {
           await axios.post('/crearCliente', this.usuario);
         }
-        alert('Usuario creado con éxito');
+        this.showAlertMessage('Usuario creado con éxito', true);
         this.resetForm();
       } catch (error) {
         console.error('Error al crear usuario:', error);
-        alert('Error al crear usuario');
+        this.showAlertMessage('Error al crear usuario', false);
+      } finally {
+        this.formSubmitted = false;
       }
     },
     async buscarTrabajador() {
       try {
-        const response = await axios.get(`/getTrabajador/${this.idTrabajadorOperacion}`);
+        const response = await axios.get(`/getUser/${this.idTrabajadorOperacion}`);
         this.trabajadorModificar = response.data;
+        console.log(this.trabajadorModificar);
+        
         this.trabajadorEncontrado = true;
       } catch (error) {
         console.error('Error al buscar trabajador:', error);
-        alert('Trabajador no encontrado');
+        this.showAlertMessage('Trabajador no encontrado', false);
         this.trabajadorEncontrado = false;
       }
     },
     async modificarTrabajador() {
       try {
-        await axios.put(`/actualizarTrabajador/${this.idTrabajadorOperacion}`, this.trabajadorModificar);
-        alert('Trabajador modificado con éxito');
+        await axios.put(`/putUsers/${this.idTrabajadorOperacion}`, this.trabajadorModificar);
+        this.showAlertMessage('Trabajador modificado con éxito', true);
         this.trabajadorEncontrado = false;
         this.idTrabajadorOperacion = '';
       } catch (error) {
         console.error('Error al modificar trabajador:', error);
-        alert('Error al modificar trabajador');
+        this.showAlertMessage('Error al modificar trabajador', false);
       }
     },
     async eliminarTrabajador() {
       if (confirm('¿Está seguro de que desea eliminar este trabajador?')) {
         try {
-          await axios.delete(`/eliminarTrabajador/${this.idTrabajadorOperacion}`);
-          alert('Trabajador eliminado con éxito');
+          await axios.delete(`/delUsers/${this.idTrabajadorOperacion}`);
+          this.showAlertMessage('Trabajador eliminado con éxito', true);
           this.trabajadorEncontrado = false;
           this.idTrabajadorOperacion = '';
           this.cargarIdsTrabajadores();
         } catch (error) {
           console.error('Error al eliminar trabajador:', error);
-          alert('Error al eliminar trabajador');
+          this.showAlertMessage('Error al eliminar trabajador', false);
         }
       }
     },
     async buscarCliente() {
       try {
+        console.log(this.numeroClienteOperacion);
+        
         const response = await axios.get(`/getCliente/${this.numeroClienteOperacion}`);
+
         this.clienteModificar = response.data;
+        console.log(this.clienteModificar);
+        
         this.clienteEncontrado = true;
       } catch (error) {
         console.error('Error al buscar cliente:', error);
-        alert('Cliente no encontrado');
+        this.showAlertMessage('Cliente no encontrado', false);
         this.clienteEncontrado = false;
       }
     },
     async modificarCliente() {
       try {
-        await axios.put(`/actualizarCliente/${this.numeroClienteOperacion}`, this.clienteModificar);
-        alert('Cliente modificado con éxito');
+        console.log(this.clienteModificar);
+        
+        await axios.put("/updCliente/", this.clienteModificar);
+        this.showAlertMessage('Cliente modificado con éxito', true);
         this.clienteEncontrado = false;
         this.numeroClienteOperacion = '';
       } catch (error) {
         console.error('Error al modificar cliente:', error);
-        alert('Error al modificar cliente');
+        this.showAlertMessage('Error al modificar cliente', false);
       }
     },
     async eliminarCliente() {
       if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
         try {
-          await axios.delete(`/eliminarCliente/${this.numeroClienteOperacion}`);
-          alert('Cliente eliminado con éxito');
+          await axios.delete(`/delCliente/${this.numeroClienteOperacion}`);
+          this.showAlertMessage('Cliente eliminado con éxito', true);
           this.clienteEncontrado = false;
           this.numeroClienteOperacion = '';
           this.cargarIdsClientes();
         } catch (error) {
           console.error('Error al eliminar cliente:', error);
-          alert('Error al eliminar cliente');
+          this.showAlertMessage('Error al eliminar cliente', false);
         }
       }
+    },
+    showAlertMessage(message, success) {
+      // Implement this method to show alert messages
+      // You can use a similar approach as in the LoginRegister component
+      console.log(message, success);
     }
   }
 }

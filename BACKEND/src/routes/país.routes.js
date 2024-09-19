@@ -1,14 +1,14 @@
 import { Router } from "express"
 
-router = Router()
+const router = Router()
 
 // Controlador para tbpais_delete
-app.delete('/tbpais/:id', );
+router.delete('/delPais/:id', );
 
 // Controlador para tbpais_insert
-app.post('/tbpais', );
+router.post('/insertPais', );
 
 // Controlador para tbpais_update
-app.put('/tbpais/:id',);
+router.put('/updPais/:id',);
 
 export default router

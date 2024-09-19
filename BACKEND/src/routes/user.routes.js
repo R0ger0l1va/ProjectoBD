@@ -8,16 +8,20 @@ import {
   getSex,
   getPais,
   getAllUsers,
+  getUser,
+  postTrabajador,
 } from "../controllers/user.controllers.js";
 
 const router = Router();
 router.get("/getSex", getSex)
+router.get("/getUser/:id_usuario", getUser);
 router.get('/getPais',getPais )
 router.get("/GetAllUsers", getAllUsers);
+router.post("/postTrabajador", postTrabajador)
 router.post("/signIn", signIn);
 router.get("/getLoginUser", getLoginUser);
 router.post("/signUp", signUp);
-router.delete("/users", deleteUser);
-router.put("/users/:id_usuario", updateUser);
+router.delete("/delUsers/:id_usuario", deleteUser);
+router.put("/putUsers/:id_usuario", updateUser);
 
 export default router;
