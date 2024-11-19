@@ -554,7 +554,7 @@ export const pdf_salida3 = async (req, res) => {
 
     // Título del reporte
     doc.setFontSize(18);
-    doc.text("Reporte de Pólizas Vencidas", 14, 22);
+    doc.text("Reporte de Polizas Vencidas", 14, 22);
 
     // Agregar datos en formato de tabla
     doc.autoTable({
@@ -697,7 +697,7 @@ export const pdf_salida6 = async (req, res) => {
 
     // Título del reporte
     doc.setFontSize(18);
-    doc.text("Reporte de Clientes y sus Pólizas", 14, 22);
+    doc.text("Reporte de Clientes y sus Polizas", 14, 22);
 
     // Agregar datos de clientes en formato de tabla
     for (const row of resultClientes.rows) {

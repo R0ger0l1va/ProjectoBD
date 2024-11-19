@@ -223,12 +223,14 @@ export default {
       countries: [],
       clienteData: [],
       usuarioData: [], // New array to store Usuario data
+
       loginForm: {
         id_usuario: '',
         nombre_usuario: '',
         contrasenna: '',
         rol: ''
       },
+
       registerForm: {
         nombre_usuario: '',
         apellido_cliente: '',
@@ -290,6 +292,8 @@ export default {
         const pais = await axios.get('/getPais')
         const clientes = await axios.get('/getAllClientes')
         const usuarios = await axios.get('/GetAllUsers') // New API call to get Usuario data
+        console.log(pais.data)
+
         this.countries = pais.data.map((pais) => ({
           id: pais.id_pais,
           nombre: pais.nombre_pais

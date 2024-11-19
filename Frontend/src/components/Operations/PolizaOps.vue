@@ -12,7 +12,7 @@
       <form @submit.prevent="crearPoliza">
         <div class="campo">
           <label for="agencia">Agencia:</label>
-          <select id="agencia" v-model="poliza.id_agencia_seguro" required>
+          <select id="agencia" v-model="poliza.id_agencia_seguro" @change="segurosDeAgencias" required>
             <option v-for="agencia in agencias" :key="agencia.id" :value="agencia.id">
               {{ agencia.nombre }}
             </option>
@@ -20,7 +20,7 @@
         </div>
         <div class="campo">
           <label for="tipoSeguro">Tipo de Seguro:</label>
-          <select id="tipoSeguro" v-model="poliza.id_tipo_seguro" required>
+          <select id="tipoSeguro" v-model="poliza.id_tipo_seguro" @change="compararNombre" required>
             <option v-for="tipo in tiposSeguro" :key="tipo.id" :value="tipo.id">
               {{ tipo.nombre }}
             </option>
@@ -75,7 +75,7 @@
       <form v-if="polizaEncontrada" @submit.prevent="modificarPoliza">
         <div class="campo">
           <label for="agenciaModificar">Agencia:</label>
-          <select id="agenciaModificar" v-model="poliza.id_agencia_seguro" required>
+          <select id="agenciaModificar" v-model="poliza.id_agencia_seguro" @change="segurosDeAgencias" required>
             <option v-for="agencia in agencias" :key="agencia.id" :value="agencia.id">
               {{ agencia.nombre }}
             </option>
@@ -156,18 +156,19 @@ export default {
       numeroPolizaBusqueda: '',
       polizaEncontrada: false,
       poliza: {
-        numero_poliza: '',
-        id_agencia_seguro: '',
-        numero_identidad_cliente: '',
+        numero_poliza: 0,
+        id_agencia_seguro: 0,
+        numero_identidad_cliente: 0,
         id_estado_poliza: 3,
-        id_tipo_seguro: '',
+        id_tipo_seguro: 0,
         fecha_inicio: '',
         fecha_fin: '',
-        prima_mensual: '',
+        prima_mensual: 0.0,
         monto_total_asegurado: 0.0,
-        id_tipo_cobertura: ''
+        id_tipo_cobertura: 0,
       },
       agencias: [],
+      segurosAge: [],
       tiposSeguro: [],
       tiposCoberturas: [],
       clientes: [],
@@ -184,30 +185,44 @@ export default {
         this.poliza.fecha_fin &&
         this.poliza.id_tipo_cobertura
       )
+    },
+    fechasValidas() {
+      if (this.poliza.fecha_inicio && this.poliza.fecha_fin) {
+        return new Date(this.poliza.fecha_inicio) < new Date(this.poliza.fecha_fin)
+      }
+      return true
     }
   },
   methods: {
+    async buscarPoliza() {
+      try {
+        const response = await axios.get(`/getPoliza/${this.numeroPolizaBusqueda}`)
+        this.poliza = response.data
+        this.polizaEncontrada = true
+      } catch (error) {
+        console.error('Error buscando la póliza:', error)
+        alert('No se encontró la póliza o hubo un error en la búsqueda.')
+        this.polizaEncontrada = false
+      }
+    },
     async fetchData() {
       try {
-        const [agenciasRes, tiposSeguroRes, tiposCoberturaRes, clientesRes, polizasRes] = await Promise.all([
+        const [agenciasRes, tiposCoberturaRes, clientesRes, polizasRes] = await Promise.all([
           axios.get('/getAllAgencias'),
-          axios.get('/getAllTipoSeguros'),
           axios.get('/getAllCoberturas'),
           axios.get('/getAllClientes'),
-          axios.get('/getAllPolizas')
+          axios.get('/getAllPolizas'),
         ])
         this.agencias = agenciasRes.data.map((agencia) => ({
           id: agencia.id_agencia_seguro,
           nombre: agencia.nombre_agencia_seguro
         }))
+
         this.tiposCoberturas = tiposCoberturaRes.data.map((cobertura) => ({
           id: cobertura.id_tipo_cobertura,
           nombre: cobertura.nombre_tipo_cobertura
         }))
-        this.tiposSeguro = tiposSeguroRes.data.map((tipo) => ({
-          id: tipo.id_tipo_seguro,
-          nombre: tipo.nombre_tipo_seguro
-        }))
+        
         this.clientes = clientesRes.data.map((cliente) => ({
           id: cliente.numero_identidad_cliente,
           nombre: cliente.nombre_cliente
@@ -217,22 +232,78 @@ export default {
         console.error('Error fetching data:', error)
       }
     },
+    async segurosDeAgencias() {
+      try {
+        if (this.poliza.id_agencia_seguro) {
+           const tiposSeguroRes = await axios.get('/getAllTipoSeguros')
+          this.tiposSeguro = tiposSeguroRes.data.map((tipo) => ({
+          id: tipo.id_tipo_seguro,
+          nombre: tipo.nombre_tipo_seguro
+        }))
+          const segAge = await axios.get(`/getSegurosAgencia/${this.poliza.id_agencia_seguro}`)
+          this.segurosAge = segAge.data
+          console.log(this.segurosAge);
+           console.log(this.tiposSeguro);
+          
+          this.tiposSeguro = this.tiposSeguro.filter(tipo => 
+            this.segurosAge.some(seguro => seguro === tipo.nombre)
+          )
+          console.log(JSON.stringify(this.tiposSeguro) );
+          
+          this.poliza.id_tipo_seguro = '' // Reset the selected insurance type
+        }
+      } catch (error) {
+        alert(error.response + " " + "No se ha encontrado ningún seguro de esta Agencia")
+        this.tiposSeguro = []
+      }
+    },
     calcularPagoMensual() {
       if (this.poliza.fecha_inicio && this.poliza.fecha_fin && this.poliza.id_tipo_cobertura) {
         const inicio = new Date(this.poliza.fecha_inicio)
         const fin = new Date(this.poliza.fecha_fin)
         const diasDiferencia = (fin - inicio) / (1000 * 60 * 60 * 24)
         const cobertura = this.tiposCoberturas.find(c => c.id === this.poliza.id_tipo_cobertura)
-        if (cobertura) {
-          // Aquí deberías implementar tu lógica de cálculo basada en la cobertura y los días
-          // Este es solo un ejemplo y debe ser ajustado según tus necesidades específicas
-          this.poliza.prima_mensual = (cobertura.tarifa_base * diasDiferencia / 30).toFixed(2)
+        console.log(cobertura.id);
+        
+          switch (cobertura.id) {
+            case 1:
+              this.poliza.prima_mensual = (5000 * diasDiferencia/30).toFixed(2)
+              break;
+              case 2:
+              this.poliza.prima_mensual =(3000 *diasDiferencia/30).toFixed(2)
+              break;
+              case 3:
+              this.poliza.prima_mensual =(1000 * diasDiferencia/30).toFixed(2)
+              break;
+            default:
+               this.poliza.prima_mensual = 0
+
+              break;
+          }
+        
+      }
+    },
+    async compararNombre() {
+      if (this.currentOperation === 'crear' || this.currentOperation === 'modificar') {
+        try {
+          const response = await axios.get(`/getCliente/${this.poliza.numero_identidad_cliente}`)
+          this.nombreExistente = response.data.exists
+          if (this.nombreExistente) {
+            alert('Ya existe un seguro con este nombre.')
+          }
+        } catch (error) {
+          console.error('Error al verificar el nombre:', error)
         }
       }
     },
     async crearPoliza() {
       if (!this.formValido) {
         alert('Por favor, complete todos los campos correctamente.')
+        return
+      }
+
+      if (!this.fechasValidas) {
+        alert('La fecha de finalización debe ser posterior a la fecha de inicio.')
         return
       }
 
@@ -245,18 +316,18 @@ export default {
         alert('Error al crear la póliza')
       }
     },
-    async buscarPoliza() {
-      try {
-        const response = await axios.get(`/getPoliza/${this.numeroPolizaBusqueda}`)
-        this.poliza = response.data
-        this.polizaEncontrada = true
-      } catch (error) {
-        console.error('Error buscando la póliza:', error)
-        alert('No se encontró la póliza o hubo un error en la búsqueda.')
-        this.polizaEncontrada = false
-      }
-    },
+
     async modificarPoliza() {
+      if (!this.formValido) {
+        alert('Por favor, complete todos los campos correctamente.')
+        return
+      }
+
+      if (!this.fechasValidas) {
+        alert('La fecha de finalización debe ser posterior a la fecha de inicio.')
+        return
+      }
+
       try {
         await axios.put('/actPoliza', this.poliza)
         alert('Póliza modificada con éxito')
@@ -281,12 +352,25 @@ export default {
     resetForm() {
       this.polizaEncontrada = false
       this.numeroPolizaBusqueda = ''
-      Object.keys(this.poliza).forEach((key) => (this.poliza[key] = ''))
+      Object.keys(this.poliza).forEach((key) => (this.poliza[key] = 3))
     }
   },
   mounted() {
     this.fetchData()
-  }
+  }, watch: {
+    'poliza.fecha_inicio': function() {
+      this.calcularPagoMensual()
+    },
+    'poliza.fecha_fin': function() {
+      this.calcularPagoMensual()
+    },
+    'poliza.id_tipo_cobertura': function() {
+      this.calcularPagoMensual()
+    },
+    'poliza.id_tipo_seguro': function() {
+      this.compararNombre()
+    }
+  },
 }
 </script>
 

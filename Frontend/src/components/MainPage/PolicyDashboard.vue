@@ -210,10 +210,11 @@ h1 {
 }
 
 .policy-card h2 {
-  color: #44917c;
+  color: black;
   margin-top: 0;
   margin-bottom: 15px;
   font-size: 1.2em;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
 }
 
 .policy-details {
@@ -225,15 +226,19 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 5px 10px;
+  border-radius: 4px;
 }
 
 .label {
   font-weight: bold;
-  color: #666;
+  color: #333;
 }
 
 .value {
-  color: #333;
+  color: #000;
+  font-weight: 500;
 }
 
 .no-policies {
@@ -271,17 +276,22 @@ h1 {
 
 /* Status text classes */
 .status-text-active {
-  color: #4caf50;
+  color: #006400;
   font-weight: bold;
 }
 
 .status-text-cancelled {
-  color: #f44336;
+  color: #8b0000;
   font-weight: bold;
 }
 
 .status-text-expired {
-  color: #2196f3;
+  color: #00008b;
+  font-weight: bold;
+}
+
+.invalid-policy .value {
+  color: #8b0000;
   font-weight: bold;
 }
 

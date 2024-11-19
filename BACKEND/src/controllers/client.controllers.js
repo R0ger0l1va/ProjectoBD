@@ -7,7 +7,9 @@ export const getClient = async (req, res) => {
       id_cliente,
     ]);
     
-      res.json(result.rows);
+    res.json(result.rows[0]);
+    console.log(result.rows);
+    
     
   } catch (error) {
     res.status(500).send(error.message);
@@ -45,7 +47,7 @@ export const crearCliente = async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (error) {
-    res.send(error.message);
+    res.status(409).send(error.message);
   }
 };
 
@@ -64,36 +66,29 @@ export const borrarCliente = async (req, res) => {
 };
 
 export const actualizarCliente = async (req, res) => {
+  const { id } = req.params;
+  const cliente = req.body;
+  console.log(id);
   
-  const {
-    numero_id_cliente,
-    id_pais,
-    id_sexo,
-    nombre_cliente,
-    apellido_cliente,
-    edad,
-    direccion_postal,
-    telefono,
-    correo_electronico,
-    carnet_identidad,
-  } = req.body;
+  console.log(cliente);
+  
   try {
     const result = await pool.query(
       "SELECT * FROM public.tbcliente_update($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
       [
-        numero_id_cliente,
-        id_pais,
-        id_sexo,
-        nombre_cliente,
-        apellido_cliente,
-        edad,
-        direccion_postal,
-        telefono,
-        correo_electronico,
-        carnet_identidad,
+       5,
+        cliente.id_pais,
+        cliente.id_sexo,
+        cliente.nombre_cliente,
+        cliente.apellido_cliente,
+        cliente.edad,
+        cliente.direccion_postal,
+        cliente.telefono,
+        cliente.correo_electronico,
+        cliente.carnet_identidad,
       ]
     );
-    
+      
       res.json(result.rows);
     
   } catch (error) {

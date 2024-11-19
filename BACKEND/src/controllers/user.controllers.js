@@ -100,7 +100,7 @@ export const signIn = async (req, res) => {
         case "Cliente":
           res.status(200).json({
             Usuario: result.rows[0],
-            message: "Se ha logueado como Vendedor",
+            message: "Se ha logueado como Cliente",
           });
           break;
         case "Vendedor":

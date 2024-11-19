@@ -145,6 +145,7 @@
           <label for="telefonoModificar">Teléfono:</label>
           <input id="telefonoModificar" v-model="clienteModificar.telefono">
         </div>
+        
         <div class="campo">
           <label for="emailModificar">Email:</label>
           <input id="emailModificar" v-model="clienteModificar.correo_electronico" type="email" required>
@@ -184,6 +185,7 @@ export default {
       clienteEncontrado: false,
       trabajadorModificar: {},
       clienteModificar: {},
+      clienteBackup:{},
       errors: {
         name: false,
         password: false,
@@ -337,7 +339,7 @@ export default {
             rol: this.usuario.rol
           });
         } else {
-          await axios.post('/crearCliente', this.usuario);
+          await axios.post('/postCliente', this.usuario);
         }
         this.showAlertMessage('Usuario creado con éxito', true);
         this.resetForm();
@@ -352,6 +354,7 @@ export default {
       try {
         const response = await axios.get(`/getUser/${this.idTrabajadorOperacion}`);
         this.trabajadorModificar = response.data;
+        this.trabajadorBackup = this.trabajadorModificar
         console.log(this.trabajadorModificar);
         
         this.trabajadorEncontrado = true;
@@ -393,6 +396,7 @@ export default {
         const response = await axios.get(`/getCliente/${this.numeroClienteOperacion}`);
 
         this.clienteModificar = response.data;
+        this.clienteBackup = response.data
         console.log(this.clienteModificar);
         
         this.clienteEncontrado = true;
@@ -404,9 +408,9 @@ export default {
     },
     async modificarCliente() {
       try {
-        console.log(this.clienteModificar);
-        
-        await axios.put("/updCliente/", this.clienteModificar);
+       const res= await axios.put(`/updCliente/${this.numeroClienteOperacion}`, this.clienteModificar);
+console.log(res.data);
+
         this.showAlertMessage('Cliente modificado con éxito', true);
         this.clienteEncontrado = false;
         this.numeroClienteOperacion = '';
@@ -419,6 +423,7 @@ export default {
       if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
         try {
           await axios.delete(`/delCliente/${this.numeroClienteOperacion}`);
+          await axios.delete(`/delUsers/${this.numeroClienteOperacion}`)
           this.showAlertMessage('Cliente eliminado con éxito', true);
           this.clienteEncontrado = false;
           this.numeroClienteOperacion = '';

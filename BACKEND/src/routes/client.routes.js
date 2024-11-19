@@ -11,6 +11,6 @@ const router = Router();
 router.get("/getCliente/:id_cliente", getClient);
 router.post("/postCliente", crearCliente);
 router.delete("/delCliente/:id", borrarCliente);
-router.put("/updCliente", actualizarCliente);
+router.put("/updCliente/:id", actualizarCliente);
 
 export default router;

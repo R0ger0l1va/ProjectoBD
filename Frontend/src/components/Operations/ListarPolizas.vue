@@ -22,10 +22,12 @@
       </div>
       <div class="campo">
         <label for="filtroEstado">Filtrar por Estado:</label>
-        <select id="filtroEstado" v-model="filtro.id_estado_poliza">
+        <select id="filtroEstado" v-model.number="filtro.id_estado_poliza">
           <option value="">Todos</option>
-          <option value="1">Activa</option>
-          <option value="2">Inactiva</option>
+    <option value="3">Activa</option>
+    <option value="1">Cancelada</option>
+    <option value="2">Vencida</option>
+
         </select>
       </div>
       <div class="campo">
@@ -45,6 +47,7 @@
           <th>Cliente</th>
           <th>Fecha de Inicio</th>
           <th>Fecha de Fin</th>
+          <th>Operador</th>
         </tr>
       </thead>
       <tbody>
@@ -58,6 +61,7 @@
           <td>{{ getClienteNombre(poliza.numero_identidad_cliente) }}</td>
           <td>{{ formatDate(poliza.fecha_inicio) }}</td>
           <td>{{ formatDate(poliza.fecha_fin) }}</td>
+          <td>{{this.operadores[0].nombre }}</td>
         </tr>
       </tbody>
     </table>
@@ -71,15 +75,17 @@ export default {
   name: 'ListarPolizas',
   data() {
     return {
+      op:{},
       polizas: [],
       agencias: [],
       tiposSeguro: [],
       tiposCoberturas: [],
       clientes: [],
+      operadores: [],
       filtro: {
         id_agencia_seguro: '',
         id_tipo_seguro: '',
-        id_estado_poliza: '',
+        id_estado_poliza: 0,
         prima_mensual_minima: 0
       }
     }
@@ -103,6 +109,7 @@ export default {
           axios.get('/getAllTipoSeguros'),
           axios.get('/getAllCoberturas'),
           axios.get('/getAllClientes'),
+          
         ])
         
         this.polizas = polizasRes.data
@@ -122,6 +129,12 @@ export default {
           id: cliente.numero_identidad_cliente,
           nombre: cliente.nombre_cliente
         }))
+
+        // Fetch operadores from session storage
+        const sessionData = JSON.parse(sessionStorage.getItem('session'))
+        if (sessionData && sessionData.nombre_usuario) {
+          this.operadores = [{ id: sessionData.id_usuario, nombre: sessionData.nombre_usuario }]
+        }
       } catch (error) {
         console.error('Error fetching data:', error)
         alert('Error al cargar los datos. Por favor, intente de nuevo.')
@@ -143,8 +156,27 @@ export default {
       const cliente = this.clientes.find(c => c.id === id)
       return cliente ? cliente.nombre : 'Desconocido'
     },
+    getOperadorNombre(id) {
+      const operador = this.operadores.find(o => o.id === id)
+      return operador ? operador.nombre : 'Desconocido'
+    },
     getEstadoNombre(id) {
-      return id === 1 ? 'Activa' : 'Inactiva'
+      let result = '';
+      switch (id) {
+        case 1:
+          result = 'Cancelada'
+          break;
+        case 2:
+          result = 'Vencida'
+          break;
+        case 3:
+          result = 'Activa'
+          break;
+        default:
+          result = 'Desconocido'
+          break;
+      }
+      return result
     },
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
