@@ -1,137 +1,137 @@
 <template>
-  <v-container class = "auth-container"
+  <v-container class="auth-container"
                fill-height
                fluid>
-    <v-row align = "center"
-           justify = "center">
-      <v-col cols = "12"
-             lg = "8"
-             md = "6"
-             sm = "8">
-        <v-card class = "elevation-12">
-          <v-window v-model = "step">
-            <v-window-item :value = "1">
+    <v-row align="center"
+           justify="center">
+      <v-col cols="12"
+             lg="8"
+             md="6"
+             sm="8">
+        <v-card class="elevation-12">
+          <v-window v-model="step">
+            <v-window-item :value="1">
               <v-row>
-                <v-col cols = "12"
-                       md = "8">
+                <v-col cols="12"
+                       md="8">
                   <v-card-text>
-                    <h1 class = "text-center text-h4 mb-5">Crear Cuenta</h1>
-                    <v-form ref = "signupForm"
-                            v-model = "isFormValid"
-                            @submit.prevent = "signUp">
+                    <h1 class="text-center text-h4 mb-5">Crear Cuenta</h1>
+                    <v-form ref="signupForm"
+                            v-model="isFormValid"
+                            @submit.prevent="signUp">
                       <v-row>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model = "registerForm.nombre_usuario"
-                            :rules = "[v => !!v || 'Campo requerido', v => v.length >= 3 || 'Mínimo 3 caracteres', v => !/\d/.test(v) || 'No puede contener números']"
-                            label = "Nombre"
+                            v-model="registerForm.nombre_usuario"
+                            :rules="[v => !!v || 'Campo requerido', v => v.length >= 3 || 'Mínimo 3 caracteres', v => !/\d/.test(v) || 'No puede contener números']"
+                            label="Nombre"
                             required
-                            @blur = "validateUsername"
+                            @blur="validateUsername"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model = "registerForm.apellido_cliente"
-                            :rules = "[v => !v || !/\d/.test(v) || 'No puede contener números']"
-                            label = "Apellido (Opcional)"
+                            v-model="registerForm.apellido_cliente"
+                            :rules="[v => !v || !/\d/.test(v) || 'No puede contener números']"
+                            label="Apellido (Opcional)"
                           ></v-text-field>
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-select
-                            v-model = "registerForm.id_pais"
-                            :items = "countries"
-                            :rules = "[v => !!v || 'Seleccione un país']"
-                            item-title = "nombre"
-                            item-value = "id"
-                            label = "País"
+                            v-model="registerForm.id_pais"
+                            :items="countries"
+                            :rules="[v => !!v || 'Seleccione un país']"
+                            item-title="nombre"
+                            item-value="id"
+                            label="País"
                             required
                           ></v-select>
                         </v-col>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-select
-                            v-model = "registerForm.id_sexo"
-                            :items = "gender"
-                            item-title = "nombre"
-                            item-value = "id"
-                            label = "Sexo"
+                            v-model="registerForm.id_sexo"
+                            :items="gender"
+                            item-title="nombre"
+                            item-value="id"
+                            label="Sexo"
                           ></v-select>
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model.number = "registerForm.edad"
-                            :rules = "[v => !!v || 'Campo requerido', v => v >= 18 || 'Debe ser mayor de 18 años', v => v <= 100 || 'Debe ser menor de 100 años']"
-                            label = "Edad"
+                            v-model.number="registerForm.edad"
+                            :rules="[v => !!v || 'Campo requerido', v => v >= 18 || 'Debe ser mayor de 18 años', v => v <= 100 || 'Debe ser menor de 100 años']"
+                            label="Edad"
                             required
-                            type = "number"
+                            type="number"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model = "registerForm.direccion_postal"
-                            label = "Dirección Postal (Opcional)"
+                            v-model="registerForm.direccion_postal"
+                            label="Dirección Postal (Opcional)"
                           ></v-text-field>
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model = "registerForm.telefono"
-                            label = "Teléfono (Opcional)"
+                            v-model="registerForm.telefono"
+                            label="Teléfono (Opcional)"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model = "registerForm.correo_electronico"
-                            :rules = "[v => !!v || !registerForm.telefono || 'Campo requerido si no hay teléfono', v => !v || /.+@.+\..+/.test(v) || 'E-mail debe ser válido']"
-                            label = "Correo Electrónico"
-                            type = "email"
-                            @blur = "validateEmail"
+                            v-model="registerForm.correo_electronico"
+                            :rules="[v => !!v || !registerForm.telefono || 'Campo requerido si no hay teléfono', v => !v || /.+@.+\..+/.test(v) || 'E-mail debe ser válido']"
+                            label="Correo Electrónico"
+                            type="email"
+                            @blur="validateEmail"
                           ></v-text-field>
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model = "registerForm.contrasenna"
-                            :append-icon = "showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                            :rules = "[v => !!v || 'Campo requerido', v => v.length >= 3 || 'Mínimo 3 caracteres']"
-                            :type = "showPassword ? 'text' : 'password'"
-                            label = "Contraseña"
+                            v-model="registerForm.contrasenna"
+                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                            :rules="[v => !!v || 'Campo requerido', v => v.length >= 3 || 'Mínimo 3 caracteres']"
+                            :type="showPassword ? 'text' : 'password'"
+                            label="Contraseña"
                             required
-                            @click:append = "showPassword = !showPassword"
+                            @click:append="showPassword = !showPassword"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols = "12"
-                               md = "6">
+                        <v-col cols="12"
+                               md="6">
                           <v-text-field
-                            v-model = "registerForm.carnet_identidad"
-                            :append-icon = "showCarnet ? 'mdi-eye' : 'mdi-eye-off'"
-                            :rules = "[v => !v || !/[a-zA-Z]/.test(v) || 'No puede contener letras']"
-                            :type = "showCarnet ? 'text' : 'password'"
-                            label = "Carnet de Identidad (Opcional)"
-                            @click:append = "showCarnet = !showCarnet"
+                            v-model="registerForm.carnet_identidad"
+                            :append-icon="showCarnet ? 'mdi-eye' : 'mdi-eye-off'"
+                            :rules="[v => !v || !/[a-zA-Z]/.test(v) || 'No puede contener letras']"
+                            :type="showCarnet ? 'text' : 'password'"
+                            label="Carnet de Identidad (Opcional)"
+                            @click:append="showCarnet = !showCarnet"
                           ></v-text-field>
                         </v-col>
                       </v-row>
                       <v-btn
-                        :disabled = "!isFormValid"
+                        :disabled="!isFormValid"
                         block
-                        class = "mt-4"
-                        color = "primary"
-                        type = "submit"
+                        class="mt-4"
+                        color="primary"
+                        type="submit"
 
                       >
                         Registrarse
@@ -139,67 +139,67 @@
                     </v-form>
                   </v-card-text>
                 </v-col>
-                <v-col class = "bg-primary"
-                       cols = "12"
-                       md = "4">
-                  <v-card-text class = "white--text text-center d-flex flex-column justify-center align-center h-100">
-                    <h2 class = "text-h4 mb-4">¡Bienvenido!</h2>
+                <v-col class="bg-primary"
+                       cols="12"
+                       md="4">
+                  <v-card-text class="white--text text-center d-flex flex-column justify-center align-center h-100">
+                    <h2 class="text-h4 mb-4">¡Bienvenido!</h2>
                     <p>¿Ya tienes una cuenta?</p>
                     <v-btn dark
                            outlined
-                           @click = "step++">Iniciar Sesión
+                           @click="step++">Iniciar Sesión
                     </v-btn>
                   </v-card-text>
                 </v-col>
               </v-row>
             </v-window-item>
 
-            <v-window-item :value = "2">
+            <v-window-item :value="2">
               <v-row>
-                <v-col class = "bg-primary"
-                       cols = "12"
-                       md = "4">
-                  <v-card-text class = "white--text text-center d-flex flex-column justify-center align-center h-100">
-                    <h2 class = "text-h4 mb-4">¡Hola, amigo!</h2>
+                <v-col class="bg-primary"
+                       cols="12"
+                       md="4">
+                  <v-card-text class="white--text text-center d-flex flex-column justify-center align-center h-100">
+                    <h2 class="text-h4 mb-4">¡Hola, amigo!</h2>
                     <p>¿No tienes una cuenta?</p>
                     <v-btn dark
                            outlined
-                           @click = "step--">Registrarse
+                           @click="step--">Registrarse
                     </v-btn>
                   </v-card-text>
                 </v-col>
-                <v-col cols = "12"
-                       md = "8">
+                <v-col cols="12"
+                       md="8">
                   <v-card-text>
-                    <h1 class = "text-center text-h4 mb-5">Iniciar Sesión</h1>
-                    <v-form ref = "signinForm"
-                            v-model = "isFormLoginValid"
-                            @submit.prevent = "signIn">
+                    <h1 class="text-center text-h4 mb-5">Iniciar Sesión</h1>
+                    <v-form ref="signinForm"
+                            v-model="isFormLoginValid"
+                            @submit.prevent="signIn">
                       <v-text-field
-                        v-model = "loginForm.nombre_usuario"
-                        :rules = "[v => !!v || 'Campo requerido']"
-                        label = "Nombre de Usuario"
+                        v-model="loginForm.nombre_usuario"
+                        :rules="[v => !!v || 'Campo requerido']"
+                        label="Nombre de Usuario"
                         required
                       ></v-text-field>
                       <v-text-field
-                        v-model = "loginForm.contrasenna"
-                        :append-icon = "showLoginPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                        :rules = "[v => !!v || 'Campo requerido', v => v.length >= 3 || 'Mínimo 3 caracteres']"
-                        :type = "showLoginPassword ? 'text' : 'password'"
-                        label = "Contraseña"
+                        v-model="loginForm.contrasenna"
+                        :append-icon="showLoginPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                        :rules="[v => !!v || 'Campo requerido', v => v.length >= 3 || 'Mínimo 3 caracteres']"
+                        :type="showLoginPassword ? 'text' : 'password'"
+                        label="Contraseña"
                         required
-                        @click:append = "showLoginPassword = !showLoginPassword"
+                        @click:append="showLoginPassword = !showLoginPassword"
                       ></v-text-field>
-                      <v-btn class = "mb-4"
-                             color = "primary"
+                      <v-btn class="mb-4"
+                             color="primary"
                              text>¿Olvidaste tu contraseña?
                       </v-btn>
                       <v-btn
-                        :disabled = "!isFormLoginValid"
+                        :disabled="!isFormLoginValid"
                         block
-                        class = "mt-4"
-                        color = "primary"
-                        type = "submit"
+                        class="mt-4"
+                        color="primary"
+                        type="submit"
                       >
                         Iniciar Sesión
                       </v-btn>
@@ -212,14 +212,16 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-snackbar v-model = "showAlert"
-                :color = "isSuccess ? 'success' : 'error'"
-                :timeout = "3000">
-      {{ alertMessage }}
-      <template v-slot:action = "{ attrs }">
+    <v-snackbar v-model="showAlert"
+                :color="isSuccess ? 'success' : 'error'"
+                :timeout="3000">
+      {{
+        alertMessage
+      }}
+      <template v-slot:action="{ attrs }">
         <v-btn text
-               v-bind = "attrs"
-               @click = "showAlert = false">
+               v-bind="attrs"
+               @click="showAlert = false">
           Cerrar
         </v-btn>
       </template>
@@ -383,7 +385,7 @@ export default {
         const clientResponse = await axios.get(`/getCliente/${aux}`);
         const client = clientResponse.data;
         console.log(client)
-        this.$emit('login', {userName: this.loginForm.nombre_usuario, userType: res.data.Usuario.rol,client: client}); // Emitir detalles del usuario
+        this.$emit('login', {userName: this.loginForm.nombre_usuario, userType: res.data.Usuario.rol, client: client}); // Emitir detalles del usuario
 
 
         this.showAlertMessage('Inicio de sesión exitoso', true);

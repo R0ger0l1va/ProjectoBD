@@ -1,21 +1,21 @@
-import { Router } from "express";
+import {Router} from "express";
 import {
-  getLoginUser,
-  signIn,
-  signUp,
-  deleteUser,
-  updateUser,
-  getSex,
-  getPais,
-  getAllUsers,
-  getUser,
-  postTrabajador,
+    getLoginUser,
+    signIn,
+    signUp,
+    deleteUser,
+    updateUser,
+    getSex,
+    getPais,
+    getAllUsers,
+    getUser,
+    postTrabajador,
 } from "../controllers/user.controllers.js";
 
 const router = Router();
 router.get("/getSex", getSex)
 router.get("/getUser/:id_usuario", getUser);
-router.get('/getPais',getPais )
+router.get('/getPais', getPais)
 router.get("/GetAllUsers", getAllUsers);
 router.get("/getLoginUser", getLoginUser);
 

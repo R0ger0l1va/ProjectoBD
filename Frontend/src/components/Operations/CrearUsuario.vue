@@ -13,7 +13,12 @@
       <!-- Campos comunes -->
       <div class="campo">
         <label for="nombre">Nombre:</label>
-        <input id="nombre" v-model="usuario.nombre_usuario" required @blur="validateField('nombre_usuario')">
+        <input
+          id="nombre"
+          v-model="usuario.nombre_usuario"
+          required
+          @blur="validateField('nombre_usuario')"
+        />
         <div class="error-container">
           <span v-if="errors.name" class="error-message">Campo vacío</span>
           <span v-if="minLengthErrors.name" class="error-message">Mínimo 3 caracteres</span>
@@ -22,7 +27,14 @@
       </div>
       <div class="campo">
         <label for="password">Contraseña:</label>
-        <input id="password" v-model="usuario.contrasenna" type="password" required @blur="validateField('contrasenna')" @input="validateInput('password')">
+        <input
+          id="password"
+          v-model="usuario.contrasenna"
+          type="password"
+          required
+          @blur="validateField('contrasenna')"
+          @input="validateInput('password')"
+        />
         <div class="error-container">
           <span v-if="errors.password" class="error-message">Campo vacío</span>
           <span v-if="minLengthErrors.password" class="error-message">Mínimo 3 caracteres</span>
@@ -44,11 +56,11 @@
       <div v-if="usuario.tipo === 'cliente'">
         <div class="campo">
           <label for="apellido">Apellido:</label>
-          <input id="apellido" v-model="usuario.apellido_cliente">
+          <input id="apellido" v-model="usuario.apellido_cliente" />
         </div>
         <div class="campo">
           <label for="numeroIdentidad">Número de Identidad:</label>
-          <input id="numeroIdentidad" v-model="usuario.numero_identidad_cliente">
+          <input id="numeroIdentidad" v-model="usuario.numero_identidad_cliente" />
         </div>
         <div class="campo">
           <label for="sexo">Sexo:</label>
@@ -60,24 +72,38 @@
         </div>
         <div class="campo">
           <label for="edad">Edad:</label>
-          <input id="edad" v-model="usuario.edad" type="number" required @blur="validateField('edad')">
+          <input
+            id="edad"
+            v-model="usuario.edad"
+            type="number"
+            required
+            @blur="validateField('edad')"
+          />
           <div class="error-container">
             <span v-if="errors.age" class="error-message">Debe ser mayor de 18 años</span>
           </div>
         </div>
         <div class="campo">
           <label for="direccionPostal">Dirección Postal:</label>
-          <input id="direccionPostal" v-model="usuario.direccion_postal">
+          <input id="direccionPostal" v-model="usuario.direccion_postal" />
         </div>
         <div class="campo">
           <label for="telefono">Teléfono:</label>
-          <input id="telefono" v-model="usuario.telefono">
+          <input id="telefono" v-model="usuario.telefono" />
         </div>
         <div class="campo">
           <label for="email">Email:</label>
-          <input id="email" v-model="usuario.correo_electronico" type="email" required @blur="validateField('correo_electronico')">
+          <input
+            id="email"
+            v-model="usuario.correo_electronico"
+            type="email"
+            required
+            @blur="validateField('correo_electronico')"
+          />
           <div class="error-container">
-            <span v-if="errors.email" class="error-message">Campo requerido si no hay teléfono</span>
+            <span v-if="errors.email" class="error-message"
+              >Campo requerido si no hay teléfono</span
+            >
             <span v-if="errors.emailExists" class="error-message">Email ya existe</span>
           </div>
         </div>
@@ -99,7 +125,7 @@
       <form v-if="trabajadorEncontrado" @submit.prevent="modificarTrabajador">
         <div class="campo">
           <label for="nombreModificarTrabajador">Nombre:</label>
-          <input id="nombreModificarTrabajador" v-model="trabajadorModificar.nombre" required>
+          <input id="nombreModificarTrabajador" v-model="trabajadorModificar.nombre" required />
         </div>
         <div class="campo">
           <label for="rolModificarTrabajador">Rol:</label>
@@ -111,7 +137,9 @@
         <button type="submit" class="boton-submit">Modificar Trabajador</button>
       </form>
 
-      <button v-if="trabajadorEncontrado" @click="eliminarTrabajador" class="boton-eliminar">Eliminar Trabajador</button>
+      <button v-if="trabajadorEncontrado" @click="eliminarTrabajador" class="boton-eliminar">
+        Eliminar Trabajador
+      </button>
     </div>
 
     <!-- Sección para modificar o eliminar cliente -->
@@ -127,39 +155,46 @@
       <form v-if="clienteEncontrado" @submit.prevent="modificarCliente">
         <div class="campo">
           <label for="nombreModificar">Nombre:</label>
-          <input id="nombreModificar" v-model="clienteModificar.nombre_cliente" required>
+          <input id="nombreModificar" v-model="clienteModificar.nombre_cliente" required />
         </div>
         <div class="campo">
           <label for="apellidoModificar">Apellido:</label>
-          <input id="apellidoModificar" v-model="clienteModificar.apellido_cliente">
+          <input id="apellidoModificar" v-model="clienteModificar.apellido_cliente" />
         </div>
         <div class="campo">
           <label for="edadModificar">Edad:</label>
-          <input id="edadModificar" v-model="clienteModificar.edad" type="number" required>
+          <input id="edadModificar" v-model="clienteModificar.edad" type="number" required />
         </div>
         <div class="campo">
           <label for="direccionPostalModificar">Dirección Postal:</label>
-          <input id="direccionPostalModificar" v-model="clienteModificar.direccion_postal">
+          <input id="direccionPostalModificar" v-model="clienteModificar.direccion_postal" />
         </div>
         <div class="campo">
           <label for="telefonoModificar">Teléfono:</label>
-          <input id="telefonoModificar" v-model="clienteModificar.telefono">
+          <input id="telefonoModificar" v-model="clienteModificar.telefono" />
         </div>
-        
+
         <div class="campo">
           <label for="emailModificar">Email:</label>
-          <input id="emailModificar" v-model="clienteModificar.correo_electronico" type="email" required>
+          <input
+            id="emailModificar"
+            v-model="clienteModificar.correo_electronico"
+            type="email"
+            required
+          />
         </div>
         <button type="submit" class="boton-submit">Modificar Cliente</button>
       </form>
 
-      <button v-if="clienteEncontrado" @click="eliminarCliente" class="boton-eliminar">Eliminar Cliente</button>
+      <button v-if="clienteEncontrado" @click="eliminarCliente" class="boton-eliminar">
+        Eliminar Cliente
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
   name: 'CrearUsuario',
@@ -185,7 +220,7 @@ export default {
       clienteEncontrado: false,
       trabajadorModificar: {},
       clienteModificar: {},
-      clienteBackup:{},
+      clienteBackup: {},
       errors: {
         name: false,
         password: false,
@@ -222,83 +257,87 @@ export default {
     }
   },
   mounted() {
-    this.cargarIdsTrabajadores();
-    this.cargarIdsClientes();
-    this.cargarGeneros();
+    this.cargarIdsTrabajadores()
+    this.cargarIdsClientes()
+    this.cargarGeneros()
   },
   methods: {
     async cargarIdsTrabajadores() {
       try {
-        const response = await axios.get('/getAllUsers');
+        const response = await axios.get('/getAllUsers')
         this.trabajadoresIds = response.data
-          .filter(trabajador => trabajador.rol === 'AdminGen' || trabajador.rol === 'Vendedor')        
+          .filter((trabajador) => trabajador.rol === 'AdminGen' || trabajador.rol === 'Vendedor')
           .map((trabajador) => ({
-          id: trabajador.id_usuario,
-          nombre: trabajador.nombre_usuario,
-          rol: trabajador.rol
-        }));
+            id: trabajador.id_usuario,
+            nombre: trabajador.nombre_usuario,
+            rol: trabajador.rol
+          }))
       } catch (error) {
-        console.error('Error al cargar IDs de trabajadores:', error);
+        console.error('Error al cargar IDs de trabajadores:', error)
       }
     },
     async cargarIdsClientes() {
       try {
-        const response = await axios.get('/getAllClientes');
+        const response = await axios.get('/getAllClientes')
         this.clientesIds = response.data.map((cliente) => ({
           id: cliente.numero_identidad_cliente,
           nombre: cliente.nombre_cliente
-        }));
+        }))
       } catch (error) {
-        console.error('Error al cargar IDs de clientes:', error);
+        console.error('Error al cargar IDs de clientes:', error)
       }
     },
     async cargarGeneros() {
       try {
-        const response = await axios.get('/getSex');
+        const response = await axios.get('/getSex')
         this.gender = response.data.map((sexo) => ({
           id: sexo.id_sexo,
           nombre: sexo.nombre_sexo
-        }));
+        }))
       } catch (error) {
-        console.error('Error al cargar géneros:', error);
+        console.error('Error al cargar géneros:', error)
       }
     },
     validateField(field) {
       if (field === 'nombre_usuario') {
-        this.errors.name = this.usuario.nombre_usuario === '';
-        this.validateUsername();
+        this.errors.name = this.usuario.nombre_usuario === ''
+        this.validateUsername()
       } else if (field === 'contrasenna') {
-        this.errors.password = this.usuario.contrasenna === '';
+        this.errors.password = this.usuario.contrasenna === ''
       } else if (field === 'edad') {
-        this.errors.age = this.usuario.edad < 18;
+        this.errors.age = this.usuario.edad < 18
       } else if (field === 'correo_electronico') {
-        this.errors.email = !this.usuario.correo_electronico;
-        this.validateEmail();
+        this.errors.email = !this.usuario.correo_electronico
+        this.validateEmail()
       }
     },
     validateInput(field) {
-      const minLength = 3;
+      const minLength = 3
       if (field === 'name' || field === 'password') {
-        this.minLengthErrors[field] = 
+        this.minLengthErrors[field] =
           this.usuario[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length > 0 &&
-          this.usuario[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length < minLength;
-        this.errors[field] = false;
+          this.usuario[field === 'name' ? 'nombre_usuario' : 'contrasenna'].length < minLength
+        this.errors[field] = false
       }
     },
     async validateUsername() {
       try {
-        const response = await axios.post('/checkNombreExistente', { nombre: this.usuario.nombre_usuario });
-        this.errors.nameExists = response.data.exists;
+        const response = await axios.post('/checkNombreExistente', {
+          nombre: this.usuario.nombre_usuario
+        })
+        this.errors.nameExists = response.data.exists
       } catch (error) {
-        console.error('Error al validar el nombre:', error);
+        console.error('Error al validar el nombre:', error)
       }
     },
     async validateEmail() {
       try {
-        const response = await axios.post('/checkEmailExistente', { email: this.usuario.correo_electronico });
-        this.errors.emailExists = response.data.exists;
+        const response = await axios.post('/checkEmailExistente', {
+          email: this.usuario.correo_electronico
+        })
+        this.errors.emailExists = response.data.exists
       } catch (error) {
-        console.error('Error al validar el email:', error);
+        console.error('Error al validar el email:', error)
       }
     },
     resetForm() {
@@ -314,7 +353,7 @@ export default {
         direccion_postal: '',
         telefono: '',
         correo_electronico: ''
-      };
+      }
       this.errors = {
         name: false,
         password: false,
@@ -322,122 +361,125 @@ export default {
         email: false,
         nameExists: false,
         emailExists: false
-      };
+      }
       this.minLengthErrors = {
         name: false,
         password: false
-      };
-      this.formSubmitted = false;
+      }
+      this.formSubmitted = false
     },
     async crearUsuario() {
-      this.formSubmitted = true;
+      this.formSubmitted = true
       try {
         if (this.usuario.tipo === 'trabajador') {
           await axios.post('/postTrabajador', {
             nombre_usuario: this.usuario.nombre_usuario,
             contrasenna: this.usuario.contrasenna,
             rol: this.usuario.rol
-          });
+          })
         } else {
-          await axios.post('/postCliente', this.usuario);
+          await axios.post('/postCliente', this.usuario)
         }
-        this.showAlertMessage('Usuario creado con éxito', true);
-        this.resetForm();
+        this.showAlertMessage('Usuario creado con éxito', true)
+        this.resetForm()
       } catch (error) {
-        console.error('Error al crear usuario:', error);
-        this.showAlertMessage('Error al crear usuario', false);
+        console.error('Error al crear usuario:', error)
+        this.showAlertMessage('Error al crear usuario', false)
       } finally {
-        this.formSubmitted = false;
+        this.formSubmitted = false
       }
     },
     async buscarTrabajador() {
       try {
-        const response = await axios.get(`/getUser/${this.idTrabajadorOperacion}`);
-        this.trabajadorModificar = response.data;
+        const response = await axios.get(`/getUser/${this.idTrabajadorOperacion}`)
+        this.trabajadorModificar = response.data
         this.trabajadorBackup = this.trabajadorModificar
-        console.log(this.trabajadorModificar);
-        
-        this.trabajadorEncontrado = true;
+        console.log(this.trabajadorModificar)
+
+        this.trabajadorEncontrado = true
       } catch (error) {
-        console.error('Error al buscar trabajador:', error);
-        this.showAlertMessage('Trabajador no encontrado', false);
-        this.trabajadorEncontrado = false;
+        console.error('Error al buscar trabajador:', error)
+        this.showAlertMessage('Trabajador no encontrado', false)
+        this.trabajadorEncontrado = false
       }
     },
     async modificarTrabajador() {
       try {
-        await axios.put(`/putUsers/${this.idTrabajadorOperacion}`, this.trabajadorModificar);
-        this.showAlertMessage('Trabajador modificado con éxito', true);
-        this.trabajadorEncontrado = false;
-        this.idTrabajadorOperacion = '';
+        await axios.put(`/putUsers/${this.idTrabajadorOperacion}`, this.trabajadorModificar)
+        this.showAlertMessage('Trabajador modificado con éxito', true)
+        this.trabajadorEncontrado = false
+        this.idTrabajadorOperacion = ''
       } catch (error) {
-        console.error('Error al modificar trabajador:', error);
-        this.showAlertMessage('Error al modificar trabajador', false);
+        console.error('Error al modificar trabajador:', error)
+        this.showAlertMessage('Error al modificar trabajador', false)
       }
     },
     async eliminarTrabajador() {
       if (confirm('¿Está seguro de que desea eliminar este trabajador?')) {
         try {
-          await axios.delete(`/delUsers/${this.idTrabajadorOperacion}`);
-          this.showAlertMessage('Trabajador eliminado con éxito', true);
-          this.trabajadorEncontrado = false;
-          this.idTrabajadorOperacion = '';
-          this.cargarIdsTrabajadores();
+          await axios.delete(`/delUsers/${this.idTrabajadorOperacion}`)
+          this.showAlertMessage('Trabajador eliminado con éxito', true)
+          this.trabajadorEncontrado = false
+          this.idTrabajadorOperacion = ''
+          this.cargarIdsTrabajadores()
         } catch (error) {
-          console.error('Error al eliminar trabajador:', error);
-          this.showAlertMessage('Error al eliminar trabajador', false);
+          console.error('Error al eliminar trabajador:', error)
+          this.showAlertMessage('Error al eliminar trabajador', false)
         }
       }
     },
     async buscarCliente() {
       try {
-        console.log(this.numeroClienteOperacion);
-        
-        const response = await axios.get(`/getCliente/${this.numeroClienteOperacion}`);
+        console.log(this.numeroClienteOperacion)
 
-        this.clienteModificar = response.data;
+        const response = await axios.get(`/getCliente/${this.numeroClienteOperacion}`)
+
+        this.clienteModificar = response.data
         this.clienteBackup = response.data
-        console.log(this.clienteModificar);
-        
-        this.clienteEncontrado = true;
+        console.log(this.clienteModificar)
+
+        this.clienteEncontrado = true
       } catch (error) {
-        console.error('Error al buscar cliente:', error);
-        this.showAlertMessage('Cliente no encontrado', false);
-        this.clienteEncontrado = false;
+        console.error('Error al buscar cliente:', error)
+        this.showAlertMessage('Cliente no encontrado', false)
+        this.clienteEncontrado = false
       }
     },
     async modificarCliente() {
       try {
-       const res= await axios.put(`/updCliente/${this.numeroClienteOperacion}`, this.clienteModificar);
-console.log(res.data);
+        const res = await axios.put(
+          `/updCliente/${this.numeroClienteOperacion}`,
+          this.clienteModificar
+        )
+        console.log(res.data)
 
-        this.showAlertMessage('Cliente modificado con éxito', true);
-        this.clienteEncontrado = false;
-        this.numeroClienteOperacion = '';
+        this.showAlertMessage('Cliente modificado con éxito', true)
+        this.clienteEncontrado = false
+        this.numeroClienteOperacion = ''
       } catch (error) {
-        console.error('Error al modificar cliente:', error);
-        this.showAlertMessage('Error al modificar cliente', false);
+        console.error('Error al modificar cliente:', error)
+        this.showAlertMessage('Error al modificar cliente', false)
       }
     },
     async eliminarCliente() {
       if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
         try {
-          await axios.delete(`/delCliente/${this.numeroClienteOperacion}`);
+          await axios.delete(`/delCliente/${this.numeroClienteOperacion}`)
           await axios.delete(`/delUsers/${this.numeroClienteOperacion}`)
-          this.showAlertMessage('Cliente eliminado con éxito', true);
-          this.clienteEncontrado = false;
-          this.numeroClienteOperacion = '';
-          this.cargarIdsClientes();
+          this.showAlertMessage('Cliente eliminado con éxito', true)
+          this.clienteEncontrado = false
+          this.numeroClienteOperacion = ''
+          this.cargarIdsClientes()
         } catch (error) {
-          console.error('Error al eliminar cliente:', error);
-          this.showAlertMessage('Error al eliminar cliente', false);
+          console.error('Error al eliminar cliente:', error)
+          this.showAlertMessage('Error al eliminar cliente', false)
         }
       }
     },
     showAlertMessage(message, success) {
       // Implement this method to show alert messages
       // You can use a similar approach as in the LoginRegister component
-      console.log(message, success);
+      console.log(message, success)
     }
   }
 }
@@ -448,7 +490,7 @@ console.log(res.data);
   background-color: white;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .campo {
@@ -461,7 +503,8 @@ label {
   font-weight: bold;
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
@@ -469,7 +512,9 @@ input, select {
   box-sizing: border-box;
 }
 
-.boton-submit, .boton-buscar, .boton-eliminar {
+.boton-submit,
+.boton-buscar,
+.boton-eliminar {
   padding: 10px 15px;
   color: white;
   border: none;
@@ -479,11 +524,11 @@ input, select {
 }
 
 .boton-submit {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 .boton-buscar {
-  background-color: #008CBA;
+  background-color: #008cba;
 }
 
 .boton-eliminar {
@@ -496,7 +541,8 @@ input, select {
   margin-top: 5px;
 }
 
-.operaciones-cliente, .operaciones-trabajador {
+.operaciones-cliente,
+.operaciones-trabajador {
   margin-top: 20px;
   border-top: 1px solid #ccc;
   padding-top: 20px;

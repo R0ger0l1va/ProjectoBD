@@ -45,7 +45,7 @@
             <v-list-item-title>{{
                 userName
               }}
-              
+
             </v-list-item-title>
             <v-list-item-subtitle>Logged In</v-list-item-subtitle>
           </v-list-item>
@@ -374,7 +374,7 @@ export default {
             {
               icon: "mdi-card-account-details",
               text: "My Polizes",
-              route: "/clientview/mypolizes",
+              route: "/clientview/policard",
             },
 
           ];
@@ -392,6 +392,8 @@ export default {
       // For example:
       // this.$store.dispatch('logout')
       // this.$router.push('/login')
+      this.$router.push('/')
+
     },
     changePassword() {
       // Implement password change logic here

@@ -230,7 +230,7 @@ export default {
     return {
 
       editedIndex: -1,
-      dafaultPoliza: {},
+      defaultPoliza: {},
       editedPoliza: {},
       polTarget: 0,
 
@@ -365,7 +365,7 @@ export default {
         }));
 
 
-        // Fetch operadores from session storage
+        //todo Fetch operadores from session storage
         const sessionData = JSON.parse(sessionStorage.getItem('session'))
         if (sessionData && sessionData.nombre_usuario) {
           this.operadores = [{id: sessionData.id_usuario, nombre: sessionData.nombre_usuario}]
@@ -376,7 +376,7 @@ export default {
           this.editedPoliza = Object.assign(Object.fromEntries(keys.map(key => [key, null])), {
             id_estado_poliza: 3,
             monto_total_asegurado: 0
-          }); // Crear un nuevo objeto con propiedades vacías
+          }); //todo Crear un nuevo objeto con propiedades vacías
           this.defaultPoliza = Object.assign(Object.fromEntries(keys.map(key => [key, null])), {
             id_estado_poliza: 3,
             monto_total_asegurado: 0
