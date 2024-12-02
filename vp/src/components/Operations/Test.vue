@@ -248,7 +248,7 @@ export default {
     registerForm: {
       nombre_usuario: '',
       apellido_cliente: '',
-      numero_identidad_cliente: '',
+      numero_identidad_cliente: 0,
       nombre_cliente: '',
       rol: '',
       id_pais: null,

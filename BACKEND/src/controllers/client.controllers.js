@@ -18,10 +18,10 @@ export const getClient = async (req, res) => {
 
 export const crearCliente = async (req, res) => {
     const {
-        id_numero_identidad_cliente,
+        numero_identidad_cliente,
         id_pais,
         id_sexo,
-        nombre,
+        nombre_cliente,
         apellido_cliente,
         edad,
         direccion_postal,
@@ -30,13 +30,13 @@ export const crearCliente = async (req, res) => {
         carnet_identidad,
     } = req.body;
 
-    const nombre_cliente = nombre
+   
 
     try {
         const result = await pool.query(
             "SELECT * from public.tbcliente_insert($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)",
             [
-                id_numero_identidad_cliente,
+                numero_identidad_cliente,
                 id_pais,
                 id_sexo,
                 nombre_cliente,
