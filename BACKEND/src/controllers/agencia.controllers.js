@@ -28,8 +28,9 @@ export const getAgencia = async (req, res) => {
 export const delAgencia  = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query('SELECT public.tbagenciaseguro_delete($1)', [id]);
-    res.json(result.rows[0]);
+    res.status(200).json({mensaje: 'eliminado'});
+    const result = await pool.query('DELETE FROM public."tbAgenciaSeguro" WHERE public."tbAgenciaSeguro".id_agencia_seguro = $1)', [id]);
+    res.status(200).json({mensaje: 'eliminado'});
   } catch (error) {
     console.error('Error deleting agency:', error);
     res.status(500).json({ error: 'Internal Server Error' });

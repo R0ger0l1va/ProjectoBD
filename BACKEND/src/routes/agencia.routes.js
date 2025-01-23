@@ -15,4 +15,4 @@ router.get('/getAgencia/:id', getAgencia);
 // Controlador para tbagenciaseguro_update
 router.put('/updAgencia/:id', putAgencia);
 
-export default router 
+export default router

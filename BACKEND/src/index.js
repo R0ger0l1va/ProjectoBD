@@ -44,7 +44,7 @@ app.use(express.static('public'))
 
 
 app.get('/api', (req, res) => {
-    res.send("WELCOME BITCH")
+    res.send("WELCOME")
 })
 
 app.listen(port)
