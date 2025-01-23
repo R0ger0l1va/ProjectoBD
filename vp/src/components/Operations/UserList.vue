@@ -68,10 +68,10 @@
                            md="4"
                            sm="6">
                       <v-select v-model="editedUser.rol"
-                                :items="['Cliente','Trabajador']"
+                                :items="roles"
                                 variant="underlined"
                                 :rules="rules.rol"
-                                label="Roles"
+                                label="rol"
                       ></v-select>
                     </v-col>
 
@@ -173,14 +173,16 @@
         </v-icon>
       </template>
 
-      <v-icon
-        size="small"
-        @click="deleteUser(item)"
+      <template v-if="(item.rol==='Cliente' && actualUser==='Trabajador')  || (item.rol==='Trabajador' && actualUser==='AdminGen')">
+        <v-icon
+          size="small"
+          @click="deleteUser(item)"
 
 
-      >
-        mdi-delete
-      </v-icon>
+        >
+          mdi-delete
+        </v-icon>
+      </template>
     </template>
     <template v-slot:no-data>
       <v-btn
@@ -244,6 +246,14 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? 'New User' : 'Edit User'
     },
+    roles() {
+      if (this.actualUser === 'Trabajador') {
+        return ['Cliente'];
+      } else if (this.actualUser === 'AdminGen') {
+        return ['Trabajador'];
+      }
+      return []; // Retorna un array vacío si no coincide con ninguno
+    }
   },
   watch: {
     option: {

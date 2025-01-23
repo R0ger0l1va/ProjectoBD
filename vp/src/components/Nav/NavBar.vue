@@ -326,17 +326,17 @@ export default {
             {
               icon: "mdi-card-account-details",
               text: "Polizes",
-              route: "/workerview/polilist",
+              route: "/polilist",
             },
             {
               icon: "mdi-account-group",
               text: "Users",
-              route: "/workerview/userlist",
+              route: "/userlist",
             },
             {
               icon: "mdi-office-building",
               text: "Enterprises",
-              route: "/workerview/enterpriselist",
+              route: "/enterpriselist",
             },
           ];
           break;
@@ -350,17 +350,17 @@ export default {
             {
               icon: "mdi-card-account-details",
               text: "Polizes",
-              route: "/adminview/polilist",
+              route: "/polilist",
             },
             {
               icon: "mdi-account-group",
               text: "Users",
-              route: "/adminview/userlist",
+              route: "/userlist",
             },
             {
               icon: "mdi-office-building",
               text: "Enterprises",
-              route: "/adminview/enterpriselist",
+              route: "/documentList",
             },
           ];
           break;

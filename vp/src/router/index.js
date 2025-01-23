@@ -15,21 +15,18 @@ import test from "@/components/Operations/Test.vue";
 import poliList from "@/components/Operations/PoliList.vue";
 import poliCard from "@/components/Operations/PoliCard.vue";
 
-const manualRoutes = [{
-  path: '/workerview', component: workerView,
-  children: [
-    {path: 'polilist', component: poliList},
-    {path: 'userlist', component: userList},
-    {path: 'enterpriselist', component: enterpriseList}],
+const manualRoutes = [
+  {path: '/workerview', component: workerView},
+  {path: '/polilist', component: poliList},
+  {path: '/userlist', component: userList},
+  {path: '/enterpriselist', component: enterpriseList},
 
-},
+
   {path: '/', component: test},
-  {
-    path: '/adminview', component: AdminView, children: [
-      {path: 'polilist', component: poliList},
-      {path: 'userlist', component: userList},
-      {path: 'enterpriselist', component: enterpriseList}]
-  },
+
+  {path: '/adminview', component: AdminView},
+ 
+
   {
     path: '/clientview', component: ClientView, children: [
       {path: 'policard', component: poliCard}]

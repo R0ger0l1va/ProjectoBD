@@ -1,5 +1,6 @@
 import {pool} from "../../database/db.js";
 
+
 export const getSex = async (req, res) => {
     try {
         const result = await pool.query('select * from tbsexo_read_all()')
