@@ -130,7 +130,6 @@
       </v-col>
     </v-row>
   </v-container>
-  <router-view></router-view> <!-- Esto es crucial para mostrar los componentes hijos -->
 </template>
 
 <script>

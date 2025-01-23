@@ -12,8 +12,8 @@ import AdminView from "@/pages/AdminView.vue";
 import ClientView from "@/pages/ClientView.vue";
 import test from "@/components/Operations/Test.vue";
 import poliList from "@/components/Operations/PoliList.vue";
-import poliCard from "@/components/Operations/PoliCard.vue";
 import DocumentList from "@/components/Operations/DocumentList.vue";
+import PoliCard from "@/components/Operations/PoliCard.vue";
 
 const manualRoutes = [
   {path: '/workerview', component: workerView},
@@ -28,10 +28,10 @@ const manualRoutes = [
 
 
   {
-    path: '/clientview', component: ClientView, children: [
-      {path: 'policard', component: poliCard}]
-  }]
-
+    path: '/clientview', component: ClientView
+  },
+  {path: '/policard', component: PoliCard}
+]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: manualRoutes,

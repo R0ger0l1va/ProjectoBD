@@ -50,6 +50,8 @@
             <v-list-item-subtitle>Logged In</v-list-item-subtitle>
           </v-list-item>
           <v-divider/>
+
+
           <v-list nav>
             <v-list-item
               v-for="item in filteredMenuItems"
@@ -69,9 +71,75 @@
                 v-text="item.text"
               ></v-list-item-title>
             </v-list-item>
+
+            <!-- Botón para revisar pedidos -->
+            <v-list-item
+              v-if="userType === 'Trabajador' || userType === 'AdminGen'"
+              @click="openDialog">
+              <template v-slot:prepend>
+                <v-icon>mdi-file-document</v-icon>
+              </template>
+              <v-list-item-title>Revisar Pedidos</v-list-item-title>
+            </v-list-item>
+
+
           </v-list>
         </v-list>
       </v-menu>
+
+      <v-dialog v-model="dialogVisible"
+                max-width="800px">
+        <template v-slot:activator="{ on }"></template>
+
+        <v-card>
+          <v-card-title>Pedidos de Póliza</v-card-title>
+
+          <v-card-text>
+            <!-- Mostrar los pedidos en forma de tarjetas -->
+            <div v-if="pedidos.length === 0">No hay pedidos disponibles.</div>
+            <div v-for="(pedido, index) in pedidos"
+                 :key="index">
+              <v-card class="mb-3">
+                <v-card-title>
+                  Cliente: {{
+                    pedido.username
+                  }}
+                </v-card-title>
+                <v-card-title>Agencia: {{
+                    pedido.agency
+                  }}
+                </v-card-title>
+
+                <v-card-title>
+                  Tipo de Seguro: {{
+                    pedido.insuranceType
+                  }}
+                </v-card-title>
+                <v-card-title>
+                  Tipo de cobertura: {{
+                    pedido.coverageType
+                  }}
+                </v-card-title>
+                <!-- Icono para eliminar el pedido -->
+                <v-card-actions>
+                  <v-btn icon
+                         @click.prevent="deletePedido(index)">
+                    <v-icon color="red">mdi-delete</v-icon> <!-- Icono de eliminar -->
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </div>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn color="primary"
+                   @click="closeDialog">Cerrar
+            </v-btn> <!-- Botón para cerrar el diálogo -->
+          </v-card-actions>
+        </v-card>
+
+      </v-dialog>
+
     </v-app-bar>
     <v-navigation-drawer
       v-model="drawer"
@@ -88,6 +156,11 @@
               userName
             }}</p>
         </v-col>
+      </v-row>
+      <v-row class="mt-3 mb-4"
+             justify="center"
+             v-if="userType === 'Cliente'">
+        <req-poliza/>
       </v-row>
       <v-row class="mt-3 mb-4"
              justify="center"></v-row>
@@ -252,7 +325,10 @@
 </template>
 
 <script>
+import reqPoliza from "@/components/Operations/ReqPoliza.vue";
+
 export default {
+  components: {reqPoliza},
   props: {
     state: {
       type: Boolean,
@@ -293,6 +369,8 @@ export default {
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
+      dialogVisible: false, // Controla la visibilidad del diálogo
+      pedidos: [], // Almacena los pedidos recuperados del local storage
     };
   },
   created() {
@@ -314,6 +392,37 @@ export default {
     },
   },
   methods: {
+    deletePedido(index) {
+      // Eliminar el pedido del array local
+      this.pedidos.splice(index, 1);
+
+      // Actualizar el local storage
+      localStorage.setItem('polizaList', JSON.stringify(this.pedidos));
+
+
+      // Recargar los pedidos para reflejar los cambios en la interfaz
+      this.loadPedidos();
+
+      // Opcionalmente, puedes mostrar un mensaje de confirmación o éxito
+      alert('Pedido eliminado con éxito.');
+    },
+
+    openDialog() {
+      this.loadPedidos(); // Cargar los pedidos al abrir el diálogo
+      this.dialogVisible = true; // Abrir el diálogo
+    },
+    closeDialog() {
+      this.dialogVisible = false; // Cerrar el diálogo
+    },
+    loadPedidos() {
+      const storedData = localStorage.getItem('polizaList');
+      if (storedData) {
+        this.pedidos = JSON.parse(storedData);
+
+      }
+    },
+
+
     updateLinks() {
       switch (this.userType) {
         case "Vendedor":
@@ -374,8 +483,9 @@ export default {
             {
               icon: "mdi-card-account-details",
               text: "My Polizes",
-              route: "/clientview/policard",
+              route: "/policard",
             },
+
 
           ];
           break;
