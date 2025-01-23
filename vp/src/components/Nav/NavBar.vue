@@ -358,8 +358,8 @@ export default {
               route: "/userlist",
             },
             {
-              icon: "mdi-office-building",
-              text: "Enterprises",
+              icon: "mdi-file-pdf-box",
+              text: "Documents",
               route: "/documentList",
             },
           ];
