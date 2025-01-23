@@ -373,8 +373,24 @@ export default {
           return
         }
         this.loginForm.id_usuario = existingUser.id // Set the ID for login
-        console.log('LOCCCCCOOOOOOOOOOO')
         const res = await axios.post('/signIn', this.loginForm);
+
+        sessionStorage.setItem('token', res.data.msg);
+        const token = sessionStorage.getItem('token')
+        console.log(token);
+
+
+       const userDataKey = axios.get("/profile", {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+
+        const username = (await userDataKey).data.msg.nombre_usuario
+        const userRol = (await userDataKey).data.msg.rol
+
+
+
 
         console.log('Iniciando sesión:', this.loginForm)
         this.showAlert = true
@@ -384,12 +400,13 @@ export default {
         const aux = res.data.Usuario.id_usuario
         const clientResponse = await axios.get(`/getCliente/${aux}`);
         const client = clientResponse.data;
-        console.log(client)
-        this.$emit('login', {userName: this.loginForm.nombre_usuario, userType: res.data.Usuario.rol, client: client}); // Emitir detalles del usuario
+        this.$emit('login', {userName: username, userType: userRol, client: client}); // Emitir detalles del usuario
 
 
         this.showAlertMessage('Inicio de sesión exitoso', true);
-        sessionStorage.setItem('session', JSON.stringify(res.data.Usuario));
+
+
+
         await this.redirectUser(res.data.Usuario.rol);
       } catch (error) {
         console.error('Error en el inicio de sesión:', error);
@@ -400,8 +417,8 @@ export default {
     redirectUser(role) {
       const routes = {
         'Cliente': '/clientview',
-        'Vendedor': '/workerview',
-        'AdminGen': '/adminview'
+        'Trabajador': '/polilist',
+        'AdminGen': '/userList'
       };
       const route = routes[role];
       if (route) {

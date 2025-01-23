@@ -425,13 +425,9 @@ export default {
 
     updateLinks() {
       switch (this.userType) {
-        case "Vendedor":
+        case "Trabajador":
           this.links = [
-            {
-              icon: "mdi-view-dashboard",
-              text: "Dashboard",
-              route: "/workerview",
-            },
+
             {
               icon: "mdi-card-account-details",
               text: "Polizes",
@@ -443,19 +439,15 @@ export default {
               route: "/userlist",
             },
             {
-              icon: "mdi-office-building",
-              text: "Enterprises",
-              route: "/enterpriselist",
+              icon: "mdi-file-pdf-box",
+              text: "Documents",
+              route: "/documentList",
             },
           ];
           break;
         case "AdminGen":
           this.links = [
-            {
-              icon: "mdi-view-dashboard",
-              text: "Dashboard",
-              route: "/adminview",
-            },
+
             {
               icon: "mdi-card-account-details",
               text: "Polizes",

@@ -7,7 +7,7 @@ export const getSex = async (req, res) => {
         const result = await pool.query('select * from tbsexo_read_all()')
         res.json(result.rows)
     } catch (error) {
-        console.error("Error al obtener los paises :", error);
+        console.error("Error al obtener los sexos :", error);
         res.status(500).json({message: "Error interno del servidor"});
 
     }
@@ -74,6 +74,9 @@ export const postTrabajador = async (req, res) => {
     const nombre_usuario = nombre
     const salt = await bcryptjs.genSalt(10)
     const hashedPassword = await bcryptjs.hash(contrasenna, salt)
+    const token = jwt.sign({user: nombre_usuario},
+        process.env.JWT_SECRET,
+        {expiresIn: "1h"})
     try {
         
         const result = await pool.query(
@@ -84,6 +87,7 @@ export const postTrabajador = async (req, res) => {
         res.status(200).json({
             message: "Se ha registrado como " + rol,
             id_usuario: result.rows[0].id_usuario,
+            ok: true,msg: token
         });
     } catch (error) {
         console.log(error);
@@ -94,19 +98,43 @@ export const postTrabajador = async (req, res) => {
     }
 };
 
+export const profile = async (req,res)=>{
+    try{
+        
+        
+        const result = await pool.query(
+            "select * from public.tbusuarios_read($1)",
+            [req.user]
+        );
+        
+        return res.json({ok:true,msg: result.rows[0]})
+
+    }
+    catch(error){
+        console.log(error);
+        return res.status(500).json({
+            ok:false,
+            msg: "Error server"
+        })
+        
+    }
+}
+
 export const signIn = async (req, res) => {
     const {id_usuario, contrasenna,nombre_usuario} = req.body;
 
     try {
         const result = await pool.query(
             "select * from public.tbusuarios_read($1)",
-            [id_usuario]
+            [nombre_usuario]
         );
+        const token = jwt.sign({user: nombre_usuario},
+            process.env.JWT_SECRET,
+            {expiresIn: "1h"})
+
         const isMatch = await bcryptjs.compare(contrasenna,result.rows[0].contrasenna)
         if (isMatch) {
-            const token = jwt.sign({user: nombre_usuario},
-                process.env.JWT_SECRET,
-                {expiresIn: "1h"})
+           
                 
             switch (result.rows[0].rol) {
                 case "Cliente":
@@ -116,7 +144,7 @@ export const signIn = async (req, res) => {
                         ok: true,msg: token
                     });
                     break;
-                case "Vendedor":
+                case "Trabajador":
                     res.status(200).json({
                         Usuario: result.rows[0],
                         message: "Se ha logueado como Vendedor",
@@ -202,8 +230,8 @@ export const updateUser = async (req, res) => {
     const data = req.body;
 
     const result = await pool.query(
-        "select public.tbusuarios_update($1,$2,$3,$4)",
-        [id_usuario, data.nombre, data.password, data.rol]
+        "select public.tbusuarios_update($1,$2,$3)",
+        [id_usuario, data.nombre, data.rol]
     );
     console.log(result);
     res.send("actualizando usuario" + id_usuario);

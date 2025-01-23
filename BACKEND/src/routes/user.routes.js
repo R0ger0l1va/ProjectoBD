@@ -10,7 +10,9 @@ import {
     getAllUsers,
     getUser,
     postTrabajador,
+    profile,
 } from "../controllers/user.controllers.js";
+import { verifyToken } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 router.get("/getSex", getSex)
@@ -22,6 +24,7 @@ router.get("/getLoginUser", getLoginUser);
 router.post("/postTrabajador", postTrabajador)
 router.post("/signIn", signIn);
 router.post("/signUp", signUp);
+router.get('/profile',verifyToken,profile )
 
 router.delete("/delUsers/:id_usuario", deleteUser);
 

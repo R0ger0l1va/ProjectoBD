@@ -102,10 +102,17 @@ export default {
 
     }
   },
-  created() {
-    const sessionData = sessionStorage.getItem('session');
-    if (sessionData) {
-      this.client = JSON.parse(sessionData);
+   async created() {
+    const token = sessionStorage.getItem('token');
+    const userDataKey = axios.get("/profile", {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+
+
+    if (token) {
+      this.client = (await userDataKey).data.msg;
       console.log(this.client);
       this.getPolizas()
     }

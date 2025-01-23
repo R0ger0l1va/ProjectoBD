@@ -36,51 +36,7 @@
     </v-row>
 
 
-    <v-row class="mt-4">
-      <v-col cols="12">
-        <v-card>
-          <v-card-title class="text-h5">Resumen de su Póliza</v-card-title>
-          <v-card-text>
-            <v-list>
-              <v-list-item>
-                <v-list-item-title>Tipo de Seguro:</v-list-item-title>
-                <v-list-item-subtitle>{{
-                    policyDetails.type
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-title>Fecha de Compra:</v-list-item-title>
-                <v-list-item-subtitle>{{
-                    policyDetails.purchaseDate
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-title>Último Pago:</v-list-item-title>
-                <v-list-item-subtitle>{{
-                    policyDetails.lastPayment
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-title>Estado:</v-list-item-title>
-                <v-list-item-subtitle>
-                  <v-chip
-                    :color="policyDetails.status === 'Activa' ? 'green' : 'red'"
-                    text-color="white"
-                  >
-                    {{
-                      policyDetails.status
-                    }}
-                  </v-chip>
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    
 
     <v-row class="mt-4">
       <v-col cols="12">
