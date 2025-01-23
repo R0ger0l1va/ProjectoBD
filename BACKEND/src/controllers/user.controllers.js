@@ -1,5 +1,6 @@
 import {pool} from "../../database/db.js";
-
+import jwt from "jsonwebtoken"
+import bcryptjs from 'bcryptjs'
 
 export const getSex = async (req, res) => {
     try {
@@ -71,10 +72,13 @@ export const getLoginUser = async (req, res) => {
 export const postTrabajador = async (req, res) => {
     const {nombre, contrasenna, rol} = req.body;
     const nombre_usuario = nombre
+    const salt = await bcryptjs.genSalt(10)
+    const hashedPassword = await bcryptjs.hash(contrasenna, salt)
     try {
+        
         const result = await pool.query(
             "Select * from public.tbusuarios_insert($1,$2,$3)",
-            [nombre_usuario, contrasenna, rol]
+            [nombre_usuario, hashedPassword, rol]
         );
 
         res.status(200).json({
@@ -91,31 +95,39 @@ export const postTrabajador = async (req, res) => {
 };
 
 export const signIn = async (req, res) => {
-    const {id_usuario, contrasenna} = req.body;
+    const {id_usuario, contrasenna,nombre_usuario} = req.body;
 
     try {
         const result = await pool.query(
             "select * from public.tbusuarios_read($1)",
             [id_usuario]
         );
-        if (result.rows[0].contrasenna === contrasenna) {
+        const isMatch = await bcryptjs.compare(contrasenna,result.rows[0].contrasenna)
+        if (isMatch) {
+            const token = jwt.sign({user: nombre_usuario},
+                process.env.JWT_SECRET,
+                {expiresIn: "1h"})
+                
             switch (result.rows[0].rol) {
                 case "Cliente":
                     res.status(200).json({
                         Usuario: result.rows[0],
                         message: "Se ha logueado como Cliente",
+                        ok: true,msg: token
                     });
                     break;
                 case "Vendedor":
                     res.status(200).json({
                         Usuario: result.rows[0],
                         message: "Se ha logueado como Vendedor",
+                        ok: true,msg: token
                     });
                     break;
                 case "AdminGen":
                     res.status(200).json({
                         Usuario: result.rows[0],
                         message: "Se ha logueado como AdminGen",
+                        ok: true,msg: token
                     });
                     break;
                 default:
@@ -129,6 +141,10 @@ export const signIn = async (req, res) => {
                 message: "contraseña incorrecta",
             });
         }
+
+        
+
+
     } catch (error) {
         res.status(404).json({
             message: "El usuario no existe",
@@ -138,16 +154,27 @@ export const signIn = async (req, res) => {
 
 export const signUp = async (req, res) => {
     const {nombre_usuario, contrasenna} = req.body;
+
+    const salt = await bcryptjs.genSalt(10)
+    const hashedPassword = await bcryptjs.hash(contrasenna, salt)
+
     try {
         const result = await pool.query("Select * from public.tbusuarios_insert($1,$2,$3)", [
 
             nombre_usuario,
-            contrasenna,
+            hashedPassword,
             "Cliente",
         ]);
 
+        const token = jwt.sign({user: nombre_usuario},
+            process.env.JWT_SECRET,
+            {expiresIn: "1h"})
+
+
         res.status(200).json({
             message: "Se ha registrado como Cliente",
+            ok: true,
+            msg: token,
             id_usuario: result.rows[0].id_usuario,
         });
     } catch (error) {
