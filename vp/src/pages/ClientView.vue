@@ -35,34 +35,6 @@
       </v-col>
     </v-row>
 
-    <v-row class="mt-4">
-      <v-col cols="12">
-        <v-card>
-          <v-card-title class="text-h5">Historial de Pagos de su Póliza</v-card-title>
-          <v-card-text>
-            <v-sheet class="mx-auto"
-                     height="150">
-              <v-sparkline
-                :value="sparklineData"
-                :labels="sparklineLabels"
-                :gradient="gradient"
-                :smooth="10"
-                type="trend"
-                fill="false"
-                :padding="8"
-                :line-width="2"
-                stroke-linecap="round"
-                label-size="4"
-                autoLineWidth:
-                false
-                gradient-direction="top"
-                auto-draw
-              ></v-sparkline>
-            </v-sheet>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
 
     <v-row class="mt-4">
       <v-col cols="12">

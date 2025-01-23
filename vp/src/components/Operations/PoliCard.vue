@@ -1,139 +1,87 @@
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12">
-        <h1 class="text-h4 text-center mb-6 primary--text">Pólizas de {{
-            client.nombre_usuario
-          }}</h1>
-      </v-col>
-    </v-row>
+  <div class="dashboard-container">
+    <h1>Pólizas de {{
+        client.nombre_usuario
+      }}</h1>
 
-    <v-row v-if="policies.length > 0">
-      <v-col v-for="policy in policies"
-             :key="policy.id"
-             cols="12"
-             sm="6"
-             md="4">
-        <v-card
-          :class="[
-            getCoverageClass(policy.tipoCobertura),
-            getStatusClass(policy.estadoPoliza) 
-          ]"
-          elevation="2"
-          hover
-        >
-          <v-card-title> {{
-              policy.agenciaSeguro
-            }}
-          </v-card-title>
-          <v-card-text>
-            <v-list
-              dense>
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-list-item-title>Número de Póliza:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle>{{
-                    policy.numero_poliza
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-list-item-title>Tipo de Seguro:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle>{{
-                    policy.tipoSeguro
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item v-if="isValidPolicy(policy.tipoSeguro)">
-                <template v-slot:prepend>
-                  <v-list-item-title>Estado Poliza:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle :class="getStatusTextClass(policy.estadoPoliza)">
-                  {{
-                    policy.estadoPoliza
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item v-else>
-                <template v-slot:prepend>
-                  <v-list-item-title>Estado Poliza:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle class="error--text">No válida</v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-list-item-title>Fecha de Inicio:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle>{{
-                    formatDate(policy.fecha_inicio)
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-list-item-title>Fecha de Finalización:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle>{{
-                    formatDate(policy.fecha_fin)
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-list-item-title>Tipo Cobertura:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle>{{
-                    policy.tipoCobertura
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-list-item-title>Pago Mensual:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle>{{
-                    formatCurrency(policy.prima_mensual)
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item>
-                <template v-slot:prepend>
-                  <v-list-item-title>Último Pago:</v-list-item-title>
-                </template>
-                <v-list-item-subtitle>{{
-                    policy.monto_total_asegurado
-                  }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row v-else
-           justify="center">
-      <v-col cols="12"
-             sm="8"
-             md="6">
-        <v-alert type="info"
-                 text>
-          Este cliente no tiene pólizas activas en este momento.
-        </v-alert>
-      </v-col>
-    </v-row>
-  </v-container>
+    <div v-if="policies.length > 0"
+         class="policies-list">
+      <div
+        v-for="policy in policies"
+        :key="policy.id"
+        class="policy-card"
+        :class="[
+          getCoverageClass(policy.tipoCobertura),
+          getStatusClass(policy.estadoPoliza)
+        ]"
+      >
+        <h2>ID de Agencia: {{
+            policy.agenciaSeguro
+          }}</h2>
+        <div class="policy-details">
+          <div class="detail-item">
+            <span class="label">Número de Póliza:</span>
+            <span class="value">{{
+                policy.numero_poliza
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Tipo de Seguro:</span>
+            <span class="value">{{
+                policy.tipoSeguro
+              }}</span>
+          </div>
+          <div v-if="isValidPolicy(policy.tipoSeguro)"
+               class="detail-item">
+            <span class="label">Estado Poliza:</span>
+            <span class="value"
+                  :class="getStatusTextClass(policy.estadoPoliza)">{{
+                policy.estadoPoliza
+              }}</span>
+          </div>
+          <div v-else
+               class="detail-item invalid-policy">
+            <span class="label">Estado Poliza:</span>
+            <span class="value">No válida</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Fecha de Inicio:</span>
+            <span class="value">{{
+                formatDate(policy.fecha_inicio)
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Fecha de Finalización:</span>
+            <span class="value">{{
+                formatDate(policy.fecha_fin)
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Tipo Cobertura:</span>
+            <span class="value">{{
+                policy.tipoCobertura
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Pago Mensual:</span>
+            <span class="value">{{
+                formatCurrency(policy.prima_mensual)
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Último Pago:</span>
+            <span class="value">{{
+                policy.monto_total_asegurado
+              }} </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else
+         class="no-policies">
+      <p>Este cliente no tiene pólizas activas en este momento.</p>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -151,6 +99,7 @@ export default {
       },
       policies: [],
       seguros: []
+
     }
   },
   created() {
@@ -161,7 +110,10 @@ export default {
       this.getPolizas()
     }
   },
+
   methods: {
+
+
     async getPolizas() {
       try {
         const res = await axios.get(`/getPolizas/${this.client.id_usuario}`);
@@ -193,9 +145,12 @@ export default {
         }
       }
     },
+
+
     isValidPolicy(tipoSeguro) {
       return this.seguros.includes(tipoSeguro);
     },
+
     formatDate(dateString) {
       const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
       return new Date(dateString).toLocaleDateString(undefined, options);
@@ -204,52 +159,167 @@ export default {
       return new Intl.NumberFormat('es-ES', {style: 'currency', currency: 'EUR'}).format(amount);
     },
     getCoverageClass(tipoCobertura) {
-      switch (tipoCobertura) {
+      switch (tipoCobertura.toLowerCase()) {
         case 'vip':
-          return 'yellow lighten-3';
+          return 'coverage-vip';
         case 'premium':
-          return 'grey lighten-3';
+          return 'coverage-premium';
         case 'estandar':
-          return 'orange lighten-3';
+          return 'coverage-estandar';
         default:
           return '';
       }
     },
     getStatusClass(estadoPoliza) {
-      switch (estadoPoliza) {
+      switch (estadoPoliza.toLowerCase()) {
         case 'activa':
-          return 'green--text text--darken-2';
+          return 'status-active';
         case 'cancelada':
-          return 'red--text text--darken-2';
+          return 'status-cancelled';
         case 'vencida':
-          return 'blue--text text--darken-2';
+          return 'status-expired';
         default:
           return '';
       }
     },
     getStatusTextClass(estadoPoliza) {
-      switch (estadoPoliza) {
+      switch (estadoPoliza.toLowerCase()) {
         case 'activa':
-          return 'success--text';
+          return 'status-text-active';
         case 'cancelada':
-          return 'error--text';
+          return 'status-text-cancelled';
         case 'vencida':
-          return 'info--text';
+          return 'status-text-expired';
         default:
           return '';
       }
     }
   }
+
 }
 </script>
 
 <style scoped>
-.v-card {
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #44917c;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.policies-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.policy-card {
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
-.v-card:hover {
+.policy-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.policy-card h2 {
+  color: black;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.policy-details {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.label {
+  font-weight: bold;
+  color: #333;
+}
+
+.value {
+  color: #000;
+  font-weight: 500;
+}
+
+.no-policies {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin-top: 30px;
+}
+
+/* Coverage classes */
+.coverage-vip {
+  background-color: #ffd700;
+}
+
+.coverage-premium {
+  background-color: #c0c0c0;
+}
+
+.coverage-estandar {
+  background-color: #cd7f32;
+}
+
+/* Status classes */
+.status-active {
+  border: 2px solid #4caf50;
+}
+
+.status-cancelled {
+  opacity: 0.8;
+}
+
+.status-expired {
+  opacity: 0.9;
+}
+
+/* Status text classes */
+.status-text-active {
+  color: #006400;
+  font-weight: bold;
+}
+
+.status-text-cancelled {
+  color: #8b0000;
+  font-weight: bold;
+}
+
+.status-text-expired {
+  color: #00008b;
+  font-weight: bold;
+}
+
+.invalid-policy .value {
+  color: #8b0000;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .policies-list {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
-

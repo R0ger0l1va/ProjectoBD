@@ -1,12 +1,12 @@
 <template>
   <div class="dashboard-container">
     <h1>Pólizas de {{ client.nombre_usuario }}</h1>
-    
+
     <div v-if="policies.length > 0" class="policies-list">
-      <div 
-        v-for="policy in policies" 
-        :key="policy.id" 
-        class="policy-card" 
+      <div
+        v-for="policy in policies"
+        :key="policy.id"
+        class="policy-card"
         :class="[
           getCoverageClass(policy.tipoCobertura),
           getStatusClass(policy.estadoPoliza)
@@ -73,11 +73,11 @@ export default {
         rol: '',
       },
       policies: [
-        
-          
+
+
       ],
       seguros:[]
-        
+
       }
     },
  created() {
@@ -88,9 +88,9 @@ export default {
       this.getPolizas()
     }
   },
-  
+
   methods: {
-    
+
 
      async getPolizas() {
       try {
@@ -123,8 +123,8 @@ export default {
         }
       }
     },
-    
-    
+
+
    isValidPolicy(tipoSeguro) {
       return this.seguros.includes(tipoSeguro);
     },
@@ -173,7 +173,7 @@ export default {
       }
     }
   }
-  
+
 }
 </script>
 
