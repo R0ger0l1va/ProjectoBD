@@ -28,23 +28,19 @@
 
     <!-- Diálogo para aceptar el pedido -->
     <v-dialog v-model="dialog" max-width="600px">
-      <v-form ref="form">
-        <v-card>
-          <v-card-title><span class="text-h5">{{ formTitle }}</span></v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
+      <v-form ref="form" >
+
                 <!-- Aquí van los campos del formulario -->
                 <v-card>
               <v-card-title><span class="text-h5">{{
                   formTitle
                 }}</span></v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
+              <v-card-text  >
+                <v-container >
+                  <v-row >
                     <v-col cols="12"
                            md="4"
-                           sm="6">
+                           sm="6" >
                       <v-select
                         v-model="editedPoliza.id_agencia_seguro"
                         :items="agencias"
@@ -52,6 +48,7 @@
                         item-value="id"
                         variant="underlined"
                         density="compact"
+                        :rules="[rules.required]"
                         label="Agencias Seguro">
                       </v-select>
                     </v-col>
@@ -65,6 +62,7 @@
                         item-value="id"
                         variant="underlined"
                         density="compact"
+                        :rules="[rules.required]"
                         label="Tipos Seguro">
                       </v-select>
                     </v-col>
@@ -76,6 +74,7 @@
                         :items="tiposCoberturas"
                         item-title="nombre"
                         item-value="id"
+                        :rules="[rules.required]"
                         variant="underlined"
                         density="compact"
                         label="Tipos Cobertura">
@@ -94,17 +93,20 @@
                            sm="6">
                       <v-text-field v-model="editedPoliza.id_estado_poliza"
                                     variant="underlined"
+                                    model-value=3
                                     label="Estado"
-                                    :readonly="isCreating"></v-text-field>
+                                    readonly
+                                    ></v-text-field>
                     </v-col>
                     <v-col cols="12"
                            md="4"
                            sm="6">
                       <v-text-field v-model="editedPoliza.monto_total_asegurado"
-                                    model-value="0"
+                                    model-value=0
                                     variant="underlined"
                                     label="Monto Total"
-                                    readonly></v-text-field>
+                                    readonly
+                                    ></v-text-field>
                     </v-col>
                     <v-col cols="12"
                            md="4"
@@ -114,6 +116,7 @@
                         :items="clientes"
                         item-title="nombre"
                         item-value="id"
+                        :rules="[rules.required]"
                         variant="underlined"
                         density="compact"
                         label="Cliente">
@@ -161,18 +164,6 @@
               </v-card-actions>
             </v-card>
 
-                <!-- Resto de campos... -->
-                <!-- Puedes agregar más campos aquí según tu formulario original -->
-
-              </v-row>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue-darken-1" variant="text" @click="closeDialog">Cancelar</v-btn>
-            <v-btn color="blue-darken-1" variant="text" @click="save">Guardar</v-btn>
-          </v-card-actions>
-        </v-card>
       </v-form>
     </v-dialog>
 
@@ -180,28 +171,32 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
+      editedIndex: -1,
+      defaultPoliza: {},
+      editedPoliza: {},
+      operadores: [],
+
       pedidos: [], // Almacena los pedidos recuperados del local storage
       dialog: false, // Controla la visibilidad del diálogo
       formTitle: 'Aceptar Pedido', // Título del formulario
-      editedPoliza: {
-        id_agencia_seguro: null,
-        id_tipo_seguro: null,
-        id_tipo_cobertura: null,
-        prima_mensual: '',
-        id_estado_poliza: '',
-        monto_total_asegurado: '',
-        numero_identidad_cliente: null,
-        fecha_inicio: '',
-        fecha_fin: ''
-      },
       agencias: [], // Debes llenar esto con tus datos
       tiposSeguro: [], // Debes llenar esto con tus datos
       tiposCoberturas: [], // Debes llenar esto con tus datos
-      clientes: [] // Debes llenar esto con tus datos
+      clientes: [], // Debes llenar esto con tus datos
+
+      rules: {
+        fechaInicioRule: value => !value || (new Date(value) <= new Date(this.editedPoliza.fecha_fin)) || 'La fecha inicial no puede ser mayor que la fecha final.',
+        fechaFinRule: value => !value || (new Date(value) >= new Date(this.editedPoliza.fecha_inicio)) || 'La fecha final no puede ser menor que la fecha inicial.',
+        primaRule: value => (value >= 100) || 'La prima mensual no puede ser menor que 100.',
+        required: value => !!value || 'Este campo es obligatorio',
+
+      }
     };
+
   },
 
   created() {
@@ -212,6 +207,68 @@ export default {
   },
 
   methods: {
+
+    async fetchData (){
+      try {
+
+
+
+const [polizasRes, agenciasRes, tiposSeguroRes, tiposCoberturaRes, clientesRes] = await Promise.all([
+  axios.get('/getAllPolizas'),
+  axios.get('/getAllAgencias'),
+  axios.get('/getAllTipoSeguros'),
+  axios.get('/getAllCoberturas'),
+  axios.get('/getAllClientes'),
+
+])
+
+this.polizas = polizasRes.data
+this.totalItems = this.polizas.length; // Actualiza el total de elementos si es necesario
+this.agencias = agenciasRes.data.map(agencia => ({
+  id: agencia.id_agencia_seguro,
+  nombre: agencia.nombre_agencia_seguro,
+}))
+this.tiposSeguro = tiposSeguroRes.data.map(tipo => ({
+  id: tipo.id_tipo_seguro,
+  nombre: tipo.nombre_tipo_seguro
+}))
+this.tiposCoberturas = tiposCoberturaRes.data.map(cobertura => ({
+  id: cobertura.id_tipo_cobertura,
+  nombre: cobertura.nombre_tipo_cobertura
+}))
+this.clientes = clientesRes.data.map(cliente => ({
+  id: cliente.numero_identidad_cliente,
+  nombre: cliente.nombre_cliente
+}))
+
+if (this.polizas.length > 0) {
+          const keys = Object.keys(this.polizas[0]); // Obtener las claves del primer objeto
+          this.editedPoliza = Object.assign(Object.fromEntries(keys.map(key => [key, null])), {
+            id_estado_poliza: 3,
+            monto_total_asegurado: 0
+          }); //todo Crear un nuevo objeto con propiedades vacías
+          this.defaultPoliza = Object.assign(Object.fromEntries(keys.map(key => [key, null])), {
+            id_estado_poliza: 3,
+            monto_total_asegurado: 0
+          }); // Crear un nuevo objeto con propiedades vacías
+
+          console.log(this.editedPoliza);
+        } else {
+          console.log('El arreglo de pólizas está vacío.');
+        }
+
+
+
+} catch (error) {
+console.error('Error fetching data:', error)
+alert('Error al cargar los datos. Por favor, intente de nuevo.')
+} finally {
+this.loading = false;
+}
+
+
+},
+
     deletePedido(index) {
       // Eliminar el pedido del array local
       this.pedidos.splice(index, 1);
@@ -233,26 +290,58 @@ export default {
       }
     },
 
-    openDialog(pedido) {
-      this.editedPoliza = { ...pedido }; // Cargar los datos del pedido en editedPoliza
+    openDialog(pedid,index) {
+      // this.editedPoliza = { ...pedido }; // Cargar los datos del pedido en editedPoliza
       this.dialog = true; // Abrir el diálogo
+      this.currentIndex = index; // Guarda el índice actual en una propiedad
+      
+
     },
 
     closeDialog() {
       this.dialog = false; // Cerrar el diálogo
     },
 
-    save() {
-      // Lógica para guardar los cambios (puedes implementarla según tus necesidades)
-      console.log('Guardando:', this.editedPoliza);
 
-      // Cerrar el diálogo después de guardar
-      this.closeDialog();
 
-      // Aquí podrías agregar lógica adicional para actualizar el estado o enviar datos al servidor.
-    }
+    async save(index) {
+      if (!(await this.$refs.form.validate()).valid) {
+        alert("HOLA")
+        return
+      }
+
+        try {
+          console.log(this.editedPoliza);
+
+          await axios.post('/postPoliza', this.editedPoliza)
+          alert('Póliza creada con éxito')
+          this.deletePedido(index)
+
+        } catch (error) {
+          console.error('Error creating policy:', error)
+          alert('Error al crear la póliza')
+        }
+
+
+      this.close()
+      this.fetchData()
+
+
+    },
+    close() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedPoliza = Object.assign({}, this.defaultPoliza)
+        this.editedIndex = -1
+      })
+    },
+  },
+
+  mounted() {
+    this.fetchData()
   }
 }
+
 </script>
 
 <style scoped>

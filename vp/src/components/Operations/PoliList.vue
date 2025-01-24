@@ -61,6 +61,8 @@
                         :items="agencias"
                         item-title="nombre"
                         item-value="id"
+                        :rules="[rules.required]"
+
                         variant="underlined"
                         density="compact"
                         label="Agencias Seguro">
@@ -73,6 +75,8 @@
                         v-model="editedPoliza.id_tipo_seguro"
                         :items="tiposSeguro"
                         item-title="nombre"
+                        :rules="[rules.required]"
+
                         item-value="id"
                         variant="underlined"
                         density="compact"
@@ -86,6 +90,8 @@
                         v-model="editedPoliza.id_tipo_cobertura"
                         :items="tiposCoberturas"
                         item-title="nombre"
+                        :rules="[rules.required]"
+
                         item-value="id"
                         variant="underlined"
                         density="compact"
@@ -97,6 +103,7 @@
                            sm="6">
                       <v-text-field v-model="editedPoliza.prima_mensual"
                                     variant="underlined"
+                                    
                                     label="Prima Mensual"
                                     :rules="[rules.primaRule]"></v-text-field>
                     </v-col>
@@ -124,6 +131,8 @@
                         v-model="editedPoliza.numero_identidad_cliente"
                         :items="clientes"
                         item-title="nombre"
+                        :rules="[rules.required]"
+
                         item-value="id"
                         variant="underlined"
                         density="compact"
@@ -274,7 +283,9 @@ export default {
       rules: {
         fechaInicioRule: value => !value || (new Date(value) <= new Date(this.editedPoliza.fecha_fin)) || 'La fecha inicial no puede ser mayor que la fecha final.',
         fechaFinRule: value => !value || (new Date(value) >= new Date(this.editedPoliza.fecha_inicio)) || 'La fecha final no puede ser menor que la fecha inicial.',
-        primaRule: value => (value >= 100) || 'La prima mensual no puede ser menor que 100.'
+        primaRule: value => (value >= 100) || 'La prima mensual no puede ser menor que 100.',
+        required: value => !!value || 'Este campo es obligatorio',
+
       }
 
     }
@@ -366,9 +377,14 @@ export default {
 
 
         //todo Fetch operadores from session storage
-        const sessionData = JSON.parse(sessionStorage.getItem('session'))
-        if (sessionData && sessionData.nombre_usuario) {
-          this.operadores = [{id: sessionData.id_usuario, nombre: sessionData.nombre_usuario}]
+        const token = sessionStorage.getItem('token')
+        const userDataKey = axios.get("/profile", {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+        if (token && (await userDataKey).data.msg.nombre_usuario) {
+          this.operadores = [{id: (await userDataKey).data.msg.id_usuario, nombre: (await userDataKey).data.msg.nombre_usuario}]
         }
 
         if (this.polizas.length > 0) {
