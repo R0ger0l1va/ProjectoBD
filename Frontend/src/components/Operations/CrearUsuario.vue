@@ -378,7 +378,7 @@ export default {
             rol: this.usuario.rol
           })
         } else {
-          await axios.post('/postCliente', this.usuario)
+          await axios.post('/postCliente', this.usuario,postCliente)
         }
         this.showAlertMessage('Usuario creado con éxito', true)
         this.resetForm()
@@ -429,10 +429,15 @@ export default {
       }
     },
     async buscarCliente() {
+      const token = sessionStorage.getItem('token')
       try {
         console.log(this.numeroClienteOperacion)
 
-        const response = await axios.get(`/getCliente/${this.numeroClienteOperacion}`)
+        const response = await axios.get(`/getCliente/${this.numeroClienteOperacion}`,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
 
         this.clienteModificar = response.data
         this.clienteBackup = response.data

@@ -70,13 +70,10 @@ export const getLoginUser = async (req, res) => {
 };
 
 export const postTrabajador = async (req, res) => {
-    const {nombre, contrasenna, rol,id_usuario} = req.body;
+    const {nombre, contrasenna, rol} = req.body;
     const nombre_usuario = nombre
     const salt = await bcryptjs.genSalt(10)
     const hashedPassword = await bcryptjs.hash(contrasenna, salt)
-    const token = jwt.sign({user_id: id_usuario,user_rol:rol},
-        process.env.JWT_SECRET,
-        {expiresIn: "1h"})
     try {
         
         const result = await pool.query(
@@ -87,7 +84,6 @@ export const postTrabajador = async (req, res) => {
         res.status(200).json({
             message: "Se ha registrado como " + rol,
             id_usuario: result.rows[0].id_usuario,
-            ok: true,msg: token
         });
     } catch (error) {
         console.log(error);

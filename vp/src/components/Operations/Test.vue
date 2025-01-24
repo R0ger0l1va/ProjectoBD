@@ -305,7 +305,8 @@ export default {
 
         this.usuarioData = usuarios.data.map(usuario => ({
           id: usuario.id_usuario,
-          nombre: usuario.nombre_usuario
+          nombre: usuario.nombre_usuario,
+          rol: usuario.rol
         }));
 
       } catch (error) {
@@ -335,6 +336,7 @@ export default {
       return !existingEmail
     },
     async signUp() {
+      const token = sessionStorage.getItem('token')
       if (this.isRegisterFormValid) {
         try {
           if (!this.validateUsername() || !this.validateEmail()) {
@@ -345,7 +347,11 @@ export default {
           const res = await axios.post('/signUp', this.registerForm);
           const generated = res.data.id_usuario;
           this.registerForm.numero_id_cliente = generated;
-          const clienteRes = await axios.post('/postCliente', this.registerForm);
+          const clienteRes = await axios.post('/postCliente', this.registerForm,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        });
           console.log(clienteRes);
           this.showAlertMessage('Registro exitoso', true);
           this.resetForm();
@@ -369,6 +375,7 @@ export default {
           return
         }
         this.loginForm.id_usuario = existingUser.id // Set the ID for login
+        this.loginForm.rol = existingUser.rol
         const res = await axios.post('/signIn', this.loginForm);
 
         sessionStorage.setItem('token', res.data.msg);
@@ -394,7 +401,11 @@ export default {
         this.isSuccess = true
         this.alertMessage = 'Inicio de sesión exitoso'
         const aux = res.data.Usuario.id_usuario
-        const clientResponse = await axios.get(`/getCliente/${aux}`);
+        const clientResponse = await axios.get(`/getCliente/${aux}`,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        });
         const client = clientResponse.data;
         this.$emit('login', {userName: username, userType: userRol, client: client}); // Emitir detalles del usuario
 

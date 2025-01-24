@@ -284,9 +284,14 @@ export default {
       }
     },
     async compararNombre() {
+      const token = sessionStorage.getItem('token')
       if (this.currentOperation === 'crear' || this.currentOperation === 'modificar') {
         try {
-          const response = await axios.get(`/getCliente/${this.poliza.numero_identidad_cliente}`)
+          const response = await axios.get(`/getCliente/${this.poliza.numero_identidad_cliente}`,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
           this.nombreExistente = response.data.exists
           if (this.nombreExistente) {
             alert('Ya existe un seguro con este nombre.')

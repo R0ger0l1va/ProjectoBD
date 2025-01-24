@@ -17,6 +17,7 @@ import {
   sortPolizas,
   updPoliza,
 } from "../controllers/poliza.controllers.js";
+import { verifyToken } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
@@ -40,10 +41,10 @@ router.get("/getAgencia/:id_agencia_seguro", getAgencia);
 router.get("/getEstadoPoliza/:id_estado_poliza", getEstadoPoliza);
 
 //todo CRUD Polizas
-router.get("/getPoliza/:id", getPoliza);
-router.get("/getPolizas/:id_usuario", getPolizas);
-router.post("/postPoliza", crearPoliza);
-router.delete("/delPoliza/:id", borrarPoliza);
-router.put("/actPoliza", updPoliza);
+router.get("/getPoliza/:id",verifyToken, getPoliza);
+router.get("/getPolizas/:id_usuario",verifyToken, getPolizas);
+router.post("/postPoliza",verifyToken, crearPoliza);
+router.delete("/delPoliza/:id",verifyToken, borrarPoliza);
+router.put("/actPoliza",verifyToken, updPoliza);
 
 export default router;

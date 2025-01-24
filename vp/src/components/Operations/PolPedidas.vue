@@ -46,6 +46,7 @@
                         :items="agencias"
                         item-title="nombre"
                         item-value="id"
+                        :model-value="pedidos.agency"
                         variant="underlined"
                         density="compact"
                         :rules="[rules.required]"
@@ -294,7 +295,7 @@ this.loading = false;
       // this.editedPoliza = { ...pedido }; // Cargar los datos del pedido en editedPoliza
       this.dialog = true; // Abrir el diálogo
       this.currentIndex = index; // Guarda el índice actual en una propiedad
-      
+
 
     },
 

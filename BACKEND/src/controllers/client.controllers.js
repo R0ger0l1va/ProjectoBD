@@ -17,42 +17,46 @@ export const getClient = async (req, res) => {
 };
 
 export const crearCliente = async (req, res) => {
-    const {
-        numero_identidad_cliente,
-        id_pais,
-        id_sexo,
-        nombre_cliente,
-        apellido_cliente,
-        edad,
-        direccion_postal,
-        telefono,
-        correo_electronico,
-        carnet_identidad,
-    } = req.body;
 
-   
-
-    try {
-        const result = await pool.query(
-            "SELECT * from public.tbcliente_insert($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)",
-            [
-                numero_identidad_cliente,
-                id_pais,
-                id_sexo,
-                nombre_cliente,
-                apellido_cliente,
-                edad,
-                direccion_postal,
-                telefono,
-                correo_electronico,
-                carnet_identidad,
-            ]
-        );
-        res.json(result.rows[0]);
-    } catch (error) {
-        res.status(409).send(error.message);
-        console.log(error)
-    }
+    
+        const {
+            numero_identidad_cliente,
+            id_pais,
+            id_sexo,
+            nombre,
+            apellido_cliente,
+            edad,
+            direccion_postal,
+            telefono,
+            correo_electronico,
+            carnet_identidad,
+        } = req.body;
+    
+       console.log(req.rol);
+       const nombre_cliente = nombre
+        
+        try {
+            const result = await pool.query(
+                "SELECT * from public.tbcliente_insert($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)",
+                [
+                    numero_identidad_cliente,
+                    id_pais,
+                    id_sexo,
+                    nombre_cliente,
+                    apellido_cliente,
+                    edad,
+                    direccion_postal,
+                    telefono,
+                    correo_electronico,
+                    carnet_identidad,
+                ]
+            );
+            res.json(result.rows[0]);
+        } catch (error) {
+            res.status(409).send(error.message);
+            console.log(error)
+        }
+    
 };
 
 export const borrarCliente = async (req, res) => {
@@ -80,7 +84,7 @@ export const actualizarCliente = async (req, res) => {
         const result = await pool.query(
             "SELECT * FROM public.tbcliente_update($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
             [
-                5,
+                
                 cliente.id_pais,
                 cliente.id_sexo,
                 cliente.nombre_cliente,

@@ -198,7 +198,7 @@
 </template>
 
 <script>
-import * as promise from "axios";
+
 import axios from "axios";
 
 export default {
@@ -366,11 +366,19 @@ export default {
         try {
           console.log(this.editedUser)
           const res = await axios.post('/postTrabajador', this.editedUser)
+          this.editedUser.numero_identidad_cliente = res.data.id_usuario
+          this.editedUser.nombre_cliente =
+          console.log(this.editedUser);
+
           alert('Usuario creado con éxito')
           if (this.editedUser.rol === 'Cliente') {
-            this.editedUser.id_numero_identidad_cliente = res.data.id_usuario
             console.log(this.editedUser)
-            await axios.post('/postCliente', this.editedUser)
+            const token = sessionStorage.getItem('token')
+            console.log(token);
+
+            await axios.post('/postCliente', this.editedUser,{headers: {
+    'Authorization': `Bearer ${token}`
+}})
             alert('Cliente agregado')
           }
         } catch (error) {
@@ -400,11 +408,16 @@ export default {
     },
 
     async deleteItemConfirm() {
+      const token = sessionStorage.getItem('token')
       try {
-        await axios.delete(`/delUsers/${this.userTarget}`)
+        await axios.delete(`/delUsers/${this.userTarget}`,{headers: {
+    'Authorization': `Bearer ${token}`
+}})
         alert('Usuario eliminado con éxito')
         if (this.editedUser.rol === 'Cliente') {
-          await axios.delete(`/delCliente/${this.userTarget}`)
+          await axios.delete(`/delCliente/${this.userTarget}`,{headers: {
+    'Authorization': `Bearer ${token}`
+}})
           alert("Cliente eliminado con exito")
         }
       } catch (error) {
