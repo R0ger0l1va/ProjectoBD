@@ -70,11 +70,11 @@ export const getLoginUser = async (req, res) => {
 };
 
 export const postTrabajador = async (req, res) => {
-    const {nombre, contrasenna, rol} = req.body;
+    const {nombre, contrasenna, rol,id_usuario} = req.body;
     const nombre_usuario = nombre
     const salt = await bcryptjs.genSalt(10)
     const hashedPassword = await bcryptjs.hash(contrasenna, salt)
-    const token = jwt.sign({user: nombre_usuario},
+    const token = jwt.sign({user_id: id_usuario,user_rol:rol},
         process.env.JWT_SECRET,
         {expiresIn: "1h"})
     try {
@@ -121,14 +121,14 @@ export const profile = async (req,res)=>{
 }
 
 export const signIn = async (req, res) => {
-    const {id_usuario, contrasenna,nombre_usuario} = req.body;
+    const {id_usuario, contrasenna,nombre_usuario,rol} = req.body;
 
     try {
         const result = await pool.query(
             "select * from public.tbusuarios_read($1)",
-            [nombre_usuario]
+            [id_usuario]
         );
-        const token = jwt.sign({user: nombre_usuario},
+        const token = jwt.sign({user_id: id_usuario,user_rol:rol},
             process.env.JWT_SECRET,
             {expiresIn: "1h"})
 
@@ -233,6 +233,10 @@ export const updateUser = async (req, res) => {
         "select public.tbusuarios_update($1,$2,$3)",
         [id_usuario, data.nombre, data.rol]
     );
+    const token = jwt.sign({user_id: id_usuario,user_rol:data.rol},
+        process.env.JWT_SECRET,
+        {expiresIn: "1h"})
+
     console.log(result);
     res.send("actualizando usuario" + id_usuario);
     res.json(result.rows[0]);

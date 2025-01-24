@@ -72,73 +72,14 @@
               ></v-list-item-title>
             </v-list-item>
 
-            <!-- Botón para revisar pedidos -->
-            <v-list-item
-              v-if="userType === 'Trabajador' || userType === 'AdminGen'"
-              @click="openDialog">
-              <template v-slot:prepend>
-                <v-icon>mdi-file-document</v-icon>
-              </template>
-              <v-list-item-title>Revisar Pedidos</v-list-item-title>
-            </v-list-item>
+
 
 
           </v-list>
         </v-list>
       </v-menu>
 
-      <v-dialog v-model="dialogVisible"
-                max-width="800px">
-        <template v-slot:activator="{ on }"></template>
 
-        <v-card>
-          <v-card-title>Pedidos de Póliza</v-card-title>
-
-          <v-card-text>
-            <!-- Mostrar los pedidos en forma de tarjetas -->
-            <div v-if="pedidos.length === 0">No hay pedidos disponibles.</div>
-            <div v-for="(pedido, index) in pedidos"
-                 :key="index">
-              <v-card class="mb-3">
-                <v-card-title>
-                  Cliente: {{
-                    pedido.username
-                  }}
-                </v-card-title>
-                <v-card-title>Agencia: {{
-                    pedido.agency
-                  }}
-                </v-card-title>
-
-                <v-card-title>
-                  Tipo de Seguro: {{
-                    pedido.insuranceType
-                  }}
-                </v-card-title>
-                <v-card-title>
-                  Tipo de cobertura: {{
-                    pedido.coverageType
-                  }}
-                </v-card-title>
-                <!-- Icono para eliminar el pedido -->
-                <v-card-actions>
-                  <v-btn icon
-                         @click.prevent="deletePedido(index)">
-                    <v-icon color="red">mdi-delete</v-icon> <!-- Icono de eliminar -->
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </div>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn color="primary"
-                   @click="closeDialog">Cerrar
-            </v-btn> <!-- Botón para cerrar el diálogo -->
-          </v-card-actions>
-        </v-card>
-
-      </v-dialog>
 
     </v-app-bar>
     <v-navigation-drawer
@@ -275,52 +216,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!-- Change Password Dialog -->
-    <v-dialog v-model="showChangePasswordDialog"
-              max-width="500px">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Change Password</span>
-        </v-card-title>
-        <v-card-text>
-          <v-form @submit.prevent="changePassword">
-            <v-text-field
-              v-model="currentPassword"
-              label="Current Password"
-              type="password"
-              required
-            ></v-text-field>
-            <v-text-field
-              v-model="newPassword"
-              label="New Password"
-              type="password"
-              required
-            ></v-text-field>
-            <v-text-field
-              v-model="confirmPassword"
-              label="Confirm New Password"
-              type="password"
-              required
-            ></v-text-field>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="showChangePasswordDialog = false"
-          >Cancel
-          </v-btn
-          >
-          <v-btn color="blue darken-1"
-                 text
-                 @click="changePassword">Save
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </nav>
 </template>
 
@@ -357,11 +252,7 @@ export default {
           text: "Profile",
           action: () => (this.showProfileDialog = true),
         },
-        {
-          icon: "mdi-lock",
-          text: "Change Password",
-          action: () => (this.showChangePasswordDialog = true),
-        },
+        
         {icon: "mdi-logout", text: "Logout", action: this.logout},
       ],
       showProfileDialog: false,
@@ -369,8 +260,6 @@ export default {
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
-      dialogVisible: false, // Controla la visibilidad del diálogo
-      pedidos: [], // Almacena los pedidos recuperados del local storage
     };
   },
   created() {
@@ -392,35 +281,7 @@ export default {
     },
   },
   methods: {
-    deletePedido(index) {
-      // Eliminar el pedido del array local
-      this.pedidos.splice(index, 1);
 
-      // Actualizar el local storage
-      localStorage.setItem('polizaList', JSON.stringify(this.pedidos));
-
-
-      // Recargar los pedidos para reflejar los cambios en la interfaz
-      this.loadPedidos();
-
-      // Opcionalmente, puedes mostrar un mensaje de confirmación o éxito
-      alert('Pedido eliminado con éxito.');
-    },
-
-    openDialog() {
-      this.loadPedidos(); // Cargar los pedidos al abrir el diálogo
-      this.dialogVisible = true; // Abrir el diálogo
-    },
-    closeDialog() {
-      this.dialogVisible = false; // Cerrar el diálogo
-    },
-    loadPedidos() {
-      const storedData = localStorage.getItem('polizaList');
-      if (storedData) {
-        this.pedidos = JSON.parse(storedData);
-
-      }
-    },
 
 
     updateLinks() {
@@ -436,13 +297,18 @@ export default {
             {
               icon: "mdi-account-group",
               text: "Users",
-              route: "/userlist",
+              route: "/userList",
             },
             {
               icon: "mdi-file-pdf-box",
               text: "Documents",
               route: "/documentList",
             },
+            {
+              icon: "mdi-view-list",
+              text: "Pedidos",
+              route: "/pedidos",
+            }
           ];
           break;
         case "AdminGen":
@@ -456,13 +322,18 @@ export default {
             {
               icon: "mdi-account-group",
               text: "Users",
-              route: "/userlist",
+              route: "/userList",
             },
             {
               icon: "mdi-file-pdf-box",
               text: "Documents",
               route: "/documentList",
             },
+            {
+              icon: "mdi-view-list",
+              text: "Pedidos",
+              route: "/pedidos",
+            }
           ];
           break;
         case "Cliente":
@@ -495,6 +366,7 @@ export default {
       // this.$store.dispatch('logout')
       // this.$router.push('/login')
       this.$router.push('/')
+      sessionStorage.removeItem('token')
 
     },
     changePassword() {

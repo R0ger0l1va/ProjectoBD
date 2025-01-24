@@ -7,7 +7,6 @@
     />
     <v-main>
       <router-view @login="handleLogin"/>
-
     </v-main>
   </v-app>
 </template>
@@ -15,21 +14,22 @@
 <script>
 import NavBar from "@/components/Nav/NavBar.vue";
 
-
 export default {
-  components: {NavBar}, data() {
+  components: { NavBar },
+  data() {
     return {
       isLoggedIn: false,
       userName: '', // Definir userName
       userType: '', // Definir userType
-      clientData: null// DatosDelCLiente
-    }
-  }, methods: {
+      clientData: null // DatosDelCliente
+    };
+  },
+  methods: {
     handleLogin(userDetails) {
       this.isLoggedIn = true;
       this.userName = userDetails.userName;
       this.userType = userDetails.userType;
-      this.clientData = userDetails.client
+      this.clientData = userDetails.client;
 
       // Guardar estado en sessionStorage
       sessionStorage.setItem('isLoggedIn', true);
@@ -49,12 +49,23 @@ export default {
       sessionStorage.removeItem('userType');
       sessionStorage.removeItem('clientData');
     },
-
   },
   watch: {
     $route(to) {
-      if (to.path === '/') {
-        this.handleLogout();
+      if (to.path !== '/') {
+        // Si no es la ruta principal, verifica si hay un token y carga los datos
+        const token = sessionStorage.getItem('token'); // O donde estés almacenando el token
+        if (token) {
+          // Aquí puedes agregar la lógica para obtener los detalles del usuario si es necesario
+          const userDetails = {
+            userName: sessionStorage.getItem('userName'),
+            userType: sessionStorage.getItem('userType'),
+            client: JSON.parse(sessionStorage.getItem('clientData'))
+          };
+          this.handleLogin(userDetails); // Llama a handleLogin con los datos del usuario
+        }
+      } else {
+        this.handleLogout(); // Si es la ruta principal, cierra sesión
       }
     }
   },
@@ -66,13 +77,6 @@ export default {
       this.userType = sessionStorage.getItem('userType');
       this.clientData = JSON.parse(sessionStorage.getItem('clientData'));
     }
-    this.$router.afterEach((to) => {
-      if (to.path === '/') {
-        this.handleLogout();
-      }
-    });
   }
 }
-
-
 </script>

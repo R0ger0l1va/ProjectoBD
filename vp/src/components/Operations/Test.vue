@@ -190,10 +190,6 @@
                         required
                         @click:append="showLoginPassword = !showLoginPassword"
                       ></v-text-field>
-                      <v-btn class="mb-4"
-                             color="primary"
-                             text>¿Olvidaste tu contraseña?
-                      </v-btn>
                       <v-btn
                         :disabled="!isFormLoginValid"
                         block
@@ -407,7 +403,7 @@ export default {
 
 
 
-        await this.redirectUser(res.data.Usuario.rol);
+        await this.redirectUser(userRol);
       } catch (error) {
         console.error('Error en el inicio de sesión:', error);
         this.showAlertMessage('Error al iniciar sesión', false);

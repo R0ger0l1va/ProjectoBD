@@ -15,7 +15,7 @@ export const verifyToken = (req,res,next) => {
 
     try{
        const nombre_usuario = jwt.verify(token,process.env.JWT_SECRET )
-       req.user = nombre_usuario.user
+       req.user = nombre_usuario.user_id
        
         next()
     }catch(error){
